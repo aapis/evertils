@@ -14,6 +14,9 @@ alias evertils='evertils.rb'
 1. Execute `bundle install`
 2. Execute `evertils clean logs` to test if everything installed correctly
 
+## Logging Specification
+See [this document](LOGGING_SPECIFICATION.md) to see how it all gets organized.
+
 ## How to Use
 
 |Command|Description|Usage|
