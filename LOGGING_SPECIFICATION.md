@@ -13,7 +13,7 @@
 * Title format: Weekly Log [Start of Week Date - End of Week Date]
 * Link to each daily log and contain a summary of the important items (tags denote important items, use them to determine what the important weekly items are)
 * Tagged “week-$WEEK_NUM”
-* Weekly goals section included as a constant reminder of what needs to be done this week, also handy for sending to Marcin each Monday
+* Weekly goals section included as a constant reminder of what needs to be done this week, also handy for sending to {{BOSS_MAN}} each Monday
 * Project updates go under each weekly goal
 
 ## Monthly logs
@@ -35,3 +35,6 @@
 * borked - I broke something in production
 * interview - interviewed someone or was part of an interview
 * meeting - participated in a meeting of some kind
+
+## Log Templates
+See [this directory](lib/configs/templates).
