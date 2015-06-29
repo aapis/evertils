@@ -33,29 +33,15 @@ module Granify
       end
 
       def get_notebooks
-        @data = @@store.listNotebooks(@@developer_token)
+        @@store.listNotebooks(@@developer_token)
       end
 
       def get_tags
-        @data = @@store.listTags(@@developer_token)
+        @@store.listTags(@@developer_token)
       end
 
       def get_user
-        @data = @@user.getUser(@@developer_token)
-      end
-
-      def get_note(filter_terms)
-        filter = ::Evernote::EDAM::NoteStore::NoteFilter.new("words" => "intitle:#{filter_terms}")
-        @@store.findNotes(@@developer_token, filter, nil, 1)
-      end
-
-      def note_exists(filter_terms)
-        note = get_note(filter_terms)
-        note.totalNotes > 0
-      end
-
-      def current_log_exists
-        note_exists(date_templates[$request.command])
+        @@user.getUser(@@developer_token)
       end
 
       def get_notebook_by_name(name)
@@ -89,6 +75,16 @@ module Granify
         end
         
         output
+      end
+
+      def get_note(filter_terms)
+        filter = ::Evernote::EDAM::NoteStore::NoteFilter.new("words" => "intitle:#{filter_terms}")
+        @@store.findNotes(@@developer_token, filter, nil, 1)
+      end
+
+      def current_log_exists
+        note = get_note(date_templates[$request.command])
+        note.totalNotes > 0
       end
 
       def create_note
