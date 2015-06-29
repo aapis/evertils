@@ -1,6 +1,8 @@
 module Granify
   module Controller
     class New < Controller::Base
+      attr_accessor :title, :file, :notebook
+
       def pre_exec
         begin
           # interface with the Evernote API so we can use it later
@@ -8,6 +10,23 @@ module Granify
 
           # all methods require internet to make API calls
           @methods_require_internet.push(:daily, :weekly, :monthly)
+
+          # command flag parser
+          OptionParser.new do |opt|
+            opt.banner = "#{Granify::PACKAGE_NAME} new note [...-flags]"
+
+            opt.on("-t", "--title=TITLE", "Set a custom title") do |title|
+              @title = title
+            end
+
+            opt.on("-f", "--file=PATH", "Attach a file to your custom note") do |file|
+              @file = file
+            end
+
+            opt.on("-n", "--notebook=PBOOK", "Attach a file to your custom note") do |notebook|
+              @notebook = notebook
+            end
+          end.parse!
 
           # user = @model.get_user
           # Notify.success("Welcome, #{user.name} (#{user.username})")
@@ -26,7 +45,7 @@ module Granify
           Notify.error("There's already a log for today!")
         end
 
-        @model.create_note("Custom Note", $request.custom, "Quarterly")
+        @model.create_note(@title || "Evertils - Custom Note", $request.custom, @notebook)
       end
     end
   end

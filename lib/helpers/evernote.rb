@@ -126,7 +126,9 @@ module Granify
         end
 
         ## parent_notebook is optional; if omitted, default notebook is used
-        our_note.notebookGuid = parent_notebook.guid
+        if parent_notebook.respond_to? :guid
+          our_note.notebookGuid = parent_notebook.guid
+        end
 
         ## Attempt to create note in Evernote account
         begin
@@ -141,7 +143,11 @@ module Granify
           Notify.error "EDAMNotFoundException: Invalid parent notebook GUID"
         end
 
-        Notify.success("#{parent_notebook.stack}/#{parent_notebook.name}/#{our_note.title} created")
+        if parent_notebook.respond_to? :stack
+          Notify.success("#{parent_notebook.stack}/#{parent_notebook.name}/#{our_note.title} created")
+        else
+          Notify.success("DEFAULT_NOTEBOOK/#{our_note.title} created")
+        end
       end
 
       def generate_stats
