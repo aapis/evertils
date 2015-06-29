@@ -1,7 +1,11 @@
 module Granify
-  module Model
-    class Generate < Model::Base
+  module Helper
+    class Evernote < Model::Base
       @@developer_token = ENV["EVERTILS_TOKEN"]
+
+      def initialize
+        authenticate
+      end
 
       def authenticate
         if @@developer_token.nil?
@@ -82,23 +86,28 @@ module Granify
         @@store.findNotes(@@developer_token, filter, nil, 1)
       end
 
-      def current_log_exists
+      def note_exists
         note = get_note(date_templates[$request.command])
         note.totalNotes > 0
       end
 
-      def create_note
+      def create_note(title = date_templates[$request.command], body = template_contents, p_notebook_name = nil)
         if $request.command == :weekly && !Date.today.monday?
           Notify.error("Sorry, you can only create new weekly logs on Mondays")
         end
 
+        # only join when required
+        if body.is_a? Array
+          body = body.join
+        end
+
         n_body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         n_body += "<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">"
-        n_body += "<en-note>#{template_contents}</en-note>"
+        n_body += "<en-note>#{body}</en-note>"
        
         ## Create note object
-        our_note = Evernote::EDAM::Type::Note.new
-        our_note.title = date_templates[$request.command]
+        our_note = ::Evernote::EDAM::Type::Note.new
+        our_note.title = title
         our_note.content = n_body
         our_note.tagNames = []
 
@@ -110,7 +119,11 @@ module Granify
           our_note.tagNames << "month-#{Time.now.strftime('%-m').to_i}"
         end
 
-        parent_notebook = get_notebook_by_name($request.command.capitalize)
+        if p_notebook_name.nil?
+          parent_notebook = get_notebook_by_name($request.command.capitalize)
+        else
+          parent_notebook = get_notebook_by_name(p_notebook_name)
+        end
 
         ## parent_notebook is optional; if omitted, default notebook is used
         our_note.notebookGuid = parent_notebook.guid
@@ -118,12 +131,12 @@ module Granify
         ## Attempt to create note in Evernote account
         begin
           note = @@store.createNote(@@developer_token, our_note)
-        rescue Evernote::EDAM::Error::EDAMUserException => edue
+        rescue ::Evernote::EDAM::Error::EDAMUserException => edue
           ## Something was wrong with the note data
           ## See EDAMErrorCode enumeration for error code explanation
           ## http://dev.evernote.com/documentation/reference/Errors.html#Enum_EDAMErrorCode
           Notify.error "EDAMUserException: #{edue}"
-        rescue Evernote::EDAM::Error::EDAMNotFoundException => ednfe
+        rescue ::Evernote::EDAM::Error::EDAMNotFoundException => ednfe
           ## Parent Notebook GUID doesn't correspond to an actual notebook
           Notify.error "EDAMNotFoundException: Invalid parent notebook GUID"
         end
@@ -169,11 +182,11 @@ module Granify
           end_of_week = now + 4 # days
           
           {
-            :daily => "Daily Log [#{now.strftime('%B %-d')} - #{day_of_week}]",
+            :daily => "Daily Log [#{now.strftime('%B %-d')} 33 - #{day_of_week}]",
             :weekly => "Weekly Log [#{now.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
             :monthly => "Monthly Log [#{now.strftime('%B %Y')}]"
           }
         end
     end
   end
-end
+  end

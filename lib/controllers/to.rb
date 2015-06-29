@@ -1,6 +1,6 @@
 module Granify
   module Controller
-    class Generate < Controller::Base
+    class To < Controller::Base
       def pre_exec
         begin
           # interface with the Evernote API so we can use it later
@@ -20,31 +20,13 @@ module Granify
         super
       end
 
-      # generate daily notes
-      def daily
+      # Create a new Evernote note from data or terminal output
+      def note
         if @model.note_exists
           Notify.error("There's already a log for today!")
         end
 
-        @model.create_note
-      end
-
-      # generate weekly notes
-      def weekly
-        if @model.note_exists
-          Notify.error("There's already a log for this week!")
-        end
-
-        @model.create_note
-      end
-
-      # generate monthly notes
-      def monthly
-        if @model.note_exists
-          Notify.error("There's already a log for this month!")
-        end
-
-        @model.create_note
+        @model.create_note("Custom Note", $request.custom, "Quarterly")
       end
     end
   end

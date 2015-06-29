@@ -25,6 +25,7 @@ require_relative "lib/model_data.rb"
 require_relative "lib/controller.rb"
 require_relative "lib/router.rb"
 require_relative "lib/model.rb"
+require_relative "lib/helpers/evernote.rb"
 require_relative "lib/helper.rb"
 
 # Modify configuration options here
