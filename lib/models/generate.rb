@@ -88,6 +88,10 @@ module Granify
       end
 
       def create_note
+        if $request.command == :weekly && !Date.today.monday?
+          Notify.error("Sorry, you can only create new weekly logs on Mondays")
+        end
+
         n_body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         n_body += "<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">"
         n_body += "<en-note>#{template_contents}</en-note>"
