@@ -23,4 +23,4 @@ See [this document](LOGGING_SPECIFICATION.md) to see how it all gets organized.
 |Command|Description|Usage|
 |--------------|-----------|--------------|
 |generate|Create notes based on templates|`evertils generate daily|weekly|monthly`|
-|to|Manually create notes|`evertils to note "STUFF"`|
+|new|Manually create notes|`evertils to note "STUFF"`|

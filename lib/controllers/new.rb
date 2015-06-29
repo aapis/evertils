@@ -1,6 +1,6 @@
 module Granify
   module Controller
-    class To < Controller::Base
+    class New < Controller::Base
       def pre_exec
         begin
           # interface with the Evernote API so we can use it later
