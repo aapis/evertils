@@ -8,6 +8,7 @@ Clone this repo, then add the following to your `~/.profile`:
 
 ```bash
 export PATH=$PATH:/path_to_cloned_dir
+export EVERTILS_TOKEN="YOUR_EVERNOTE_TOKEN"
 alias evertils='evertils.rb'
 ```
 
