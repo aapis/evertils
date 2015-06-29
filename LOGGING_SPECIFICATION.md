@@ -4,6 +4,9 @@
 * Tags should be used to denote important/new items
 * Misc tasks
   * update expense report sheet every Friday
+  * complete time tracking (Harvest)
+  * create next weekly log
+  * update next week's meeting notes
 
 ## Weekly logs
 * Log location: {COMPANY_NAME} Logs/Weekly
@@ -28,7 +31,7 @@
 * Tagged “q$QUARTER_NUM"
 * All quarterly and monthly goals and their completion status (done or not)
 
-##Special Tags
+## Special Tags
 * borked - I broke something in production
 * interview - interviewed someone or was part of an interview
 * meeting - participated in a meeting of some kind
