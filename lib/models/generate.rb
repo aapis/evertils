@@ -167,9 +167,9 @@ module Granify
         def date_templates
           now = DateTime.now
           end_of_week = now + 4 # days
-
+          
           {
-            :daily => "Daily Log [#{now.strftime('%B')} - #{day_of_week}]",
+            :daily => "Daily Log [#{now.strftime('%B %-d')} - #{day_of_week}]",
             :weekly => "Weekly Log [#{now.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
             :monthly => "Monthly Log [#{now.strftime('%B %Y')}]"
           }
