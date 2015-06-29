@@ -17,7 +17,7 @@ module Granify
 
       # generate daily notes
       def daily
-        if current_log_exists
+        if @model.current_log_exists
           Notify.error("There's already a log for today!")
         end
 
@@ -26,22 +26,21 @@ module Granify
 
       # generate weekly notes
       def weekly
-        if current_log_exists
+        if @model.current_log_exists
           Notify.error("There's already a log for this week!")
         end
+
+        @model.create_note
       end
 
       # generate monthly notes
       def monthly
-        if current_log_exists
+        if @model.current_log_exists
           Notify.error("There's already a log for this month!")
         end
-      end
 
-      private
-        def current_log_exists
-          @model.get_log
-        end
+        @model.create_note
+      end
     end
   end
 end

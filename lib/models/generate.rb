@@ -13,17 +13,19 @@ module Granify
       end
 
       def date_templates
+        now = DateTime.now
+        end_of_week = now + 4 # days
+
         {
-          :daily => "Daily Log [#{Date.today.strftime('%B')} - #{day_of_week}]",
-          :weekly => "Weekly Log [#{Date.today.strftime('%B %e')} - #{day_of_week}]",
-          :monthly => "Monthly Log [#{Date.today.strftime('%B %e')} - #{day_of_week}]"
+          :daily => "Daily Log [#{now.strftime('%B')} - #{day_of_week}]",
+          :weekly => "Weekly Log [#{now.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
+          :monthly => "Monthly Log [#{now.strftime('%B %Y')}]"
         }
       end
 
       def authenticate
         if @@developer_token.nil?
           Notify.error("Evernote developer token is not configured properly!\n$EVERTILS_TOKEN == nil")
-          exit(1)
         end
 
         evernoteHost = "www.evernote.com"
@@ -37,11 +39,10 @@ module Granify
                    ::Evernote::EDAM::UserStore::EDAM_VERSION_MAJOR,
                    ::Evernote::EDAM::UserStore::EDAM_VERSION_MINOR)
 
-        @version = "#{::Evernote::EDAM::UserStore::EDAM_VERSION_MAJOR}.#{::Evernote::EDAM::UserStore::EDAM_VERSION_MINOR}"
+        version = "#{::Evernote::EDAM::UserStore::EDAM_VERSION_MAJOR}.#{::Evernote::EDAM::UserStore::EDAM_VERSION_MINOR}"
 
         if !versionOK
-          Notify.error("Evernote API requires an update.  Latest version is #{@version}")
-          exit(1)
+          Notify.error("Evernote API requires an update.  Latest version is #{version}")
         end
 
         noteStoreUrl = @@user.getNoteStoreUrl(@@developer_token)
@@ -73,7 +74,7 @@ module Granify
         note.totalNotes > 0
       end
 
-      def get_log
+      def current_log_exists
         note_exists(date_templates[$request.command])
       end
 
