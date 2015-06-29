@@ -4,7 +4,12 @@ module Granify
       @@developer_token = ENV["EVERTILS_TOKEN"]
 
       def template_contents
-        IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}.xml").join("").gsub!("\n", '')
+        if Date.today.friday?
+          # Friday uses a slightly different template
+          IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}-friday.xml").join("").gsub!("\n", '')
+        else
+          IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}.xml").join("").gsub!("\n", '')
+        end
       end
 
       def date_templates
