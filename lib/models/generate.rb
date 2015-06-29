@@ -120,6 +120,15 @@ module Granify
         our_note = Evernote::EDAM::Type::Note.new
         our_note.title = date_templates[$request.command]
         our_note.content = n_body
+        our_note.tagNames = []
+
+        # properly tag logs
+        case $request.command
+        when :weekly
+          our_note.tagNames << "week-#{Time.now.strftime('%V').to_i}"
+        when :monthly
+          our_note.tagNames << "month-#{Time.now.strftime('%-m').to_i}"
+        end
 
         parent_notebook = get_notebook_by_name($request.command.capitalize)
 
