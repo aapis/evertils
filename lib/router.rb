@@ -53,7 +53,7 @@ module Granify
 
           if context.methods_require_internet.include? $request.command
             if !Utils.has_internet_connection?
-              raise RuntimeError, "Command `granify #{$request.controller} #{$request.command}` requires a connection to the internet.\nPlease check your network configuration settings."
+              raise RuntimeError, "Command `#{Granify::PACKAGE_NAME} #{$request.controller} #{$request.command}` requires a connection to the internet.\nPlease check your network configuration settings."
             end
           end
 

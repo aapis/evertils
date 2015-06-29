@@ -8,7 +8,7 @@ module Granify
       # Perform pre-run tasks
       def pre_exec
         OptionParser.new do |opt|
-          opt.banner = "granify controller command [...-flags]"
+          opt.banner = "#{Granify::PACKAGE_NAME} controller command [...-flags]"
 
           opt.on("-v", "--verbose", "Verbose output") do |v|
             # short output
@@ -24,21 +24,7 @@ module Granify
 
       # Perform post-run cleanup tasks, such as deleting old logs
       def post_exec(total_errors = 0, total_warnings = 0, total_files = 0)
-        # TODO: do post-test evaluation
-        # total_errors = @model.data.log.faults[:errors]
-        # total_warnings = @model.data.log.faults[:warnings]
-
-        # if @model.data.log.total_files_processed
-        #   total_files = @model.data.log.total_files_processed
-        # end
-
-        if @@options[:verbose]
-          Notify.info("Results:\nCommand: granify #{$request.controller} #{$request.command} #{($request.flags && $request.flags.size > 0 ? $request.flags.to_json : '')}\n#{total_errors} errors and #{total_warnings} warnings in #{total_files} source files.\nTotal execution time: #{Helper::Time.human_readable(@last_model.start, Time.now)}")
-        end
-
-        if Logs.dirty?
-          Logs.clean
-        end
+        
       end
 
       # Determines if the command can execute
