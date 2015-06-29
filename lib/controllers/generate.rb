@@ -6,6 +6,9 @@ module Granify
           # interface with the Evernote API so we can use it later
           @model.authenticate
 
+          # all methods require internet to make API calls
+          @methods_require_internet.push(:daily, :weekly, :monthly)
+
           # user = @model.get_user
           # Notify.success("Welcome, #{user.name} (#{user.username})")
         rescue ::Evernote::EDAM::Error::EDAMSystemException => e
@@ -13,6 +16,8 @@ module Granify
         rescue ::Evernote::EDAM::Error::EDAMUserException => e
           Notify.error("Evernote.authenticate error\n#{e.parameter} (#{e.errorCode})")
         end
+
+        super
       end
 
       # generate daily notes
