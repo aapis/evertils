@@ -126,7 +126,7 @@ module Granify
         end
 
         ## parent_notebook is optional; if omitted, default notebook is used
-        if parent_notebook.respond_to? :guid
+        if !parent_notebook.empty?
           our_note.notebookGuid = parent_notebook.guid
         end
 
@@ -143,7 +143,9 @@ module Granify
           Notify.error "EDAMNotFoundException: Invalid parent notebook GUID"
         end
 
-        if parent_notebook.respond_to? :stack
+        # A parent notebook object exists, otherwise it was saved to the default
+        # notebook
+        if !parent_notebook.empty?
           Notify.success("#{parent_notebook.stack}/#{parent_notebook.name}/#{our_note.title} created")
         else
           Notify.success("DEFAULT_NOTEBOOK/#{our_note.title} created")
