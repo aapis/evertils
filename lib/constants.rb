@@ -8,9 +8,5 @@ module Granify
   MODEL_DIR = INSTALLED_DIR + "/lib/models/"
   TEMPLATE_DIR = INSTALLED_DIR + "/lib/configs/templates/"
   LOG_DIGEST_LENGTH = 20
-  SHELL_COMMANDS = {
-    :macosx => %w(git uglifyjs rubocop),
-    :linux => %w(git uglifyjs rubocop)
-  }
   DEBUG = false
 end
