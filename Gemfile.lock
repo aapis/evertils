@@ -25,3 +25,6 @@ DEPENDENCIES
   evernote-thrift
   notifaction
   rubocop
+
+BUNDLED WITH
+   1.10.4

@@ -1,0 +1,165 @@
+module Granify
+  module Model
+    class Generate < Model::Base
+      @@developer_token = ENV["EVERTILS_TOKEN"]
+
+      def template_contents
+        IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}.xml").join("").gsub!("\n", '')
+      end
+
+      def date_templates
+        {
+          :daily => "Daily Log [#{Date.today.strftime('%B')} - #{day_of_week}]",
+          :weekly => "Weekly Log [#{Date.today.strftime('%B %e')} - #{day_of_week}]",
+          :monthly => "Monthly Log [#{Date.today.strftime('%B %e')} - #{day_of_week}]"
+        }
+      end
+
+      def authenticate
+        if @@developer_token.nil?
+          Notify.error("Evernote developer token is not configured properly!\n$EVERTILS_TOKEN == nil")
+          exit(1)
+        end
+
+        evernoteHost = "www.evernote.com"
+        userStoreUrl = "https://#{evernoteHost}/edam/user"
+
+        userStoreTransport = Thrift::HTTPClientTransport.new(userStoreUrl)
+        userStoreProtocol = Thrift::BinaryProtocol.new(userStoreTransport)
+        @@user = ::Evernote::EDAM::UserStore::UserStore::Client.new(userStoreProtocol)
+
+        versionOK = @@user.checkVersion("evernote-data",
+                   ::Evernote::EDAM::UserStore::EDAM_VERSION_MAJOR,
+                   ::Evernote::EDAM::UserStore::EDAM_VERSION_MINOR)
+
+        @version = "#{::Evernote::EDAM::UserStore::EDAM_VERSION_MAJOR}.#{::Evernote::EDAM::UserStore::EDAM_VERSION_MINOR}"
+
+        if !versionOK
+          Notify.error("Evernote API requires an update.  Latest version is #{@version}")
+          exit(1)
+        end
+
+        noteStoreUrl = @@user.getNoteStoreUrl(@@developer_token)
+
+        noteStoreTransport = Thrift::HTTPClientTransport.new(noteStoreUrl)
+        noteStoreProtocol = Thrift::BinaryProtocol.new(noteStoreTransport)
+        @@store = ::Evernote::EDAM::NoteStore::NoteStore::Client.new(noteStoreProtocol)
+      end
+
+      def get_notebooks
+        @data = @@store.listNotebooks(@@developer_token)
+      end
+
+      def get_tags
+        @data = @@store.listTags(@@developer_token)
+      end
+
+      def get_user
+        @data = @@user.getUser(@@developer_token)
+      end
+
+      def get_note(filter_terms)
+        filter = ::Evernote::EDAM::NoteStore::NoteFilter.new("words" => "intitle:#{filter_terms}")
+        @@store.findNotes(@@developer_token, filter, nil, 1)
+      end
+
+      def note_exists(filter_terms)
+        note = get_note(filter_terms)
+        note.totalNotes > 0
+      end
+
+      def get_log
+        note_exists(date_templates[$request.command])
+      end
+
+      def get_notebook_by_name(name)
+        output = {}
+        get_notebooks.each do |notebook|
+          if notebook.name == name.to_s
+            output = notebook
+          end
+        end
+        
+        output
+      end
+
+      def get_notebooks_by_stack(stack)
+        output = {}
+        get_notebooks.each do |notebook|
+          if notebook.stack == stack
+            #output[notebook.name] = []
+
+            filter = Evernote::EDAM::NoteStore::NoteFilter.new
+            filter.notebookGuid = notebook.guid
+
+            result = Evernote::EDAM::NoteStore::NotesMetadataResultSpec.new
+            result.includeTitle = true
+            result.includeUpdated = true
+            result.includeTagGuids = true
+
+            notes = @@store.findNotesMetadata(@@developer_token, filter, 0, 400, result)
+            output[notebook.name] = notes
+          end
+        end
+        
+        output
+      end
+
+      def create_note
+        n_body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+        n_body += "<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">"
+        n_body += "<en-note>#{template_contents}</en-note>"
+       
+        ## Create note object
+        our_note = Evernote::EDAM::Type::Note.new
+        our_note.title = date_templates[$request.command]
+        our_note.content = n_body
+
+        parent_notebook = get_notebook_by_name($request.command.capitalize)
+
+        ## parent_notebook is optional; if omitted, default notebook is used
+        our_note.notebookGuid = parent_notebook.guid
+
+        ## Attempt to create note in Evernote account
+        begin
+          note = @@store.createNote(@@developer_token, our_note)
+        rescue Evernote::EDAM::Error::EDAMUserException => edue
+          ## Something was wrong with the note data
+          ## See EDAMErrorCode enumeration for error code explanation
+          ## http://dev.evernote.com/documentation/reference/Errors.html#Enum_EDAMErrorCode
+          puts edue.inspect
+          Notify.error "EDAMUserException: #{edue}"
+        rescue Evernote::EDAM::Error::EDAMNotFoundException => ednfe
+          ## Parent Notebook GUID doesn't correspond to an actual notebook
+          Notify.error "EDAMNotFoundException: Invalid parent notebook GUID"
+        end
+
+        Notify.success("#{parent_notebook.stack}/#{parent_notebook.name}/#{date_templates[$request.command]} created")
+      end
+
+      def generate_stats
+        {
+          "Statistic description" => 9845.3894
+        }
+      end
+
+      private
+        # Legacy notes will have single/double character denotations for day of
+        # week, this maps them.
+        def day_of_week
+          case Date.today.strftime('%a')
+          when 'Mon'
+            :M
+          when 'Tue'
+            :Tu
+          when 'Wed'
+            :W
+          when 'Thu'
+            :Th
+          when 'Fri'
+            :F
+          end
+        end
+    end
+  end
+end

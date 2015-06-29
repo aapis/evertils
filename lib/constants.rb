@@ -6,6 +6,7 @@ module Granify
   HELPER_DIR = INSTALLED_DIR + "/lib/helpers/"
   CONTROLLER_DIR = INSTALLED_DIR + "/lib/controllers/"
   MODEL_DIR = INSTALLED_DIR + "/lib/models/"
+  TEMPLATE_DIR = INSTALLED_DIR + "/lib/configs/templates/"
   LOG_DIGEST_LENGTH = 20
   SHELL_COMMANDS = {
     :macosx => %w(git uglifyjs rubocop),
