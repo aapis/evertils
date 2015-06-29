@@ -3,26 +3,6 @@ module Granify
     class Generate < Model::Base
       @@developer_token = ENV["EVERTILS_TOKEN"]
 
-      def template_contents
-        if Date.today.friday?
-          # Friday uses a slightly different template
-          IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}-friday.xml").join("").gsub!("\n", '')
-        else
-          IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}.xml").join("").gsub!("\n", '')
-        end
-      end
-
-      def date_templates
-        now = DateTime.now
-        end_of_week = now + 4 # days
-
-        {
-          :daily => "Daily Log [#{now.strftime('%B')} - #{day_of_week}]",
-          :weekly => "Weekly Log [#{now.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
-          :monthly => "Monthly Log [#{now.strftime('%B %Y')}]"
-        }
-      end
-
       def authenticate
         if @@developer_token.nil?
           Notify.error("Evernote developer token is not configured properly!\n$EVERTILS_TOKEN == nil")
@@ -142,14 +122,13 @@ module Granify
           ## Something was wrong with the note data
           ## See EDAMErrorCode enumeration for error code explanation
           ## http://dev.evernote.com/documentation/reference/Errors.html#Enum_EDAMErrorCode
-          puts edue.inspect
           Notify.error "EDAMUserException: #{edue}"
         rescue Evernote::EDAM::Error::EDAMNotFoundException => ednfe
           ## Parent Notebook GUID doesn't correspond to an actual notebook
           Notify.error "EDAMNotFoundException: Invalid parent notebook GUID"
         end
 
-        Notify.success("#{parent_notebook.stack}/#{parent_notebook.name}/#{date_templates[$request.command]} created")
+        Notify.success("#{parent_notebook.stack}/#{parent_notebook.name}/#{our_note.title} created")
       end
 
       def generate_stats
@@ -174,6 +153,26 @@ module Granify
           when 'Fri'
             :F
           end
+        end
+
+        def template_contents
+          if Date.today.friday? && $request.command == :daily
+            # Friday uses a slightly different template
+            IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}-friday.xml").join("").gsub!("\n", '')
+          else
+            IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}.xml").join("").gsub!("\n", '')
+          end
+        end
+
+        def date_templates
+          now = DateTime.now
+          end_of_week = now + 4 # days
+
+          {
+            :daily => "Daily Log [#{now.strftime('%B')} - #{day_of_week}]",
+            :weekly => "Weekly Log [#{now.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
+            :monthly => "Monthly Log [#{now.strftime('%B %Y')}]"
+          }
         end
     end
   end
