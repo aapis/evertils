@@ -48,10 +48,10 @@ module Granify
         @@user.getUser(@@developer_token)
       end
 
-      def get_notebook_by_name(name)
+      def get_notebook_by_name(name = $request.command)
         output = {}
         get_notebooks.each do |notebook|
-          if notebook.name.to_sym == name[0]
+          if notebook.name == name.to_s.capitalize
             output = notebook
           end
         end
@@ -62,7 +62,7 @@ module Granify
       def get_notes_by_notebook(name)
         output = {}
         get_notebooks.each do |notebook|
-          if notebook.name.to_sym == name.capitalize
+          if notebook.name.to_s == name.capitalize.to_s
             filter = ::Evernote::EDAM::NoteStore::NoteFilter.new
             filter.notebookGuid = notebook.guid
 
@@ -149,11 +149,11 @@ module Granify
         end
 
         if p_notebook_name.nil?
-          parent_notebook = get_notebook_by_name($request.command.capitalize)
+          parent_notebook = get_notebook_by_name
         else
           parent_notebook = get_notebook_by_name(p_notebook_name)
         end
-
+        
         ## parent_notebook is optional; if omitted, default notebook is used
         if parent_notebook.is_a? ::Evernote::EDAM::Type::Notebook
           our_note.notebookGuid = parent_notebook.guid
@@ -219,7 +219,7 @@ module Granify
           end_of_week = now + 4 # days
           
           {
-            :daily => "Daily Log [#{now.strftime('%B %-d')} 33 - #{day_of_week}]",
+            :daily => "Daily Log [#{now.strftime('%B %-d')} - #{day_of_week}]",
             :weekly => "Weekly Log [#{now.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
             :monthly => "Monthly Log [#{now.strftime('%B %Y')}]"
           }
