@@ -91,25 +91,35 @@ module Granify
         note.totalNotes > 0
       end
 
-      def create_note(title = date_templates[$request.command], body = template_contents, p_notebook_name = nil)
+      def create_note(title = date_templates[$request.command], body = template_contents, p_notebook_name = nil, file = nil)
         if $request.command == :weekly && !Date.today.monday?
           Notify.error("Sorry, you can only create new weekly logs on Mondays")
         end
+
+        # Create note object
+        our_note = ::Evernote::EDAM::Type::Note.new
+        our_note.resources = []
+        our_note.tagNames = []
 
         # only join when required
         if body.is_a? Array
           body = body.join
         end
 
+        # a file was requested, lets prepare it for storage
+        if !file.nil?
+          media_resource = EvernoteENML.new(:plaintext)
+          body.concat(media_resource.embeddable_element)
+          our_note.resources << media_resource.element
+        end
+
         n_body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         n_body += "<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">"
         n_body += "<en-note>#{body}</en-note>"
        
-        ## Create note object
-        our_note = ::Evernote::EDAM::Type::Note.new
+        # setup note properties
         our_note.title = title
         our_note.content = n_body
-        our_note.tagNames = []
 
         # properly tag logs
         case $request.command

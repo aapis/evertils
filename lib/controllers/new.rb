@@ -45,7 +45,7 @@ module Granify
           Notify.error("There's already a log for today!")
         end
 
-        @model.create_note(@title || "Evertils - Custom Note", $request.custom, @notebook)
+        @model.create_note(@title || "Evertils - Custom Note", $request.custom, @notebook, @file)
       end
     end
   end

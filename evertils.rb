@@ -11,6 +11,7 @@ require "uri"
 require "fileutils"
 require "cgi"
 require "notifaction"
+require 'digest/md5'
 
 # include required files
 require_relative "lib/helpers/time.rb"
@@ -26,6 +27,7 @@ require_relative "lib/controller.rb"
 require_relative "lib/router.rb"
 require_relative "lib/model.rb"
 require_relative "lib/helpers/evernote.rb"
+require_relative "lib/helpers/evernote-enml.rb"
 require_relative "lib/helper.rb"
 
 # Modify configuration options here
