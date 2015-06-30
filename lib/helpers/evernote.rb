@@ -136,7 +136,7 @@ module Granify
         end
 
         ## parent_notebook is optional; if omitted, default notebook is used
-        if !parent_notebook.empty?
+        if parent_notebook.is_a? ::Evernote::EDAM::Type::Notebook
           our_note.notebookGuid = parent_notebook.guid
         end
 
@@ -155,7 +155,7 @@ module Granify
 
         # A parent notebook object exists, otherwise it was saved to the default
         # notebook
-        if !parent_notebook.empty?
+        if parent_notebook.is_a? ::Evernote::EDAM::Type::Notebook
           Notify.success("#{parent_notebook.stack}/#{parent_notebook.name}/#{our_note.title} created")
         else
           Notify.success("DEFAULT_NOTEBOOK/#{our_note.title} created")
