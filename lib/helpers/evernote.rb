@@ -51,11 +51,30 @@ module Granify
       def get_notebook_by_name(name)
         output = {}
         get_notebooks.each do |notebook|
-          if notebook.name == name.to_s
+          if notebook.name.to_sym == name[0]
             output = notebook
           end
         end
         
+        output
+      end
+
+      def get_notes_by_notebook(name)
+        output = {}
+        get_notebooks.each do |notebook|
+          if notebook.name.to_sym == name.capitalize
+            filter = ::Evernote::EDAM::NoteStore::NoteFilter.new
+            filter.notebookGuid = notebook.guid
+
+            result = ::Evernote::EDAM::NoteStore::NotesMetadataResultSpec.new
+            result.includeTitle = true
+            result.includeUpdated = true
+            result.includeTagGuids = true
+
+            output = @@store.findNotesMetadata(@@developer_token, filter, 0, 400, result)
+          end
+        end
+
         output
       end
 
@@ -65,10 +84,10 @@ module Granify
           if notebook.stack == stack
             #output[notebook.name] = []
 
-            filter = Evernote::EDAM::NoteStore::NoteFilter.new
+            filter = ::Evernote::EDAM::NoteStore::NoteFilter.new
             filter.notebookGuid = notebook.guid
 
-            result = Evernote::EDAM::NoteStore::NotesMetadataResultSpec.new
+            result = ::Evernote::EDAM::NoteStore::NotesMetadataResultSpec.new
             result.includeTitle = true
             result.includeUpdated = true
             result.includeTagGuids = true
