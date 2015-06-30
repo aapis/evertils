@@ -20,7 +20,7 @@ module Granify
         @element.attributes = ::Evernote::EDAM::Type::ResourceAttributes.new()
         @element.attributes.fileName = file_path # temporary for now, the actual file name
 
-        @embeddable_element = "<br />Attachment with hash #{@element.data.bodyHash}<br /> <en-media type=\"text/plain\" hash=\"#{@element.data.bodyHash}\" /><br />"
+        @embeddable_element = "<br />Attachment with hash #{@element.data.bodyHash}<br /> <en-media type=\"#{@element.mime}\" hash=\"#{@element.data.bodyHash}\" /><br />"
       end
     end
   end
