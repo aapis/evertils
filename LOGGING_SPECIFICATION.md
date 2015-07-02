@@ -38,3 +38,25 @@
 
 ## Log Templates
 See [this directory](lib/configs/templates).
+
+## tl;dr
+
+Basic setup in Evernote:
+
+```
+- {{COMPANY_NAME}} Logs
+  - Daily
+  - Weekly
+  - Monthly
+  - Quarterly
+```
+
+To quickly add notes, based on a template dictated by the requirements above:
+
+```shell
+evertils generate daily # adds a note to Logs/Daily
+evertils generate weekly # adds a note to Logs/Weekly
+evertils generate monthly # adds a note to Logs/Monthly
+```
+
+Just make sure to update that note every time you do something, otherwise you'll be logging a whole lot of nothing.
