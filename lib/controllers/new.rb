@@ -47,6 +47,19 @@ module Granify
 
         @model.create_note(@title || "Evertils - Custom Note", $request.custom, @notebook, @file)
       end
+
+      # create a note and return the share link
+      def share_note
+        message = JSON.parse(STDIN.gets).join || $request.custom
+        message = message.gsub!("\n", '<br />')
+        note = @model.create_note(@title || "Evertils - Custom Note", message, @notebook, @file, true)
+
+        if note[:share_url]
+          Notify.success("Note created and shared:\n#{note[:share_url]}")
+        else
+          Notify.error("Something dreadful happened!")
+        end
+      end
     end
   end
 end

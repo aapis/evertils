@@ -12,12 +12,13 @@ module Granify
           Notify.error("Evernote developer token is not configured properly!\n$EVERTILS_TOKEN == nil")
         end
 
-        evernoteHost = "www.evernote.com"
-        userStoreUrl = "https://#{evernoteHost}/edam/user"
+        @evernoteHost = "www.evernote.com"
+        userStoreUrl = "https://#{@evernoteHost}/edam/user"
 
         userStoreTransport = Thrift::HTTPClientTransport.new(userStoreUrl)
         userStoreProtocol = Thrift::BinaryProtocol.new(userStoreTransport)
         @@user = ::Evernote::EDAM::UserStore::UserStore::Client.new(userStoreProtocol)
+        @@shardId = @@user.getUser(@@developer_token).shardId
 
         versionOK = @@user.checkVersion("evernote-data",
                    ::Evernote::EDAM::UserStore::EDAM_VERSION_MAJOR,
@@ -110,7 +111,7 @@ module Granify
         note.totalNotes > 0
       end
 
-      def create_note(title = date_templates[$request.command], body = template_contents, p_notebook_name = nil, file = nil)
+      def create_note(title = date_templates[$request.command], body = template_contents, p_notebook_name = nil, file = nil, share_note = false)
         if $request.command == :weekly && !Date.today.monday?
           Notify.error("Sorry, you can only create new weekly logs on Mondays")
         end
@@ -161,7 +162,13 @@ module Granify
 
         ## Attempt to create note in Evernote account
         begin
-          note = @@store.createNote(@@developer_token, our_note)
+          output = {}
+          output[:note] = @@store.createNote(@@developer_token, our_note)
+          
+          if share_note
+            shareKey = @@store.shareNote(@@developer_token, output[:note].guid)
+            output[:share_url] = "https://#{@evernoteHost}/shard/#{@@shardId}/sh/#{output[:note].guid}/#{shareKey}"
+          end
         rescue ::Evernote::EDAM::Error::EDAMUserException => edue
           ## Something was wrong with the note data
           ## See EDAMErrorCode enumeration for error code explanation
@@ -179,6 +186,8 @@ module Granify
         else
           Notify.success("DEFAULT_NOTEBOOK/#{our_note.title} created")
         end
+
+        output
       end
 
       def generate_stats
