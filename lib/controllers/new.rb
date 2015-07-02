@@ -41,14 +41,18 @@ module Granify
 
       # Create a new Evernote note from data or terminal output
       def note
-        if @model.note_exists
-          Notify.error("There's already a log for today!")
-        end
+        message = JSON.parse(STDIN.gets).join || $request.custom
+        message = message.gsub!("\n", '<br />')
+        note = @model.create_note(@title || "Evertils - Custom Note", message, @notebook, @file)
 
-        @model.create_note(@title || "Evertils - Custom Note", $request.custom, @notebook, @file)
+        if note[:share_url]
+          Notify.success("Note created and shared:\n#{note[:share_url]}")
+        else
+          Notify.error("Something dreadful happened!")
+        end
       end
 
-      # create a note and return the share link
+      # Create a new note and automatically share it
       def share_note
         message = JSON.parse(STDIN.gets).join || $request.custom
         message = message.gsub!("\n", '<br />')
