@@ -4,7 +4,7 @@ module Granify
       def pre_exec
         begin
           # interface with the Evernote API so we can use it later
-          @model = Granify::Helper::Evernote.new
+          @model = Granify::Helper.load('evernote')
 
           # all methods require internet to make API calls
           @methods_require_internet.push(:daily, :weekly, :monthly)
