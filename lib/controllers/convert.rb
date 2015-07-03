@@ -51,6 +51,7 @@ module Granify
           Notify.info("Printing list of notes")
 
           metadata.each_pair do |note_guid, note_content|
+            # convert it here!
             puts note_content
           end
         else
