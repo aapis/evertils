@@ -11,6 +11,8 @@ module Granify
           # all methods require internet to make API calls
           @methods_require_internet.push(:daily, :weekly, :monthly)
 
+          @title = "Evertils - Custom Note"
+
           # command flag parser
           OptionParser.new do |opt|
             opt.banner = "#{Granify::PACKAGE_NAME} new note [...-flags]"
@@ -52,7 +54,7 @@ module Granify
           message = @body
         end
 
-        note = @model.create_note(@title || "Evertils - Custom Note", message, @notebook, @file)
+        note = @model.create_note(@title, message, @notebook, @file)
 
         if note[:note]
           Notify.success("Note created")
@@ -69,8 +71,11 @@ module Granify
         else
           message = @body
         end
+
+        # Prefix title to indicate it's shared status
+        @title = "[SHARED] #{@title}"
         
-        note = @model.create_note(@title || "Evertils - Custom Note", message, @notebook, @file, true)
+        note = @model.create_note(@title, message, @notebook, @file, true)
 
         if note[:share_url]
           Notify.success("Note created and shared:\n#{note[:share_url]}")
