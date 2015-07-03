@@ -4,9 +4,9 @@ module Granify
       attr_reader :response, :exitcode
       attr_accessor :enable_logging
 
-      # 
+      #
       # class methods
-      # 
+      #
       class << self
         def git_queue_status
           if global("git log origin/#{git_current_branch}..HEAD --oneline")
@@ -60,7 +60,7 @@ module Granify
           if branch.nil?
             branch = git_current_branch
           end
-          
+
           global("git rev-parse --verify #{branch}")
         end
 
@@ -73,7 +73,7 @@ module Granify
 
             @response = `#{command}`.chomp
             @exitcode = $?.exitstatus
-            
+
             # Log output to a file
             # This method is better than redirecting output to a file because now
             # the response is always populated instead of being empty when output
@@ -91,15 +91,15 @@ module Granify
         end
       end
 
-      # 
+      #
       # instance methods
       #
       def minify(file, destination)
         begin
           min_file = "#{destination}#{File.basename(file, File.extname(file))}.min.js"
-          
+
           @response = `uglifyjs #{file} -cm -o "#{min_file}"`
-          
+
           Notify.success("Minified #{file}")
 
           $?.exitstatus == 0
@@ -113,7 +113,7 @@ module Granify
           command = `coffeelint -f "#{Granify::INSTALLED_DIR}/lib/configs/coffeelint.json" #{file}`
 
           @response = command.include?("Ok!")
-          
+
           # only send errors to the log file
           if !@response
             File.open(log_file.path, 'a') do |f|
@@ -131,7 +131,7 @@ module Granify
       def open_editor(file=nil)
         begin
           log_file = file || Granify::DEFAULT_LOG
-          
+
           # System editor is not set/unavailable, use system default to open the
           # file
           if `echo $EDITOR` == ""
@@ -165,7 +165,7 @@ module Granify
               f.write(@response)
             end
           end
-          
+
           @exitcode == 0
 
           # support chaining

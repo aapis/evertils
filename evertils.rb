@@ -12,6 +12,7 @@ require "fileutils"
 require "cgi"
 require "notifaction"
 require 'digest/md5'
+require 'mime/types'
 
 # include required files
 require_relative "lib/helpers/time.rb"

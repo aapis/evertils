@@ -26,6 +26,10 @@ module Granify
             opt.on("-n", "--notebook=PBOOK", "Attach a file to your custom note") do |notebook|
               @notebook = notebook
             end
+
+            opt.on("-b", "--body=BODY", "Note body") do |body|
+              @body = body
+            end
           end.parse!
 
           # user = @model.get_user
@@ -41,8 +45,13 @@ module Granify
 
       # Create a new Evernote note from data or terminal output
       def note
-        message = JSON.parse(STDIN.gets).join || $request.custom
-        message = message.gsub!("\n", '<br />')
+        if @body.nil?
+          message = JSON.parse(STDIN.gets).join
+          message = message.gsub!("\n", '<br />')
+        else
+          message = @body
+        end
+
         note = @model.create_note(@title || "Evertils - Custom Note", message, @notebook, @file)
 
         if note[:note]
@@ -54,8 +63,13 @@ module Granify
 
       # Create a new note and automatically share it
       def share_note
-        message = JSON.parse(STDIN.gets).join || $request.custom
-        message = message.gsub!("\n", '<br />')
+        if @body.nil?
+          message = JSON.parse(STDIN.gets).join
+          message = message.gsub!("\n", '<br />')
+        else
+          message = @body
+        end
+        
         note = @model.create_note(@title || "Evertils - Custom Note", message, @notebook, @file, true)
 
         if note[:share_url]

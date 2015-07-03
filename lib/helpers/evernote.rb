@@ -128,7 +128,7 @@ module Granify
 
         # a file was requested, lets prepare it for storage
         if !file.nil?
-          media_resource = EvernoteENML.new(:plaintext)
+          media_resource = EvernoteENML.new(file)
           body.concat(media_resource.embeddable_element)
           our_note.resources << media_resource.element
         end
