@@ -9,7 +9,7 @@ module Granify
           # all methods require internet to make API calls
           @methods_require_internet.push(:daily, :weekly, :monthly)
 
-          # user = @model.get_user
+          # user = @model.user
           # Notify.success("Welcome, #{user.name} (#{user.username})")
         rescue ::Evernote::EDAM::Error::EDAMSystemException => e
           Notify.error("Evernote.authenticate error\n#{e.message} (#{e.errorCode})")

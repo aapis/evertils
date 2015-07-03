@@ -18,7 +18,7 @@ module Granify
         userStoreTransport = Thrift::HTTPClientTransport.new(userStoreUrl)
         userStoreProtocol = Thrift::BinaryProtocol.new(userStoreTransport)
         @@user = ::Evernote::EDAM::UserStore::UserStore::Client.new(userStoreProtocol)
-        @@shardId = @@user.getUser(@@developer_token).shardId
+        @@shardId = user.shardId
 
         versionOK = @@user.checkVersion("evernote-data",
                    ::Evernote::EDAM::UserStore::EDAM_VERSION_MAJOR,
@@ -37,21 +37,21 @@ module Granify
         @@store = ::Evernote::EDAM::NoteStore::NoteStore::Client.new(noteStoreProtocol)
       end
 
-      def get_notebooks
+      def notebooks
         @@store.listNotebooks(@@developer_token)
       end
 
-      def get_tags
+      def tags
         @@store.listTags(@@developer_token)
       end
 
-      def get_user
+      def user
         @@user.getUser(@@developer_token)
       end
 
-      def get_notebook_by_name(name = $request.command)
+      def notebook_by_name(name = $request.command)
         output = {}
-        get_notebooks.each do |notebook|
+        notebooks.each do |notebook|
           if notebook.name == name.to_s.capitalize
             output = notebook
           end
@@ -60,9 +60,9 @@ module Granify
         output
       end
 
-      def get_notes_by_notebook(name)
+      def notes_by_notebook(name)
         output = {}
-        get_notebooks.each do |notebook|
+        notebooks.each do |notebook|
           if notebook.name.to_s == name.capitalize.to_s
             filter = ::Evernote::EDAM::NoteStore::NoteFilter.new
             filter.notebookGuid = notebook.guid
@@ -72,16 +72,19 @@ module Granify
             result.includeUpdated = true
             result.includeTagGuids = true
 
-            output = @@store.findNotesMetadata(@@developer_token, filter, 0, 400, result)
+            #output = @@store.findNotesMetadata(@@developer_token, filter, 0, 400, result)
+            notes(nil, notebook.guid).notes.each do |note|
+              output[note.guid] = @@store.getNoteContent(@@developer_token, note.guid)
+            end
           end
         end
 
         output
       end
 
-      def get_notebooks_by_stack(stack)
+      def notebooks_by_stack(stack)
         output = {}
-        get_notebooks.each do |notebook|
+        notebooks.each do |notebook|
           if notebook.stack == stack
             #output[notebook.name] = []
 
@@ -101,13 +104,24 @@ module Granify
         output
       end
 
-      def get_note(filter_terms)
-        filter = ::Evernote::EDAM::NoteStore::NoteFilter.new("words" => "intitle:#{filter_terms}")
+      def note(title_filter = nil, notebook_filter = nil)
+        filter = ::Evernote::EDAM::NoteStore::NoteFilter.new
+        filter.words = "intitle:#{title_filter}" if title_filter
+        filter.notebookGuid = notebook_filter if notebook_filter
+
         @@store.findNotes(@@developer_token, filter, nil, 1)
       end
 
+      def notes(title_filter = nil, notebook_filter = nil)
+        filter = ::Evernote::EDAM::NoteStore::NoteFilter.new
+        filter.words = "intitle:#{title_filter}" if title_filter
+        filter.notebookGuid = notebook_filter if notebook_filter
+
+        @@store.findNotes(@@developer_token, filter, nil, 300)
+      end
+
       def note_exists
-        note = get_note(date_templates[$request.command])
+        note = note(date_templates[$request.command])
         note.totalNotes > 0
       end
 
@@ -150,9 +164,9 @@ module Granify
         end
 
         if p_notebook_name.nil?
-          parent_notebook = get_notebook_by_name
+          parent_notebook = notebook_by_name
         else
-          parent_notebook = get_notebook_by_name(p_notebook_name)
+          parent_notebook = notebook_by_name(p_notebook_name)
         end
         
         ## parent_notebook is optional; if omitted, default notebook is used

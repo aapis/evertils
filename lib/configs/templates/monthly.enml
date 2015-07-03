@@ -12,8 +12,10 @@
 <div><br/></div>
 <div><span style="font-size: 18px;">Weekly Goals</span></div>
 </div>
-<div><en-todo/>...</div>
-<div><span style="font-size: 18px;"><br/></span></div>
+<ul>
+<li><en-todo/>...</li>
+</ul>
+<br />
 <div><span style="font-size: 18px;">Quarterly Goals</span></div>
 </div>
 </div>

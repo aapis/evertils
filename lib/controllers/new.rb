@@ -32,7 +32,7 @@ module Granify
             end
           end.parse!
 
-          # user = @model.get_user
+          # user = @model.user
           # Notify.success("Welcome, #{user.name} (#{user.username})")
         rescue ::Evernote::EDAM::Error::EDAMSystemException => e
           Notify.error("Evernote.authenticate error\n#{e.message} (#{e.errorCode})")
