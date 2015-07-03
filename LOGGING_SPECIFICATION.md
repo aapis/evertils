@@ -14,7 +14,6 @@
 * Link to each daily log and contain a summary of the important items (tags denote important items, use them to determine what the important weekly items are)
 * Tagged “week-$WEEK_NUM”
 * Weekly goals section included as a constant reminder of what needs to be done this week, also handy for sending to {BOSS_MAN} each Monday
-* Project updates go under each weekly goal
 
 ## Monthly logs
 * Log location: {COMPANY_NAME} Logs/Monthly
@@ -51,7 +50,7 @@ Basic setup in Evernote:
   - Quarterly
 ```
 
-To quickly add notes, based on a template dictated by the requirements above:
+To quickly add notes based on a template dictated by the requirements above:
 
 ```shell
 evertils generate daily # adds a note to Logs/Daily
