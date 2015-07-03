@@ -24,10 +24,10 @@ module Granify
                    ::Evernote::EDAM::UserStore::EDAM_VERSION_MAJOR,
                    ::Evernote::EDAM::UserStore::EDAM_VERSION_MINOR)
 
-        version = "#{::Evernote::EDAM::UserStore::EDAM_VERSION_MAJOR}.#{::Evernote::EDAM::UserStore::EDAM_VERSION_MINOR}"
+        @version = "#{::Evernote::EDAM::UserStore::EDAM_VERSION_MAJOR}.#{::Evernote::EDAM::UserStore::EDAM_VERSION_MINOR}"
 
         if !versionOK
-          Notify.error("Evernote API requires an update.  Latest version is #{version}")
+          Notify.error("Evernote API requires an update.  Latest version is #{@version}")
         end
 
         noteStoreUrl = @@user.getNoteStoreUrl(@@developer_token)
@@ -35,6 +35,14 @@ module Granify
         noteStoreTransport = Thrift::HTTPClientTransport.new(noteStoreUrl)
         noteStoreProtocol = Thrift::BinaryProtocol.new(noteStoreTransport)
         @@store = ::Evernote::EDAM::NoteStore::NoteStore::Client.new(noteStoreProtocol)
+      end
+
+      def info
+        {
+          :user => "#{user.name} (#{user.username}) - ID##{user.id}",
+          :shard => user.shardId,
+          :api_version => @version,
+        }
       end
 
       def notebooks

@@ -59,6 +59,12 @@ module Granify
           Notify.error("Notebook name is a required argument, i.e.\n#{Granify::PACKAGE_NAME} get notebook agendas")
         end
       end
+
+      def info
+        @model.info.each_pair do |key, value|
+          Notify.spit("#{key}: #{value}")
+        end
+      end
     end
   end
 end
