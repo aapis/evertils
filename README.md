@@ -5,7 +5,9 @@ Utilities for talking to your Evernote account.  Create notes, generate statisti
 ## Installation
 
 1. `gem install evertils`
-2. You're done!
+2. Add `export EVERTILS_TOKEN="token_goes_here"` to your ~/.profile
+
+Get your Evernote Developer Tokens [here](https://www.evernote.com/Login.action?targetUrl=%2Fapi%2FDeveloperToken.action).
 
 ## Logging Specification
 See [this document](LOGGING_SPECIFICATION.md) to see how it all gets organized.
