@@ -4,15 +4,7 @@ Utilities for talking to your Evernote account.  Create notes, generate statisti
 
 ## Installation
 
-Clone this repo, then add the following to your `~/.profile`:
-
-```bash
-export PATH=$PATH:/path_to_cloned_dir
-export EVERTILS_TOKEN="YOUR_EVERNOTE_TOKEN"
-alias evertils='evertils.rb'
-```
-
-1. Execute `bundle install`
+1. `gem install evertils`
 2. You're done!
 
 ## Logging Specification
@@ -25,3 +17,4 @@ See [this document](LOGGING_SPECIFICATION.md) to see how it all gets organized.
 |generate|Create notes based on templates|`evertils generate daily|weekly|monthly`|
 |new|Manually create notes|`evertils new note "STUFF"`, `evertils new share_note "STUFF"`, `other task | evertils new share_note --title="Piped data note"`|
 |get|Get data from Evernote|`evertils get notebook`|
+|convert|Convert your notes to Markdown, then back to ENML|(coming soon)|
