@@ -45,10 +45,10 @@ module Granify
         message = message.gsub!("\n", '<br />')
         note = @model.create_note(@title || "Evertils - Custom Note", message, @notebook, @file)
 
-        if note[:share_url]
-          Notify.success("Note created and shared:\n#{note[:share_url]}")
+        if note[:note]
+          Notify.success("Note created")
         else
-          Notify.error("Something dreadful happened!")
+          Notify.error("Unable to create note, are you authenticated?")
         end
       end
 
