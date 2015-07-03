@@ -24,3 +24,4 @@ See [this document](LOGGING_SPECIFICATION.md) to see how it all gets organized.
 |--------------|-----------|--------------|
 |generate|Create notes based on templates|`evertils generate daily|weekly|monthly`|
 |new|Manually create notes|`evertils new note "STUFF"`, `evertils new share_note "STUFF"`, `other task | evertils new share_note --title="Piped data note"`|
+|get|Get data from Evernote|`evertils get notebook`|

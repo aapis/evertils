@@ -39,7 +39,7 @@ module Granify
         super
       end
 
-      # Create a new Evernote note from data or terminal output
+      # Get data about a notebook, prints titles of each child note
       def notebook
         if !$request.custom.nil?
           book = $request.custom[0]
