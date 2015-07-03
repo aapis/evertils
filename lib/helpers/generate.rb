@@ -1,6 +1,6 @@
 module Granify
   module Helper
-    class Generate < Helper::Base
+    class Generate
       def self.format_date(title)
         if title =~ /Daily/
           resp = /Daily Log \[([A-Z].*) \- [A-Z]\]/.match(title)

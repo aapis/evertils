@@ -1,6 +1,6 @@
 module Granify
   module Helper
-    class Evernote < Model::Base
+    class Evernote
       @@developer_token = ENV["EVERTILS_TOKEN"]
 
       def initialize
@@ -231,9 +231,9 @@ module Granify
         def template_contents
           if Date.today.friday? && $request.command == :daily
             # Friday uses a slightly different template
-            IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}-friday.xml").join("").gsub!("\n", '')
+            IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}-friday.enml").join("").gsub!("\n", '')
           else
-            IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}.xml").join("").gsub!("\n", '')
+            IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}.enml").join("").gsub!("\n", '')
           end
         end
 
