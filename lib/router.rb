@@ -1,6 +1,17 @@
 module Granify
   class Router
     def route
+      # setup options
+      OptionParser.new do |opt|
+        opt.banner = "#{Granify::PACKAGE_NAME} controller command [...-flags]"
+
+        opt.on("-V", "--version", "Show app version") do |v|
+          # short output
+          @version = Granify::VERSION
+          Notify.spit("#{Granify::PACKAGE_NAME} #{Granify::VERSION}")
+        end
+      end.parse!
+
       # Populate request params
       $request = Request.new
 
@@ -21,47 +32,49 @@ module Granify
 
       # Create object context and pass it the required command line arguments
       begin
-        controller = Granify::Controller.const_get $request.controller.capitalize rescue false
-        
-        if !controller
-          raise "Controller not found: #{$request.controller.capitalize}"
-        end
-
-        context = controller.new
-
-        if context.can_exec? $request.controller, $request.command
-          context.pre_exec
-
-          # no command sent?  Use default to populate model data
-          model_method = ($request.command ? $request.command : context.default_method).to_s + "_data"
-
-          # populate model data
-          method = context.model.public_method(model_method) rescue false
-
-          # model is not set, use Base model instead so the controller still has
-          # access to model methods
-          if context.model.nil?
-            context.model = Model::Base.new
-          end
+        if !$request.controller.nil?
+          controller = Granify::Controller.const_get $request.controller.capitalize rescue false
           
-          # If the method exists, set model data accordingly
-          # If it doesn't exist then just fail silently, the model may not
-          # be required by some controllers
-          if method.respond_to? :call
-            context.model.data = method.call($request.custom || [])
+          if !controller
+            raise "Controller not found: #{$request.controller.capitalize}"
           end
 
-          if context.methods_require_internet.include? $request.command
-            if !Utils.has_internet_connection?
-              raise RuntimeError, "Command `#{Granify::PACKAGE_NAME} #{$request.controller} #{$request.command}` requires a connection to the internet.\nPlease check your network configuration settings."
+          context = controller.new
+
+          if context.can_exec? $request.controller, $request.command
+            context.pre_exec
+
+            # no command sent?  Use default to populate model data
+            model_method = ($request.command ? $request.command : context.default_method).to_s + "_data"
+
+            # populate model data
+            method = context.model.public_method(model_method) rescue false
+
+            # model is not set, use Base model instead so the controller still has
+            # access to model methods
+            if context.model.nil?
+              context.model = Model::Base.new
             end
+            
+            # If the method exists, set model data accordingly
+            # If it doesn't exist then just fail silently, the model may not
+            # be required by some controllers
+            if method.respond_to? :call
+              context.model.data = method.call($request.custom || [])
+            end
+
+            if context.methods_require_internet.include? $request.command
+              if !Utils.has_internet_connection?
+                raise RuntimeError, "Command `#{Granify::PACKAGE_NAME} #{$request.controller} #{$request.command}` requires a connection to the internet.\nPlease check your network configuration settings."
+              end
+            end
+
+            # Run the controller
+            context.exec
+
+            # Run cleanup commands
+            context.post_exec
           end
-
-          # Run the controller
-          context.exec
-
-          # Run cleanup commands
-          context.post_exec
         end
       rescue RuntimeError => e
         Notify.error("#{e.to_s}")

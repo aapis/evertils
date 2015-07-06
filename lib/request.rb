@@ -3,9 +3,11 @@ module Granify
     attr_reader :controller, :command, :custom, :flags, :raw_flags
 
     def initialize
-      @controller = ARGV[0].to_sym rescue nil
-      
+      @controller = nil
+      @flags = ARGV[0..ARGV.size].select { |f| f.start_with?('-') }.map { |f| f.split("=").map &:to_sym } || []
+
       if ARGV.size > 1
+        @controller = ARGV[0].to_sym rescue nil
         @command = ARGV[1].to_sym rescue nil
 
         if ARGV.size > 2

@@ -17,8 +17,8 @@ module Granify
 
           opt.on("-V", "--version", "Show app version") do |v|
             # short output
-            @@options[:verbose] = Granify::PACKAGE_VERSION
-          end          
+            @version = Granify::PACKAGE_VERSION
+          end      
         end.parse!
       end
 

@@ -15,6 +15,7 @@ require 'digest/md5'
 require 'mime/types'
 
 # include required files
+require_relative "../lib/version.rb"
 require_relative "../lib/helpers/time.rb"
 require_relative "../lib/config.rb"
 require_relative "../lib/request.rb"
