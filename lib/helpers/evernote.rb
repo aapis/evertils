@@ -166,9 +166,9 @@ module Granify
         # properly tag logs
         case $request.command
         when :weekly
-          our_note.tagNames << "week-#{Time.now.strftime('%V').to_i}"
+          our_note.tagNames << "week-#{::Time.now.strftime('%V').to_i}"
         when :monthly
-          our_note.tagNames << "month-#{Time.now.strftime('%-m').to_i}"
+          our_note.tagNames << "month-#{::Time.now.strftime('%-m').to_i}"
         end
 
         if p_notebook_name.nil?
