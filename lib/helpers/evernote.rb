@@ -112,7 +112,7 @@ module Granify
         output
       end
 
-      def note(title_filter = nil, notebook_filter = nil)
+      def find_note(title_filter = nil, notebook_filter = nil)
         filter = ::Evernote::EDAM::NoteStore::NoteFilter.new
         filter.words = "intitle:#{title_filter}" if title_filter
         filter.notebookGuid = notebook_filter if notebook_filter
@@ -129,8 +129,22 @@ module Granify
       end
 
       def note_exists
-        note = note(date_templates[$request.command])
-        note.totalNotes > 0
+        results = Helper::Results.new
+        template = date_templates[$request.command]
+        note = find_note(template)
+
+        # Evernote's search matches things like the following, so we have to get
+        # more specific
+        #   Daily Log [July 3 - F] == Daily Log [July 10 - F]
+        if note.totalNotes > 0
+          note.notes.each do |n|
+            results.add(n.title != template)
+          end
+        else
+          results.add(false)
+        end
+
+        results.should_eval_to(false)
       end
 
       def create_note(title = date_templates[$request.command], body = template_contents, p_notebook_name = nil, file = nil, share_note = false)
