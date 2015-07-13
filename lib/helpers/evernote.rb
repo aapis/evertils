@@ -247,6 +247,10 @@ module Granify
             :Th
           when 'Fri'
             :F
+          when 'Sat'
+            :Sa
+          when 'Sun'
+            :Su
           end
         end
 
