@@ -141,7 +141,7 @@ module Granify
             results.add(n.title != template)
           end
         else
-          results.add(false)
+          results.add(true)
         end
 
         results.should_eval_to(false)
