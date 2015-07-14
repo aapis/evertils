@@ -35,6 +35,10 @@ module Granify
           Notify.error("There's already a log for this week!")
         end
 
+        if !Date.today.monday?
+          Notify.error("Sorry, you can only create new weekly logs on Mondays")
+        end
+
         @model.create_note
       end
 

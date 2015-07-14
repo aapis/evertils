@@ -148,9 +148,6 @@ module Granify
       end
 
       def create_note(title = date_templates[$request.command], body = template_contents, p_notebook_name = nil, file = nil, share_note = false)
-        if $request.command == :weekly && !Date.today.monday?
-          Notify.error("Sorry, you can only create new weekly logs on Mondays")
-        end
 
         # Create note object
         our_note = ::Evernote::EDAM::Type::Note.new
