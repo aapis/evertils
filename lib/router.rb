@@ -1,17 +1,6 @@
 module Granify
   class Router
     def route
-      # setup options
-      OptionParser.new do |opt|
-        opt.banner = "#{Granify::PACKAGE_NAME} controller command [...-flags]"
-
-        opt.on("-V", "--version", "Show app version") do |v|
-          # short output
-          @version = Granify::VERSION
-          Notify.spit("#{Granify::PACKAGE_NAME} #{Granify::VERSION}")
-        end
-      end.parse!
-
       # Populate request params
       $request = Request.new
 
