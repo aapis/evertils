@@ -25,7 +25,7 @@ module Granify
               @file = file
             end
 
-            opt.on("-n", "--notebook=PBOOK", "Attach a file to your custom note") do |notebook|
+            opt.on("-n", "--notebook=PBOOK", "Choose the notebook to add your note to") do |notebook|
               @notebook = notebook
             end
 
