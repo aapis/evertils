@@ -1,6 +1,8 @@
 module Granify
   module Controller
     class Generate < Controller::Base
+      attr_accessor :force
+
       def pre_exec
         begin
           # interface with the Evernote API so we can use it later
@@ -17,13 +19,23 @@ module Granify
           Notify.error("Evernote.authenticate error\n#{e.parameter} (#{e.errorCode})")
         end
 
+        OptionParser.new do |opt|
+          opt.banner = "#{Granify::PACKAGE_NAME} generate timeframe [...-flags]"
+
+          opt.on("-f", "--force", "Force execution") do
+            @force = true
+          end
+        end.parse!
+
         super
       end
 
       # generate daily notes
       def daily
-        if @model.note_exists
-          Notify.error("There's already a log for today!")
+        if !@force
+          if @model.note_exists
+            Notify.error("There's already a log for today!")
+          end
         end
 
         @model.create_note
@@ -31,12 +43,15 @@ module Granify
 
       # generate weekly notes
       def weekly
-        if @model.note_exists
-          Notify.error("There's already a log for this week!")
-        end
+        if !@force
+          if @model.note_exists
+            Notify.error("There's already a log for this week!")
+          end
 
-        if !Date.today.monday?
-          Notify.error("Sorry, you can only create new weekly logs on Mondays")
+
+          if !Date.today.monday?
+            Notify.error("Sorry, you can only create new weekly logs on Mondays")
+          end
         end
 
         @model.create_note
@@ -44,8 +59,10 @@ module Granify
 
       # generate monthly notes
       def monthly
-        if @model.note_exists
-          Notify.error("There's already a log for this month!")
+        if !@force
+          if @model.note_exists
+            Notify.error("There's already a log for this month!")
+          end
         end
 
         @model.create_note
