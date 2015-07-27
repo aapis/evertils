@@ -13,22 +13,12 @@
 * Title format: Weekly Log [Start of Week Date - End of Week Date]
 * Link to each daily log and contain a summary of the important items (tags denote important items, use them to determine what the important weekly items are)
 * Tagged “week-$WEEK_NUM”
-* Weekly goals section included as a constant reminder of what needs to be done this week, also handy for sending to {BOSS_MAN} each Monday
 
 ## Monthly logs
 * Log location: {COMPANY_NAME} Logs/Monthly
 * Title format: Monthly Log [Month - Year]
 * Links to each weekly log of that month (table of contents style)
 * Tagged “month-$MONTH_NUM"
-* All weekly goals and their completion status (done or not)
-* My quarterly goals for this month section (title: Quarterly Goals)
-
-## Quarterly logs
-* Log location: {COMPANY_NAME} Logs/Quarterly
-* Title format: Quarterly Log [Start Month - End Month Year]
-* Links to each monthly and weekly log of that quarter (table of contents style)
-* Tagged “q$QUARTER_NUM"
-* All quarterly and monthly goals and their completion status (done or not)
 
 ## Special Tags
 * borked - I broke something in production
@@ -47,7 +37,6 @@ Basic setup in Evernote:
   - Daily
   - Weekly
   - Monthly
-  - Quarterly
 ```
 
 To quickly add notes based on a template dictated by the requirements above:
