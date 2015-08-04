@@ -205,7 +205,7 @@ module Granify
           ## Something was wrong with the note data
           ## See EDAMErrorCode enumeration for error code explanation
           ## http://dev.evernote.com/documentation/reference/Errors.html#Enum_EDAMErrorCode
-          Notify.error "EDAMUserException: #{edue}"
+          Notify.error "EDAMUserException: #{edue}\nCode #{edue.errorCode}: #{edue.parameter}"
         rescue ::Evernote::EDAM::Error::EDAMNotFoundException => ednfe
           ## Parent Notebook GUID doesn't correspond to an actual notebook
           Notify.error "EDAMNotFoundException: Invalid parent notebook GUID"
