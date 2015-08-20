@@ -48,7 +48,7 @@ module Granify
       # Create a new Evernote note from data or terminal output
       def note
         if @body.nil?
-          message = JSON.parse(STDIN.gets).join
+          message = JSON.parse("'#{STDIN.gets}'").join
           message = message.gsub!("\n", '<br />')
         else
           message = @body
