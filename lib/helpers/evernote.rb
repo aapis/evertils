@@ -147,7 +147,7 @@ module Granify
         results.should_eval_to(false)
       end
 
-      def create_note(title = date_templates[$request.command], body = template_contents, p_notebook_name = nil, file = nil, share_note = false)
+      def create_note(title = date_templates[$request.command], body = template_contents, p_notebook_name = nil, file = nil, share_note = false, created_on)
         # Create note object
         our_note = ::Evernote::EDAM::Type::Note.new
         our_note.resources = []
@@ -172,6 +172,7 @@ module Granify
         # setup note properties
         our_note.title = title
         our_note.content = n_body
+        our_note.created = created_on if !created_on.nil?
 
         # properly tag logs
         case $request.command

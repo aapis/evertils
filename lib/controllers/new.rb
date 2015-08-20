@@ -32,6 +32,14 @@ module Granify
             opt.on("-b", "--body=BODY", "Note body") do |body|
               @body = body
             end
+
+            opt.on("-b", "--tags=list", "Assign tags to the new note") do |tags|
+              @tags = body
+            end
+
+            opt.on("-b", "--created_on=DATE", "Set note created date") do |created_on|
+              @created_on = body
+            end
           end.parse!
 
           # user = @model.user
@@ -48,13 +56,13 @@ module Granify
       # Create a new Evernote note from data or terminal output
       def note
         if @body.nil?
-          message = JSON.parse("'#{STDIN.gets}'").join
+          message = JSON.parse(STDIN.gets.to_s).join
           message = message.gsub!("\n", '<br />')
         else
           message = @body
         end
 
-        note = @model.create_note(@title, message, @notebook, @file)
+        note = @model.create_note(@title, message, @notebook, @file, false, @created_on)
 
         if note[:note]
           Notify.success("Note created")
@@ -75,7 +83,7 @@ module Granify
         # Prefix title to indicate it's shared status
         @title = "[SHARED] #{@title}"
         
-        note = @model.create_note(@title, message, @notebook, @file, true)
+        note = @model.create_note(@title, message, @notebook, @file, true, @created_on)
 
         if note[:share_url]
           Notify.success("Note created and shared:\n#{note[:share_url]}")
