@@ -195,6 +195,7 @@ module Granify
 
         ## Attempt to create note in Evernote account
         begin
+          puts our_note.inspect
           output = {}
           output[:note] = @@store.createNote(@@developer_token, our_note)
           

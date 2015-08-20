@@ -33,12 +33,16 @@ module Granify
               @body = body
             end
 
-            opt.on("-b", "--tags=list", "Assign tags to the new note") do |tags|
-              @tags = body
+            opt.on("-t", "--tags=list", "Assign tags to the new note") do |tags|
+              @tags = tags
             end
 
-            opt.on("-b", "--created_on=DATE", "Set note created date") do |created_on|
-              @created_on = body
+            opt.on("-c", "--created_on=DATE", "Set note created date") do |created_on|
+              # Evernote cuts the last 3 values off of your timestamp because
+              # it "accurate to milliseconds", so we have to add them back or
+              # else the date is all messed up
+              parsed = Date.parse(created_on)
+              @created_on = (parsed.to_time.to_i.to_s + "000").to_i
             end
           end.parse!
 
