@@ -223,6 +223,54 @@ module Granify
         output
       end
 
+      def create_deployment_note
+        # Create note object
+        our_note = ::Evernote::EDAM::Type::Note.new
+        our_note.resources = []
+        our_note.tagNames = []
+
+        # only join when required
+        if body.is_a? Array
+          body = body.join
+        end
+
+        n_body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+        n_body += "<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">"
+        n_body += "<en-note>#{body}</en-note>"
+       
+        # setup note properties
+        our_note.title = title
+        our_note.content = n_body
+        our_note.created = created_on if !created_on.nil?
+
+        parent_notebook = notebook_by_name('Deployments')
+        
+        ## parent_notebook is optional; if omitted, default notebook is used
+        if parent_notebook.is_a? ::Evernote::EDAM::Type::Notebook
+          our_note.notebookGuid = parent_notebook.guid
+        end
+
+        ## Attempt to create note in Evernote account
+        begin
+          output = {}
+          output[:note] = @@store.createNote(@@developer_token, our_note)
+        rescue ::Evernote::EDAM::Error::EDAMUserException => edue
+          ## Something was wrong with the note data
+          ## See EDAMErrorCode enumeration for error code explanation
+          ## http://dev.evernote.com/documentation/reference/Errors.html#Enum_EDAMErrorCode
+          Notify.error "EDAMUserException: #{edue}\nCode #{edue.errorCode}: #{edue.parameter}"
+        rescue ::Evernote::EDAM::Error::EDAMNotFoundException => ednfe
+          ## Parent Notebook GUID doesn't correspond to an actual notebook
+          Notify.error "EDAMNotFoundException: Invalid parent notebook GUID"
+        end
+
+        # A parent notebook object exists, otherwise it was saved to the default
+        # notebook
+        Notify.success("#{parent_notebook.stack}/#{parent_notebook.name}/#{our_note.title} created")
+
+        output
+      end
+
       def generate_stats
         {
           "Statistic description" => 9845.3894

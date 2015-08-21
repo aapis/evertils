@@ -30,6 +30,16 @@ module Granify
         super
       end
 
+      def deployment
+        if !@force
+          if @model.note_exists
+            Notify.error("There's already a log for today!")
+          end
+        end
+
+        @model.create_deployment_note
+      end
+
       # generate daily notes
       def daily
         if !@force
