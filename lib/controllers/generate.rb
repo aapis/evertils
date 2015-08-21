@@ -9,7 +9,7 @@ module Granify
           @model = Granify::Helper.load('evernote')
 
           # all methods require internet to make API calls
-          @methods_require_internet.push(:daily, :weekly, :monthly)
+          @methods_require_internet.push(:daily, :weekly, :monthly, :deployment)
 
           # user = @model.user
           # Notify.success("Welcome, #{user.name} (#{user.username})")
@@ -31,6 +31,10 @@ module Granify
       end
 
       def deployment
+        if STDIN.tty?
+          Notify.error("This command relies on piped data to generate note data")
+        end
+
         if !@force
           if @model.note_exists
             Notify.error("There's already a log for today!")

@@ -3,6 +3,12 @@ module Granify
     class Evernote
       @@developer_token = ENV["EVERTILS_TOKEN"]
 
+      # required user-created notebooks
+      NOTEBOOK_DAILY = :Daily
+      NOTEBOOK_WEEKLY = :Weekly
+      NOTEBOOK_MONTHLY = :Monthly
+      NOTEBOOK_DEPLOYMENT = :Deployments
+
       def initialize
         authenticate
       end
@@ -148,6 +154,9 @@ module Granify
       end
 
       def create_note(title = date_templates[$request.command], body = template_contents, p_notebook_name = nil, file = nil, share_note = false, created_on = nil)
+        # final output
+        output = {}
+
         # Create note object
         our_note = ::Evernote::EDAM::Type::Note.new
         our_note.resources = []
@@ -195,7 +204,6 @@ module Granify
 
         ## Attempt to create note in Evernote account
         begin
-          output = {}
           output[:note] = @@store.createNote(@@developer_token, our_note)
           
           if share_note
@@ -224,49 +232,57 @@ module Granify
       end
 
       def create_deployment_note
+        # final output
+        output = {}
+
         # Create note object
         our_note = ::Evernote::EDAM::Type::Note.new
         our_note.resources = []
         our_note.tagNames = []
 
-        # only join when required
-        if body.is_a? Array
-          body = body.join
-        end
+        # format output, expected format: 
+        # PR_DESCRIPTION (https://github.com/repo/repo/pull/PR_NUM)
+        # - Created by GIT_USER
+        # - Branch: GIT_BRANCH
+        # - Merged by GIT_USER on 30/6/2015 @ 06:09:27pm
+        # - Changes: https://github.com/repo/repo/pull/PR_NUM.diff
+        # ============================================================
+        # 1 PR(s) merged from 2015-06-30 18:00:00 to 2015-07-01 17:59:59
+        # ============================================================
+        body = JSON.parse(STDIN.gets).join
+        body = body.gsub("\n", '<br />')
 
         n_body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         n_body += "<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">"
         n_body += "<en-note>#{body}</en-note>"
        
         # setup note properties
-        our_note.title = title
+        our_note.title = date_templates[NOTEBOOK_DEPLOYMENT]
         our_note.content = n_body
-        our_note.created = created_on if !created_on.nil?
 
-        parent_notebook = notebook_by_name('Deployments')
-        
-        ## parent_notebook is optional; if omitted, default notebook is used
+        parent_notebook = notebook_by_name(NOTEBOOK_DEPLOYMENT)
+
+        # parent_notebook is optional; if omitted, default notebook is used
         if parent_notebook.is_a? ::Evernote::EDAM::Type::Notebook
           our_note.notebookGuid = parent_notebook.guid
         end
 
-        ## Attempt to create note in Evernote account
+        # Attempt to create note in Evernote account
         begin
-          output = {}
           output[:note] = @@store.createNote(@@developer_token, our_note)
         rescue ::Evernote::EDAM::Error::EDAMUserException => edue
-          ## Something was wrong with the note data
-          ## See EDAMErrorCode enumeration for error code explanation
-          ## http://dev.evernote.com/documentation/reference/Errors.html#Enum_EDAMErrorCode
-          Notify.error "EDAMUserException: #{edue}\nCode #{edue.errorCode}: #{edue.parameter}"
+          ##Something was wrong with the note data
+          # See EDAMErrorCode enumeration for error code explanation
+          # http://dev.evernote.com/documentation/reference/Errors.html#Enum_EDAMErrorCode
+          Notify.error "EDAMUserException: #{edue}\nCode #{edue.errorCode}: #{edue.parameter}\nExtended:\n#{edue.inspect}"
         rescue ::Evernote::EDAM::Error::EDAMNotFoundException => ednfe
-          ## Parent Notebook GUID doesn't correspond to an actual notebook
+          # Parent Notebook GUID doesn't correspond to an actual notebook
           Notify.error "EDAMNotFoundException: Invalid parent notebook GUID"
         end
 
         # A parent notebook object exists, otherwise it was saved to the default
         # notebook
-        Notify.success("#{parent_notebook.stack}/#{parent_notebook.name}/#{our_note.title} created")
+        Notify.success("#{parent_notebook.name}/#{our_note.title} created")
 
         output
       end
@@ -313,9 +329,10 @@ module Granify
           end_of_week = now + 4 # days
           
           {
-            :daily => "Daily Log [#{now.strftime('%B %-d')} - #{day_of_week}]",
-            :weekly => "Weekly Log [#{now.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
-            :monthly => "Monthly Log [#{now.strftime('%B %Y')}]"
+            :Daily => "Daily Log [#{now.strftime('%B %-d')} - #{day_of_week}]",
+            :Weekly => "Weekly Log [#{now.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
+            :Monthly => "Monthly Log [#{now.strftime('%B %Y')}]",
+            :Deployments => "#{now.strftime('%B %-d')} - #{day_of_week}"
           }
         end
     end
