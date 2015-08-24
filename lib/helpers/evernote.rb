@@ -153,7 +153,7 @@ module Granify
         results.should_eval_to(false)
       end
 
-      def create_note(title = date_templates[$request.command], body = template_contents, p_notebook_name = nil, file = nil, share_note = false, created_on = nil)
+      def create_note(title = date_templates[$request.command.capitalize], body = template_contents, p_notebook_name = nil, file = nil, share_note = false, created_on = nil)
         # final output
         output = {}
 
@@ -316,7 +316,7 @@ module Granify
         end
 
         def template_contents
-          if Date.today.friday? && $request.command == :daily
+          if Date.today.friday? && $request.command == :Daily
             # Friday uses a slightly different template
             IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}-friday.enml").join("").gsub!("\n", '')
           else
