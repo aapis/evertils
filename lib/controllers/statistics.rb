@@ -1,13 +1,15 @@
+require_relative '../stats_processors/time'
+
 module Granify
   module Controller
     class Statistics < Controller::Base
       def pre_exec
         begin
           # interface with the Evernote API so we can use it later
-          @evernote = Granify::Helper.load('evernote')
+          @evernote = Granify::Helper.load(:evernote)
 
           # assign various analysis tools to variables
-          @time = Granify::StatsProcessor.load(:time)
+          @time_model = Granify::StatsProcessor.load(:time)
 
           # all methods require internet to make API calls
           @methods_require_internet.push(:avg_sod, :avg_eod)
@@ -31,11 +33,11 @@ module Granify
       end
 
       def avg_sod
-        @model.calculate_averages(:sod)
+        @time_model.calculate_averages(:sod, @evernote.notes_by_notebook(:Daily))
       end
 
       def avg_eod
-        @model.calculate_averages(:eod)
+        @time_model.calculate_averages(:eod, @evernote.notes_by_notebook(:Daily))
       end
     end
   end

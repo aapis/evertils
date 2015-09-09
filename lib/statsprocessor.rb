@@ -2,7 +2,8 @@ module Granify
   module StatsProcessor
     def self.load(klass, args = nil)
       begin
-        klass_instance = Granify::StatsProcessor.const_get(klass.capitalize)
+        klass = "#{klass.capitalize}Stats"
+        klass_instance = Granify::StatsProcessor.const_get(klass)
         
         if klass_instance
           if args.nil?
