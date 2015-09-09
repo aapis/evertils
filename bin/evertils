@@ -33,6 +33,7 @@ require_relative "../lib/model.rb"
 require_relative "../lib/helpers/evernote.rb"
 require_relative "../lib/helpers/evernote-enml.rb"
 require_relative "../lib/helper.rb"
+require_relative "../lib/statsprocessor.rb"
 
 # Modify configuration options here
 $config = Granify::Cfg.new
