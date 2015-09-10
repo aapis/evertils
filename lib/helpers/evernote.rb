@@ -86,9 +86,16 @@ module Granify
             result.includeUpdated = true
             result.includeTagGuids = true
 
-            #output = @@store.findNotesMetadata(@@developer_token, filter, 0, 400, result)
             notes(nil, notebook.guid).notes.each do |note|
-              output[note.guid] = @@store.getNoteContent(@@developer_token, note.guid)
+              # bind note data to the output hash
+              note.struct_fields.each do |index, field|
+                output[field[:name]] = note.send(field[:name])
+              end
+              
+              # overwrite the content property set above with actual note
+              # content (which is a string, not symbol, here)
+              output["content"] = @@store.getNoteContent(@@developer_token, note.guid)
+              output
             end
           end
         end
@@ -136,6 +143,7 @@ module Granify
 
       def note_exists(requested_date = DateTime.now)
         results = Helper::Results.new
+
         tmpl = date_templates(requested_date)
         template = tmpl[command]
         note = find_note(template)
