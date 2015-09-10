@@ -134,9 +134,10 @@ module Granify
         @@store.findNotes(@@developer_token, filter, nil, 300)
       end
 
-      def note_exists
+      def note_exists(requested_date)
         results = Helper::Results.new
-        template = date_templates[command]
+        tmpl = date_templates(requested_date)
+        template = tmpl[command]
         note = find_note(template)
 
         # Evernote's search matches things like the following, so we have to get
@@ -153,9 +154,12 @@ module Granify
         results.should_eval_to(false)
       end
 
-      def create_note(title = date_templates[command.capitalize], body = template_contents, p_notebook_name = nil, file = nil, share_note = false, created_on = nil)
+      def create_note(title = command.capitalize, body = template_contents, p_notebook_name = nil, file = nil, share_note = false, created_on = nil)
         # final output
         output = {}
+
+        tmpl = date_templates
+        title = tmpl[title]
 
         # Create note object
         our_note = ::Evernote::EDAM::Type::Note.new
@@ -231,9 +235,11 @@ module Granify
         output
       end
 
-      def create_deployment_note
+      def create_deployment_note(requested_date)
         # final output
         output = {}
+
+        requested_date = DateTime.now if requested_date.nil?
 
         # Create note object
         our_note = ::Evernote::EDAM::Type::Note.new
@@ -257,7 +263,8 @@ module Granify
         n_body += "<en-note>#{body}</en-note>"
        
         # setup note properties
-        our_note.title = date_templates[NOTEBOOK_DEPLOYMENT]
+        tmpl = date_templates(requested_date)
+        our_note.title = tmpl[NOTEBOOK_DEPLOYMENT]
         our_note.content = n_body
 
         parent_notebook = notebook_by_name(NOTEBOOK_DEPLOYMENT)
@@ -297,8 +304,8 @@ module Granify
 
       # Legacy notes will have single/double character denotations for day of
       # week, this maps them.
-      def day_of_week
-        case Date.today.strftime('%a')
+      def day_of_week(arg_date = Date.today.strftime('%a'))
+        case arg_date
         when 'Mon'
           :M
         when 'Tue'
@@ -325,15 +332,15 @@ module Granify
         end
       end
 
-      def date_templates
-        now = DateTime.now
-        end_of_week = now + 4 # days
+      def date_templates(arg_date = DateTime.now)
+        dow = day_of_week(arg_date.strftime('%a'))
+        end_of_week = arg_date + 4 # days
         
         {
-          :Daily => "Daily Log [#{now.strftime('%B %-d')} - #{day_of_week}]",
-          :Weekly => "Weekly Log [#{now.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
-          :Monthly => "Monthly Log [#{now.strftime('%B %Y')}]",
-          :Deployments => "#{now.strftime('%B %-d')} - #{day_of_week}"
+          :Daily => "Daily Log [#{arg_date.strftime('%B %-d')} - #{dow}]",
+          :Weekly => "Weekly Log [#{arg_date.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
+          :Monthly => "Monthly Log [#{arg_date.strftime('%B %Y')}]",
+          :Deployments => "#{arg_date.strftime('%B %-d')} - #{dow}"
         }
       end
 
