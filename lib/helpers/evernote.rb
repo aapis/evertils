@@ -134,7 +134,7 @@ module Granify
         @@store.findNotes(@@developer_token, filter, nil, 300)
       end
 
-      def note_exists(requested_date)
+      def note_exists(requested_date = DateTime.now)
         results = Helper::Results.new
         tmpl = date_templates(requested_date)
         template = tmpl[command]
