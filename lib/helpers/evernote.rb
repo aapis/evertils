@@ -85,16 +85,20 @@ module Granify
             result.includeTitle = true
             result.includeUpdated = true
             result.includeTagGuids = true
+            notes = notes(nil, notebook.guid).notes
 
-            notes(nil, notebook.guid).notes.each do |note|
+            notes.each do |note|
+              output["list"] = []
+
               # bind note data to the output hash
               note.struct_fields.each do |index, field|
-                output[field[:name]] = note.send(field[:name])
+                output["list"][][field[:name]] = note.send(field[:name])
               end
               
               # overwrite the content property set above with actual note
               # content (which is a string, not symbol, here)
-              output["content"] = @@store.getNoteContent(@@developer_token, note.guid)
+              output["list"][]["content"] = @@store.getNoteContent(@@developer_token, note.guid)
+              output["size"] = notes.size
               output
             end
           end

@@ -11,6 +11,8 @@ module Granify
             klass_instance.new(args)
           end
         end
+      rescue ::Evernote::EDAM::Error::EDAMSystemException => e
+        Notify.error("Evernote.system error\n#{e.inspect.to_s}")
       rescue => e
         Notify.error(e.message)
       end
