@@ -63,7 +63,7 @@ module Granify
         @@user.getUser(@@developer_token)
       end
 
-      def notebook_by_name(name = $request.command)
+      def notebook_by_name(name = command)
         output = {}
         notebooks.each do |notebook|
           if notebook.name == name.to_s.capitalize
@@ -136,7 +136,7 @@ module Granify
 
       def note_exists
         results = Helper::Results.new
-        template = date_templates[$request.command]
+        template = date_templates[command]
         note = find_note(template)
 
         # Evernote's search matches things like the following, so we have to get
@@ -153,7 +153,7 @@ module Granify
         results.should_eval_to(false)
       end
 
-      def create_note(title = date_templates[$request.command], body = template_contents, p_notebook_name = nil, file = nil, share_note = false, created_on = nil)
+      def create_note(title = date_templates[command.capitalize], body = template_contents, p_notebook_name = nil, file = nil, share_note = false, created_on = nil)
         # final output
         output = {}
 
@@ -184,10 +184,10 @@ module Granify
         our_note.created = created_on if !created_on.nil?
 
         # properly tag logs
-        case $request.command
-        when :weekly
+        case command
+        when :Weekly
           our_note.tagNames << "week-#{::Time.now.strftime('%V').to_i}"
-        when :monthly
+        when :Monthly
           our_note.tagNames << "month-#{::Time.now.strftime('%-m').to_i}"
         end
 
@@ -294,47 +294,53 @@ module Granify
       end
 
       private
-        # Legacy notes will have single/double character denotations for day of
-        # week, this maps them.
-        def day_of_week
-          case Date.today.strftime('%a')
-          when 'Mon'
-            :M
-          when 'Tue'
-            :Tu
-          when 'Wed'
-            :W
-          when 'Thu'
-            :Th
-          when 'Fri'
-            :F
-          when 'Sat'
-            :Sa
-          when 'Sun'
-            :Su
-          end
-        end
 
-        def template_contents
-          if Date.today.friday? && $request.command == :daily
-            # Friday uses a slightly different template
-            IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}-friday.enml").join("").gsub!("\n", '')
-          else
-            IO.readlines("#{Granify::TEMPLATE_DIR}#{$request.command}.enml").join("").gsub!("\n", '')
-          end
+      # Legacy notes will have single/double character denotations for day of
+      # week, this maps them.
+      def day_of_week
+        case Date.today.strftime('%a')
+        when 'Mon'
+          :M
+        when 'Tue'
+          :Tu
+        when 'Wed'
+          :W
+        when 'Thu'
+          :Th
+        when 'Fri'
+          :F
+        when 'Sat'
+          :Sa
+        when 'Sun'
+          :Su
         end
+      end
 
-        def date_templates
-          now = DateTime.now
-          end_of_week = now + 4 # days
-          
-          {
-            :Daily => "Daily Log [#{now.strftime('%B %-d')} - #{day_of_week}]",
-            :Weekly => "Weekly Log [#{now.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
-            :Monthly => "Monthly Log [#{now.strftime('%B %Y')}]",
-            :Deployments => "#{now.strftime('%B %-d')} - #{day_of_week}"
-          }
+      def template_contents
+        if Date.today.friday? && command == :Daily
+          # Friday uses a slightly different template
+          IO.readlines("#{Granify::TEMPLATE_DIR}#{command}-friday.enml").join("").gsub!("\n", '')
+        else
+          IO.readlines("#{Granify::TEMPLATE_DIR}#{command}.enml").join("").gsub!("\n", '')
         end
+      end
+
+      def date_templates
+        now = DateTime.now
+        end_of_week = now + 4 # days
+        
+        {
+          :Daily => "Daily Log [#{now.strftime('%B %-d')} - #{day_of_week}]",
+          :Weekly => "Weekly Log [#{now.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
+          :Monthly => "Monthly Log [#{now.strftime('%B %Y')}]",
+          :Deployments => "#{now.strftime('%B %-d')} - #{day_of_week}"
+        }
+      end
+
+      # format command as required by this model
+      def command
+        $request.command.capitalize
+      end
     end
   end
-  end
+end
