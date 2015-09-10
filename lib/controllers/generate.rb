@@ -1,7 +1,7 @@
 module Granify
   module Controller
     class Generate < Controller::Base
-      attr_accessor :force
+      attr_accessor :force, :start
 
       def pre_exec
         begin
@@ -25,6 +25,10 @@ module Granify
           opt.on("-f", "--force", "Force execution") do
             @force = true
           end
+
+          opt.on("-s", "--start=START", "Specify a date for the note") do |date|
+            @start = DateTime.parse(date)
+          end
         end.parse!
 
         super
@@ -36,12 +40,12 @@ module Granify
         end
 
         if !@force
-          if @model.note_exists
+          if @model.note_exists(@start)
             Notify.error("There's already a log for today!")
           end
         end
 
-        @model.create_deployment_note
+        @model.create_deployment_note(@start)
       end
 
       # generate daily notes
