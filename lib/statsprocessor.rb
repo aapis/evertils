@@ -1,8 +1,9 @@
 module Granify
-  module Helper
+  module StatsProcessor
     def self.load(klass, args = nil)
       begin
-        klass_instance = Granify::Helper.const_get(klass.capitalize)
+        klass = "#{klass.capitalize}Stats"
+        klass_instance = Granify::StatsProcessor.const_get(klass)
         
         if klass_instance
           if args.nil?
@@ -11,8 +12,6 @@ module Granify
             klass_instance.new(args)
           end
         end
-      rescue ::Evernote::EDAM::Error::EDAMSystemException => e
-        Notify.error("Evernote.system error\n#{e.inspect.to_s}")
       rescue => e
         Notify.error(e.message)
       end
