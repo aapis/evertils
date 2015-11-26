@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   module Command
     class Exec
       attr_reader :response, :exitcode
@@ -110,7 +110,7 @@ module Granify
 
       def lint(file, log_file)
         begin
-          command = `coffeelint -f "#{Granify::INSTALLED_DIR}/lib/configs/coffeelint.json" #{file}`
+          command = `coffeelint -f "#{Evertils::INSTALLED_DIR}/lib/configs/coffeelint.json" #{file}`
 
           @response = command.include?("Ok!")
 
@@ -130,7 +130,7 @@ module Granify
 
       def open_editor(file=nil)
         begin
-          log_file = file || Granify::DEFAULT_LOG
+          log_file = file || Evertils::DEFAULT_LOG
 
           # System editor is not set/unavailable, use system default to open the
           # file

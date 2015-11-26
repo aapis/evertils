@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   module Controller
     class Get < Controller::Base
       attr_accessor :title, :file, :notebook
@@ -6,14 +6,14 @@ module Granify
       def pre_exec
         begin
           # interface with the Evernote API so we can use it later
-          @model = Granify::Helper.load('evernote')
+          @model = Evertils::Helper.load('evernote')
 
           # all methods require internet to make API calls
           @methods_require_internet.push(:daily, :weekly, :monthly)
 
           # command flag parser
           OptionParser.new do |opt|
-            opt.banner = "#{Granify::PACKAGE_NAME} new note [...-flags]"
+            opt.banner = "#{Evertils::PACKAGE_NAME} new note [...-flags]"
 
             opt.on("-t", "--title=TITLE", "Set a custom title") do |title|
               @title = title
@@ -56,7 +56,7 @@ module Granify
             Notify.error("Could not pull data for notebook #{$request.custom[0]}")
           end
         else
-          Notify.error("Notebook name is a required argument, i.e.\n#{Granify::PACKAGE_NAME} get notebook agendas")
+          Notify.error("Notebook name is a required argument, i.e.\n#{Evertils::PACKAGE_NAME} get notebook agendas")
         end
       end
 

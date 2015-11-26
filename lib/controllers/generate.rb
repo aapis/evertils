@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   module Controller
     class Generate < Controller::Base
       attr_accessor :force, :start
@@ -6,7 +6,7 @@ module Granify
       def pre_exec
         begin
           # interface with the Evernote API so we can use it later
-          @model = Granify::Helper.load('evernote')
+          @model = Evertils::Helper.load('evernote')
 
           # all methods require internet to make API calls
           @methods_require_internet.push(:daily, :weekly, :monthly, :deployment)
@@ -20,7 +20,7 @@ module Granify
         end
 
         OptionParser.new do |opt|
-          opt.banner = "#{Granify::PACKAGE_NAME} generate timeframe [...-flags]"
+          opt.banner = "#{Evertils::PACKAGE_NAME} generate timeframe [...-flags]"
 
           opt.on("-f", "--force", "Force execution") do
             @force = true

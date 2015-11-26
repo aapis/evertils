@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   class Log
     attr_accessor :path, :total_files_processed
     attr_reader :template
@@ -6,10 +6,10 @@ module Granify
     def initialize(*args)
       if args.length == 0
         # default log
-        @template = "#{Granify::LOG_DIR}/%s"
+        @template = "#{Evertils::LOG_DIR}/%s"
         @path = sprintf(@template, "default.log")
       else
-        @template = "#{Granify::LOG_DIR}/%s/%s-%s.log"
+        @template = "#{Evertils::LOG_DIR}/%s/%s-%s.log"
         
         format(args)
       end

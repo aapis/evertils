@@ -1,8 +1,8 @@
-module Granify
+module Evertils
   class Logs
     MAX_LOGS_TO_STORE = 30
 
-    @files = Dir["#{Granify::LOG_DIR}/*/*.log"]
+    @files = Dir["#{Evertils::LOG_DIR}/*/*.log"]
 
     def self.clean
       if @files.size > 0
@@ -19,7 +19,7 @@ module Granify
 
     # Create a directory if required
     def self.mkdir(name)
-      dir = "#{Granify::LOG_DIR}/#{name.downcase}"
+      dir = "#{Evertils::LOG_DIR}/#{name.downcase}"
 
       if !Dir.exist? dir
         Dir.mkdir dir

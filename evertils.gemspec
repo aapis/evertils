@@ -2,7 +2,7 @@ require "./lib/version"
 
 Gem::Specification.new do |s|
   s.name          = 'evertils'
-  s.version       = Granify::VERSION
+  s.version       = Evertils::VERSION
   s.date          = '2015-07-03'
   s.summary       = "EN (heart) CLI"
   s.description   = "Evernote utilities for your CLI workflow"

@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   class Request
     attr_reader :controller, :command, :custom, :flags, :raw_flags
 
