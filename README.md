@@ -10,7 +10,7 @@ Utilities for talking to your Evernote account.  Create notes, generate statisti
 Get your Evernote Developer Tokens [here](https://www.evernote.com/Login.action?targetUrl=%2Fapi%2FDeveloperToken.action).
 
 ## Logging Specification
-See [this document](LOGGING_SPECIFICATION.md) to see how it all gets organized.
+See [this document](https://github.com/aapis/evertils/wiki/Logging-Specification) to see how it all gets organized.
 
 ## How to Use
 
