@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   class Utils
     @cache = Hash.new
     

@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   module Helper
     class Evernote
       @@developer_token = ENV["EVERTILS_TOKEN"]
@@ -326,9 +326,9 @@ module Granify
       def template_contents
         if Date.today.friday? && command == :Daily
           # Friday uses a slightly different template
-          IO.readlines("#{Granify::TEMPLATE_DIR}#{command}-friday.enml").join("").gsub!("\n", '')
+          IO.readlines("#{Evertils::TEMPLATE_DIR}#{command}-friday.enml").join("").gsub!("\n", '')
         else
-          IO.readlines("#{Granify::TEMPLATE_DIR}#{command}.enml").join("").gsub!("\n", '')
+          IO.readlines("#{Evertils::TEMPLATE_DIR}#{command}.enml").join("").gsub!("\n", '')
         end
       end
 

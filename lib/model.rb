@@ -1,10 +1,10 @@
-module Granify
+module Evertils
   module Model
     class Base
       attr_accessor :data, :branch, :browser, :command, :start
 
       def initialize(hash = nil)
-        @data = hash || Granify::Model::Data.new
+        @data = hash || Evertils::Model::Data.new
 
         # Current time
         #@time = @data.start

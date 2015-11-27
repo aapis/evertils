@@ -1,28 +1,28 @@
-module Granify
+module Evertils
   class Router
     def route
       # Populate request params
       $request = Request.new
 
       # include the controller
-      if File.exists? "#{Granify::CONTROLLER_DIR}#{$request.controller}.rb"
-        require "#{Granify::CONTROLLER_DIR}#{$request.controller}.rb"
+      if File.exists? "#{Evertils::CONTROLLER_DIR}#{$request.controller}.rb"
+        require "#{Evertils::CONTROLLER_DIR}#{$request.controller}.rb"
       end
 
       # include helpers
-      if File.exists? "#{Granify::HELPER_DIR}#{$request.controller}.rb"
-        require "#{Granify::HELPER_DIR}#{$request.controller}.rb"
+      if File.exists? "#{Evertils::HELPER_DIR}#{$request.controller}.rb"
+        require "#{Evertils::HELPER_DIR}#{$request.controller}.rb"
       end
 
       # include models
-      if File.exists? "#{Granify::MODEL_DIR}#{$request.controller}.rb"
-        require "#{Granify::MODEL_DIR}#{$request.controller}.rb"
+      if File.exists? "#{Evertils::MODEL_DIR}#{$request.controller}.rb"
+        require "#{Evertils::MODEL_DIR}#{$request.controller}.rb"
       end
 
       # Create object context and pass it the required command line arguments
       begin
         if !$request.controller.nil?
-          controller = Granify::Controller.const_get $request.controller.capitalize rescue false
+          controller = Evertils::Controller.const_get $request.controller.capitalize rescue false
           
           if !controller
             raise "Controller not found: #{$request.controller.capitalize}"
@@ -54,7 +54,7 @@ module Granify
 
             if context.methods_require_internet.include? $request.command
               if !Utils.has_internet_connection?
-                raise RuntimeError, "Command `#{Granify::PACKAGE_NAME} #{$request.controller} #{$request.command}` requires a connection to the internet.\nPlease check your network configuration settings."
+                raise RuntimeError, "Command `#{Evertils::PACKAGE_NAME} #{$request.controller} #{$request.command}` requires a connection to the internet.\nPlease check your network configuration settings."
               end
             end
 

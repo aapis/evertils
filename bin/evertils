@@ -35,10 +35,10 @@ require_relative "../lib/helpers/evernote-enml.rb"
 require_relative "../lib/helper.rb"
 
 # Modify configuration options here
-$config = Granify::Cfg.new
+$config = Evertils::Cfg.new
 # Bootstrap!
 $config.bootstrap!
 
 # Config file located, route the request
-req = Granify::Router.new
+req = Evertils::Router.new
 req.route

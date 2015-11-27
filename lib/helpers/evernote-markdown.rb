@@ -15,7 +15,7 @@ include Benchmark
 # TODO
 # - ol numbering is buggy, in fact doesn't matter for markdown code
 
-module Granify
+module Evertils
   module Helper
     class EvernoteMD
       # set basic variables:

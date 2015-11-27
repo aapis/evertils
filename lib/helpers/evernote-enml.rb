@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   module Helper
     class EvernoteENML
       attr_reader :element, :embeddable_element

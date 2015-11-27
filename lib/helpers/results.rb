@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   module Helper
     class Results
       attr_reader :bucket

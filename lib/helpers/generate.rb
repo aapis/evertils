@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   module Helper
     class Generate
       def self.format_date(title)

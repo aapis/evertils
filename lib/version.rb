@@ -1,3 +1,3 @@
-module Granify
-  VERSION = '0.1.20'
+module Evertils
+  VERSION = '0.2.0'
 end

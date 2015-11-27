@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   module Controller
     class Base
       attr_accessor :model, :helper, :methods_require_internet, :default_method
@@ -8,7 +8,7 @@ module Granify
       # Perform pre-run tasks
       def pre_exec
         OptionParser.new do |opt|
-          opt.banner = "#{Granify::PACKAGE_NAME} controller command [...-flags]"
+          opt.banner = "#{Evertils::PACKAGE_NAME} controller command [...-flags]"
 
           opt.on("-v", "--verbose", "Verbose output") do |v|
             # short output
@@ -17,7 +17,7 @@ module Granify
 
           opt.on("-V", "--version", "Show app version") do |v|
             # short output
-            @version = Granify::PACKAGE_VERSION
+            @version = Evertils::PACKAGE_VERSION
           end      
         end.parse!
       end
@@ -34,8 +34,8 @@ module Granify
 
       # Determines if the command can execute
       def can_exec?(command = nil, name = nil)
-        @model = Granify::Model.const_get(command.capitalize).new rescue nil
-        @helper = Granify::Helper.const_get(command.capitalize).new rescue nil
+        @model = Evertils::Model.const_get(command.capitalize).new rescue nil
+        @helper = Evertils::Helper.const_get(command.capitalize).new rescue nil
         @methods_require_internet = []
 
         # get user-defined methods to use as a fallback
@@ -81,25 +81,25 @@ module Granify
           
           begin
             modules.each do |mod|
-              if File.exists? "#{Granify::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
-                require "#{Granify::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
+              if File.exists? "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
+                require "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
                 
-                loaded[:controller][mod] = Granify::Controller.const_get(mod.capitalize).new
+                loaded[:controller][mod] = Evertils::Controller.const_get(mod.capitalize).new
               else
                 raise StandardError, "Controller not found: #{mod}"
               end
 
-              if File.exists? "#{Granify::INSTALLED_DIR}/lib/helpers/#{mod}.rb"
-                require "#{Granify::INSTALLED_DIR}/lib/helpers/#{mod}.rb"
-                loaded[:helper][mod] = Granify::Helper.const_get(mod.capitalize).new
+              if File.exists? "#{Evertils::INSTALLED_DIR}/lib/helpers/#{mod}.rb"
+                require "#{Evertils::INSTALLED_DIR}/lib/helpers/#{mod}.rb"
+                loaded[:helper][mod] = Evertils::Helper.const_get(mod.capitalize).new
 
                 # auto-instantiate new instance of helper for the new instance of the controller
                 loaded[:controller][mod].helper = loaded[:helper][mod]
               end
 
-              if File.exists? "#{Granify::INSTALLED_DIR}/lib/models/#{mod}.rb"
-                require "#{Granify::INSTALLED_DIR}/lib/models/#{mod}.rb"
-                loaded[:model][mod] = Granify::Model.const_get(mod.capitalize).new
+              if File.exists? "#{Evertils::INSTALLED_DIR}/lib/models/#{mod}.rb"
+                require "#{Evertils::INSTALLED_DIR}/lib/models/#{mod}.rb"
+                loaded[:model][mod] = Evertils::Model.const_get(mod.capitalize).new
 
                 # auto-instantiate new instance of model for the new instance of the controller
                 loaded[:controller][mod].model = loaded[:model][mod]

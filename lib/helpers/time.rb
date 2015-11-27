@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   module Helper
     class Time
       def self.human_readable(start, finish)

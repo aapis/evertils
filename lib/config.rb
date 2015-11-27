@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   class Cfg
     def bootstrap!
       begin

@@ -1,4 +1,4 @@
-module Granify
+module Evertils
   module Model
     class Data
       attr_accessor :identifier, :branch, :browser, :files_with_errors
@@ -59,7 +59,7 @@ module Granify
       end
 
       def log
-        get(:log, Granify::DEFAULT_LOG)
+        get(:log, Evertils::DEFAULT_LOG)
       end
 
       def add_to_error_list(file)
