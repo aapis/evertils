@@ -87,44 +87,45 @@ module Evertils
       end
 
       private
-        # autoload and instantiate required libraries, models and helpers
-        def auto_load_required(modules = [])
-          loaded = {:controller => {}, :helper => {}, :model => {}}
-          
-          begin
-            modules.each do |mod|
-              if File.exists? "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
-                require "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
-                
-                loaded[:controller][mod] = Evertils::Controller.const_get(mod.capitalize).new
-              else
-                raise StandardError, "Controller not found: #{mod}"
-              end
 
-              if File.exists? "#{Evertils::INSTALLED_DIR}/lib/helpers/#{mod}.rb"
-                require "#{Evertils::INSTALLED_DIR}/lib/helpers/#{mod}.rb"
-                loaded[:helper][mod] = Evertils::Helper.const_get(mod.capitalize).new
-
-                # auto-instantiate new instance of helper for the new instance of the controller
-                loaded[:controller][mod].helper = loaded[:helper][mod]
-              end
-
-              if File.exists? "#{Evertils::INSTALLED_DIR}/lib/models/#{mod}.rb"
-                require "#{Evertils::INSTALLED_DIR}/lib/models/#{mod}.rb"
-                loaded[:model][mod] = Evertils::Model.const_get(mod.capitalize).new
-
-                # auto-instantiate new instance of model for the new instance of the controller
-                loaded[:controller][mod].model = loaded[:model][mod]
-              else
-                loaded[:controller][mod].model = Model::Base.new
-              end
+      # autoload and instantiate required libraries, models and helpers
+      def auto_load_required(modules = [])
+        loaded = {:controller => {}, :helper => {}, :model => {}}
+        
+        begin
+          modules.each do |mod|
+            if File.exists? "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
+              require "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
+              
+              loaded[:controller][mod] = Evertils::Controller.const_get(mod.capitalize).new
+            else
+              raise StandardError, "Controller not found: #{mod}"
             end
 
-            loaded
-          rescue StandardError => e
-            Notify.error(e.message)
+            if File.exists? "#{Evertils::INSTALLED_DIR}/lib/helpers/#{mod}.rb"
+              require "#{Evertils::INSTALLED_DIR}/lib/helpers/#{mod}.rb"
+              loaded[:helper][mod] = Evertils::Helper.const_get(mod.capitalize).new
+
+              # auto-instantiate new instance of helper for the new instance of the controller
+              loaded[:controller][mod].helper = loaded[:helper][mod]
+            end
+
+            if File.exists? "#{Evertils::INSTALLED_DIR}/lib/models/#{mod}.rb"
+              require "#{Evertils::INSTALLED_DIR}/lib/models/#{mod}.rb"
+              loaded[:model][mod] = Evertils::Model.const_get(mod.capitalize).new
+
+              # auto-instantiate new instance of model for the new instance of the controller
+              loaded[:controller][mod].model = loaded[:model][mod]
+            else
+              loaded[:controller][mod].model = Model::Base.new
+            end
           end
+
+          loaded
+        rescue StandardError => e
+          Notify.error(e.message)
         end
+      end
     end
   end
 end
