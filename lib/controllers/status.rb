@@ -23,7 +23,9 @@ module Evertils
       end
 
       def default
-        Notify.success("hello!")
+        $config.options.each_pair do |key, value|
+          puts "#{key}: #{value}"
+        end
       end
     end
   end
