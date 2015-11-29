@@ -59,7 +59,13 @@ module Evertils
             end
 
             # Run the controller
-            context.exec
+            # Call a default action for controllers which do not require a third
+            # argument, i.e. evertils status 
+            if context.respond_to? :default
+              context.default
+            else
+              context.exec
+            end
 
             # Run cleanup commands
             context.post_exec

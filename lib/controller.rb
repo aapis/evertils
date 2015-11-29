@@ -7,6 +7,18 @@ module Evertils
       
       # Perform pre-run tasks
       def pre_exec
+        begin
+          # interface with the Evernote API so we can use it later
+          @model = Evertils::Helper.load('evernote')
+
+          # user = @model.user
+          # Notify.success("Welcome, #{user.name} (#{user.username})")
+        rescue ::Evernote::EDAM::Error::EDAMSystemException => e
+          Notify.error("Evernote.authenticate error\n#{e.message} (#{e.errorCode})")
+        rescue ::Evernote::EDAM::Error::EDAMUserException => e
+          Notify.error("Evernote.authenticate error\n#{e.parameter} (#{e.errorCode})")
+        end
+
         OptionParser.new do |opt|
           opt.banner = "#{Evertils::PACKAGE_NAME} controller command [...-flags]"
 
@@ -18,7 +30,7 @@ module Evertils
           opt.on("-V", "--version", "Show app version") do |v|
             # short output
             @version = Evertils::PACKAGE_VERSION
-          end      
+          end
         end.parse!
       end
 
