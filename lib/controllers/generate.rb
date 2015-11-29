@@ -4,20 +4,7 @@ module Evertils
       attr_accessor :force, :start
 
       def pre_exec
-        begin
-          # interface with the Evernote API so we can use it later
-          @model = Evertils::Helper.load('evernote')
-
-          # all methods require internet to make API calls
-          @methods_require_internet.push(:daily, :weekly, :monthly, :deployment)
-
-          # user = @model.user
-          # Notify.success("Welcome, #{user.name} (#{user.username})")
-        rescue ::Evernote::EDAM::Error::EDAMSystemException => e
-          Notify.error("Evernote.authenticate error\n#{e.message} (#{e.errorCode})")
-        rescue ::Evernote::EDAM::Error::EDAMUserException => e
-          Notify.error("Evernote.authenticate error\n#{e.parameter} (#{e.errorCode})")
-        end
+        @methods_require_internet.push(:daily, :weekly, :monthly, :deployment)
 
         OptionParser.new do |opt|
           opt.banner = "#{Evertils::PACKAGE_NAME} generate timeframe [...-flags]"

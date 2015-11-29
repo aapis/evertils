@@ -1,23 +1,7 @@
 module Evertils
   class Router
     def route
-      # Populate request params
-      $request = Request.new
-
-      # include the controller
-      if File.exists? "#{Evertils::CONTROLLER_DIR}#{$request.controller}.rb"
-        require "#{Evertils::CONTROLLER_DIR}#{$request.controller}.rb"
-      end
-
-      # include helpers
-      if File.exists? "#{Evertils::HELPER_DIR}#{$request.controller}.rb"
-        require "#{Evertils::HELPER_DIR}#{$request.controller}.rb"
-      end
-
-      # include models
-      if File.exists? "#{Evertils::MODEL_DIR}#{$request.controller}.rb"
-        require "#{Evertils::MODEL_DIR}#{$request.controller}.rb"
-      end
+      pre_exec
 
       # Create object context and pass it the required command line arguments
       begin
@@ -59,7 +43,13 @@ module Evertils
             end
 
             # Run the controller
-            context.exec
+            # Call a default action for controllers which do not require a third
+            # argument, i.e. evertils status 
+            if context.respond_to? :default
+              context.default
+            else
+              context.exec
+            end
 
             # Run cleanup commands
             context.post_exec
@@ -69,6 +59,26 @@ module Evertils
         Notify.error("#{e.to_s}")
       rescue NameError => e
         Notify.error("#{e.to_s}\n#{e.backtrace.join("\n")}")
+      end
+    end
+
+    def pre_exec
+      # Populate request params
+      $request = Request.new
+
+      # include the controller
+      if File.exists? "#{Evertils::CONTROLLER_DIR}#{$request.controller}.rb"
+        require "#{Evertils::CONTROLLER_DIR}#{$request.controller}.rb"
+      end
+
+      # include helpers
+      if File.exists? "#{Evertils::HELPER_DIR}#{$request.controller}.rb"
+        require "#{Evertils::HELPER_DIR}#{$request.controller}.rb"
+      end
+
+      # include models
+      if File.exists? "#{Evertils::MODEL_DIR}#{$request.controller}.rb"
+        require "#{Evertils::MODEL_DIR}#{$request.controller}.rb"
       end
     end
   end

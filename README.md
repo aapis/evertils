@@ -20,3 +20,4 @@ See [this document](https://github.com/aapis/evertils/wiki/Logging-Specification
 |new|Manually create notes|`evertils new note "STUFF"`, `evertils new share_note "STUFF"`, `other task | evertils new share_note --title="Piped data note"`|
 |get|Get data from Evernote|`evertils get notebook`|
 |convert|Convert your notes to Markdown, then back to ENML|(coming soon)|
+|status|View script information and other data|`evertils status`|

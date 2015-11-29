@@ -4,55 +4,43 @@ module Evertils
       attr_accessor :title, :file, :notebook
 
       def pre_exec
-        begin
-          # interface with the Evernote API so we can use it later
-          @model = Evertils::Helper.load('evernote')
+        # all methods require internet to make API calls
+        @methods_require_internet.push(:daily, :weekly, :monthly)
 
-          # all methods require internet to make API calls
-          @methods_require_internet.push(:daily, :weekly, :monthly)
+        @title = "Evertils - Custom Note"
+        
+        # command flag parser
+        OptionParser.new do |opt|
+          opt.banner = "#{Evertils::PACKAGE_NAME} new note [...-flags]"
 
-          @title = "Evertils - Custom Note"
+          opt.on("-t", "--title=TITLE", "Set a custom title") do |title|
+            @title = title
+          end
 
-          # command flag parser
-          OptionParser.new do |opt|
-            opt.banner = "#{Evertils::PACKAGE_NAME} new note [...-flags]"
+          opt.on("-f", "--file=PATH", "Attach a file to your custom note") do |file|
+            @file = file
+          end
 
-            opt.on("-t", "--title=TITLE", "Set a custom title") do |title|
-              @title = title
-            end
+          opt.on("-n", "--notebook=PBOOK", "Choose the notebook to add your note to") do |notebook|
+            @notebook = notebook
+          end
 
-            opt.on("-f", "--file=PATH", "Attach a file to your custom note") do |file|
-              @file = file
-            end
+          opt.on("-b", "--body=BODY", "Note body") do |body|
+            @body = body
+          end
 
-            opt.on("-n", "--notebook=PBOOK", "Choose the notebook to add your note to") do |notebook|
-              @notebook = notebook
-            end
+          opt.on("-t", "--tags=list", "Assign tags to the new note") do |tags|
+            @tags = tags
+          end
 
-            opt.on("-b", "--body=BODY", "Note body") do |body|
-              @body = body
-            end
-
-            opt.on("-t", "--tags=list", "Assign tags to the new note") do |tags|
-              @tags = tags
-            end
-
-            opt.on("-c", "--created_on=DATE", "Set note created date") do |created_on|
-              # Evernote cuts the last 3 values off of your timestamp because
-              # it "accurate to milliseconds", so we have to add them back or
-              # else the date is all messed up
-              parsed = Date.parse(created_on)
-              @created_on = (parsed.to_time.to_i.to_s + "000").to_i
-            end
-          end.parse!
-
-          # user = @model.user
-          # Notify.success("Welcome, #{user.name} (#{user.username})")
-        rescue ::Evernote::EDAM::Error::EDAMSystemException => e
-          Notify.error("Evernote.authenticate error\n#{e.message} (#{e.errorCode})")
-        rescue ::Evernote::EDAM::Error::EDAMUserException => e
-          Notify.error("Evernote.authenticate error\n#{e.parameter} (#{e.errorCode})")
-        end
+          opt.on("-c", "--created_on=DATE", "Set note created date") do |created_on|
+            # Evernote cuts the last 3 values off of your timestamp because
+            # it "accurate to milliseconds", so we have to add them back or
+            # else the date is all messed up
+            parsed = Date.parse(created_on)
+            @created_on = (parsed.to_time.to_i.to_s + "000").to_i
+          end
+        end.parse!
 
         super
       end

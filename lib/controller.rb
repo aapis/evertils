@@ -7,6 +7,18 @@ module Evertils
       
       # Perform pre-run tasks
       def pre_exec
+        begin
+          # interface with the Evernote API so we can use it later
+          @model = Evertils::Helper.load('evernote')
+
+          # user = @model.user
+          # Notify.success("Welcome, #{user.name} (#{user.username})")
+        rescue ::Evernote::EDAM::Error::EDAMSystemException => e
+          Notify.error("Evernote.authenticate error\n#{e.message} (#{e.errorCode})")
+        rescue ::Evernote::EDAM::Error::EDAMUserException => e
+          Notify.error("Evernote.authenticate error\n#{e.parameter} (#{e.errorCode})")
+        end
+
         OptionParser.new do |opt|
           opt.banner = "#{Evertils::PACKAGE_NAME} controller command [...-flags]"
 
@@ -18,7 +30,7 @@ module Evertils
           opt.on("-V", "--version", "Show app version") do |v|
             # short output
             @version = Evertils::PACKAGE_VERSION
-          end      
+          end
         end.parse!
       end
 
@@ -75,44 +87,45 @@ module Evertils
       end
 
       private
-        # autoload and instantiate required libraries, models and helpers
-        def auto_load_required(modules = [])
-          loaded = {:controller => {}, :helper => {}, :model => {}}
-          
-          begin
-            modules.each do |mod|
-              if File.exists? "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
-                require "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
-                
-                loaded[:controller][mod] = Evertils::Controller.const_get(mod.capitalize).new
-              else
-                raise StandardError, "Controller not found: #{mod}"
-              end
 
-              if File.exists? "#{Evertils::INSTALLED_DIR}/lib/helpers/#{mod}.rb"
-                require "#{Evertils::INSTALLED_DIR}/lib/helpers/#{mod}.rb"
-                loaded[:helper][mod] = Evertils::Helper.const_get(mod.capitalize).new
-
-                # auto-instantiate new instance of helper for the new instance of the controller
-                loaded[:controller][mod].helper = loaded[:helper][mod]
-              end
-
-              if File.exists? "#{Evertils::INSTALLED_DIR}/lib/models/#{mod}.rb"
-                require "#{Evertils::INSTALLED_DIR}/lib/models/#{mod}.rb"
-                loaded[:model][mod] = Evertils::Model.const_get(mod.capitalize).new
-
-                # auto-instantiate new instance of model for the new instance of the controller
-                loaded[:controller][mod].model = loaded[:model][mod]
-              else
-                loaded[:controller][mod].model = Model::Base.new
-              end
+      # autoload and instantiate required libraries, models and helpers
+      def auto_load_required(modules = [])
+        loaded = {:controller => {}, :helper => {}, :model => {}}
+        
+        begin
+          modules.each do |mod|
+            if File.exists? "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
+              require "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
+              
+              loaded[:controller][mod] = Evertils::Controller.const_get(mod.capitalize).new
+            else
+              raise StandardError, "Controller not found: #{mod}"
             end
 
-            loaded
-          rescue StandardError => e
-            Notify.error(e.message)
+            if File.exists? "#{Evertils::INSTALLED_DIR}/lib/helpers/#{mod}.rb"
+              require "#{Evertils::INSTALLED_DIR}/lib/helpers/#{mod}.rb"
+              loaded[:helper][mod] = Evertils::Helper.const_get(mod.capitalize).new
+
+              # auto-instantiate new instance of helper for the new instance of the controller
+              loaded[:controller][mod].helper = loaded[:helper][mod]
+            end
+
+            if File.exists? "#{Evertils::INSTALLED_DIR}/lib/models/#{mod}.rb"
+              require "#{Evertils::INSTALLED_DIR}/lib/models/#{mod}.rb"
+              loaded[:model][mod] = Evertils::Model.const_get(mod.capitalize).new
+
+              # auto-instantiate new instance of model for the new instance of the controller
+              loaded[:controller][mod].model = loaded[:model][mod]
+            else
+              loaded[:controller][mod].model = Model::Base.new
+            end
           end
+
+          loaded
+        rescue StandardError => e
+          Notify.error(e.message)
         end
+      end
     end
   end
 end
