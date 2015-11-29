@@ -1,6 +1,6 @@
 # Evertils
 
-Utilities for talking to your Evernote account.  Create notes, generate statistics based on usage, [more to come].
+Evertils is a command line utility for interacting with your Evernote account.
 
 ## Installation
 
