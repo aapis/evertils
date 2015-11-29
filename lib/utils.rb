@@ -119,5 +119,10 @@ module Evertils
     def self.has_internet_connection?
       Utils.http_response_code < 499
     end
+
+    def self.token
+      conf = YAML::load_file(Evertils::USER_CONF)
+      conf['token']
+    end
   end
 end

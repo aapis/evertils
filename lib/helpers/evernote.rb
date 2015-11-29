@@ -1,8 +1,6 @@
 module Evertils
   module Helper
     class Evernote
-      @@developer_token = ENV["EVERTILS_TOKEN"]
-
       # required user-created notebooks
       NOTEBOOK_DAILY = :Daily
       NOTEBOOK_WEEKLY = :Weekly
@@ -10,6 +8,8 @@ module Evertils
       NOTEBOOK_DEPLOYMENT = :Deployments
 
       def initialize
+        @@developer_token = Utils.token
+
         authenticate
       end
 

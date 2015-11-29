@@ -3,6 +3,7 @@ module Evertils
   INSTALLED_DIR = Gem::Specification.find_by_name(Evertils::PACKAGE_NAME).gem_dir
   LOG_DIR = INSTALLED_DIR + "/logs"
   DEFAULT_LOG = Evertils::Log.new # no args means default log
+  USER_CONF = "#{Dir.home}/.evertils.yml"
   HELPER_DIR = INSTALLED_DIR + "/lib/helpers/"
   CONTROLLER_DIR = INSTALLED_DIR + "/lib/controllers/"
   MODEL_DIR = INSTALLED_DIR + "/lib/models/"
