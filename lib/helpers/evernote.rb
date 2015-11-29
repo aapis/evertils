@@ -8,6 +8,7 @@ module Evertils
       NOTEBOOK_DEPLOYMENT = :Deployments
 
       def initialize
+        @@authenticated = false
         @@developer_token = Utils.token
 
         authenticate
@@ -15,7 +16,7 @@ module Evertils
 
       def authenticate
         if @@developer_token.nil?
-          Notify.error("Evernote developer token is not configured properly!\n$EVERTILS_TOKEN == nil")
+          Notify.error("Evernote developer token is not configured properly!")
         end
 
         @evernoteHost = "www.evernote.com"
@@ -41,6 +42,11 @@ module Evertils
         noteStoreTransport = Thrift::HTTPClientTransport.new(noteStoreUrl)
         noteStoreProtocol = Thrift::BinaryProtocol.new(noteStoreTransport)
         @@store = ::Evernote::EDAM::NoteStore::NoteStore::Client.new(noteStoreProtocol)
+        @@authenticated = true
+      end
+
+      def authenticated?
+        @@authenticated
       end
 
       def info

@@ -59,7 +59,7 @@ module Evertils
           user_defined_methods.push(public_methods[i].to_sym)
         end
 
-        @default_method = name || user_defined_methods.first || :sample
+        @default_method = name || user_defined_methods.first || :default
 
         if !respond_to? default_method.to_sym, true
           Notify.error("Command not found: #{name}")
