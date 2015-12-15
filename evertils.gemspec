@@ -12,4 +12,8 @@ Gem::Specification.new do |s|
   s.homepage      = 'http://rubygems.org/gems/evertils'
   s.license       = 'MIT'
   s.executables   = 'evertils'
+
+  s.add_runtime_dependency "evernote-thrift"
+  s.add_runtime_dependency "notifaction"
+  s.add_runtime_dependency "mime-types"
 end
