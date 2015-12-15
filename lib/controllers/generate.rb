@@ -3,8 +3,14 @@ module Evertils
     class Generate < Controller::Base
       attr_accessor :force, :start
 
+      # required user-created notebooks
+      NOTEBOOK_DAILY = :Daily
+      NOTEBOOK_WEEKLY = :Weekly
+      NOTEBOOK_MONTHLY = :Monthly
+      NOTEBOOK_DEPLOYMENT = :Deployments
+
       def pre_exec
-        @methods_require_internet.push(:daily, :weekly, :monthly, :deployment)
+        @methods_require_internet.push(:daily, :weekly, :monthly)
 
         OptionParser.new do |opt|
           opt.banner = "#{Evertils::PACKAGE_NAME} generate timeframe [...-flags]"
@@ -21,20 +27,6 @@ module Evertils
         super
       end
 
-      def deployment
-        if STDIN.tty?
-          Notify.error("This command relies on piped data to generate note data")
-        end
-
-        if !@force
-          if @model.note_exists(@start)
-            Notify.error("There's already a log for today!")
-          end
-        end
-
-        @model.create_deployment_note(@start)
-      end
-
       # generate daily notes
       def daily
         if !@force
@@ -43,7 +35,11 @@ module Evertils
           end
         end
 
-        @model.create_note
+        title = @format.date_templates[NOTEBOOK_DAILY]
+        body = @format.template_contents
+        parent_notebook = NOTEBOOK_DAILY
+
+        @model.create_note(title, body, parent_notebook)
       end
 
       # generate weekly notes
@@ -53,11 +49,14 @@ module Evertils
             Notify.error("There's already a log for this week!")
           end
 
-
           if !Date.today.monday?
             Notify.error("Sorry, you can only create new weekly logs on Mondays")
           end
         end
+
+        title = @format.date_templates[NOTEBOOK_WEEKLY]
+        body = @format.template_contents
+        parent_notebook = NOTEBOOK_WEEKLY
 
         @model.create_note
       end
@@ -69,6 +68,10 @@ module Evertils
             Notify.error("There's already a log for this month!")
           end
         end
+
+        title = @format.date_templates[NOTEBOOK_MONTHLY]
+        body = @format.template_contents
+        parent_notebook = NOTEBOOK_MONTHLY
 
         @model.create_note
       end

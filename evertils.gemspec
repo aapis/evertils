@@ -17,4 +17,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'notifaction'
   s.add_runtime_dependency 'mime-types'
   s.add_runtime_dependency 'evertils-common'
+
+  s.add_development_dependency "bundler", "~> 1.10"
+  s.add_development_dependency "rake", "~> 10.0"
 end
