@@ -58,7 +58,7 @@ module Evertils
         body = @format.template_contents
         parent_notebook = NOTEBOOK_WEEKLY
 
-        @model.create_note
+        @model.create_note(title, body, parent_notebook)
       end
 
       # generate monthly notes
@@ -73,7 +73,7 @@ module Evertils
         body = @format.template_contents
         parent_notebook = NOTEBOOK_MONTHLY
 
-        @model.create_note
+        @model.create_note(title, body, parent_notebook)
       end
     end
   end
