@@ -1,3 +1,3 @@
 module Evertils
-  VERSION = '0.2.7.2'
+  VERSION = '0.2.8'
 end
