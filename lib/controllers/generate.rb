@@ -38,12 +38,6 @@ module Evertils
         body = @format.template_contents
         parent_notebook = NOTEBOOK_DAILY
 
-        if !@force
-          if @model.note_exists(title)
-            Notify.error("There's already a log for today!")
-          end
-        end
-
         @model.create_note(title, body, parent_notebook)
       end
 
@@ -54,10 +48,6 @@ module Evertils
         parent_notebook = NOTEBOOK_WEEKLY
 
         if !@force
-          if @model.note_exists(title)
-            Notify.error("There's already a log for this week!")
-          end
-
           if !Date.today.monday?
             Notify.error("Sorry, you can only create new weekly logs on Mondays")
           end
@@ -71,12 +61,6 @@ module Evertils
         title = @format.date_templates[NOTEBOOK_MONTHLY]
         body = @format.template_contents
         parent_notebook = NOTEBOOK_MONTHLY
-
-        if !@force
-          if @model.note_exists(title)
-            Notify.error("There's already a log for this month!")
-          end
-        end
 
         @model.create_note(title, body, parent_notebook)
       end
