@@ -39,8 +39,7 @@ module Evertils
           :Daily => "Daily Log [#{arg_date.strftime('%B %-d')} - #{dow}]",
           :Weekly => "Weekly Log [#{arg_date.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
           :Monthly => "Monthly Log [#{arg_date.strftime('%B %Y')}]",
-          :Deployments => "#{arg_date.strftime('%B %-d')} - #{dow}",
-          :'Monthly Task Summaries' => "CLIENT_NAME #{arg_date.strftime('%m-%Y')} - #{dow}"
+          :Deployments => "#{arg_date.strftime('%B %-d')} - #{dow}"
         }
       end
 
