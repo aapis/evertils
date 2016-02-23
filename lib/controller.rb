@@ -8,7 +8,7 @@ module Evertils
       # Perform pre-run tasks
       def pre_exec
         # interface with the Evernote API so we can use it later
-        @model = Evertils::Common::Evernote.new
+        @model = Evertils::Common::Query::Simple.new
 
         @format = Evertils::Helper.load('formatting')
 
