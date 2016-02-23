@@ -1,16 +1,17 @@
 module Evertils
   module Controller
     class Generate < Controller::Base
-      attr_accessor :force, :start
+      attr_accessor :force, :start, :name
 
       # required user-created notebooks
       NOTEBOOK_DAILY = :Daily
       NOTEBOOK_WEEKLY = :Weekly
       NOTEBOOK_MONTHLY = :Monthly
       NOTEBOOK_DEPLOYMENT = :Deployments
+      NOTEBOOK_MTS = :'Monthly Task Summaries'
 
       def pre_exec
-        @methods_require_internet.push(:daily, :weekly, :monthly)
+        @methods_require_internet.push(:daily, :weekly, :monthly, :mts)
 
         OptionParser.new do |opt|
           opt.banner = "#{Evertils::PACKAGE_NAME} generate timeframe [...-flags]"
@@ -21,6 +22,10 @@ module Evertils
 
           opt.on("-s", "--start=START", "Specify a date for the note") do |date|
             @start = DateTime.parse(date)
+          end
+
+          opt.on("-n", "--name=NAME", "A name to pass to the script (not all command support this flag)") do |name|
+            @name = name
           end
         end.parse!
 
@@ -33,12 +38,6 @@ module Evertils
         body = @format.template_contents
         parent_notebook = NOTEBOOK_DAILY
 
-        if !@force
-          if @model.note_exists(title)
-            Notify.error("There's already a log for today!")
-          end
-        end
-
         @model.create_note(title, body, parent_notebook)
       end
 
@@ -49,10 +48,6 @@ module Evertils
         parent_notebook = NOTEBOOK_WEEKLY
 
         if !@force
-          if @model.note_exists(title)
-            Notify.error("There's already a log for this week!")
-          end
-
           if !Date.today.monday?
             Notify.error("Sorry, you can only create new weekly logs on Mondays")
           end
@@ -67,13 +62,29 @@ module Evertils
         body = @format.template_contents
         parent_notebook = NOTEBOOK_MONTHLY
 
-        if !@force
-          if @model.note_exists(title)
-            Notify.error("There's already a log for this month!")
-          end
-        end
-
         @model.create_note(title, body, parent_notebook)
+      end
+
+      # generate monthly task summary templates
+      def mts
+        Notify.error("Name argument is required") if @name.nil?
+
+        title = "#{@name} #{DateTime.now.strftime('%m-%Y')}"
+        body = @format.template_contents
+        parent_notebook = NOTEBOOK_MTS
+
+        # create the note from template
+        mts_note = @model.create_note(title, body, parent_notebook)
+        
+        # tag it
+        # TODO: maybe move this out of controller?
+        tag_manager = Evertils::Common::Manager::Tag.new
+        month_tag = tag_manager.find("month-#{DateTime.now.strftime('%-m')}")
+        mts_note.tag(month_tag.prop(:name))
+
+        # TODO: commented out until support for multiple tags is added
+        # client_tag = tag_manager.find_or_create(@name)
+        # mts_note.tag(client_tag.prop(:name))
       end
     end
   end
