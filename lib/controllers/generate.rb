@@ -8,6 +8,7 @@ module Evertils
       NOTEBOOK_WEEKLY = :Weekly
       NOTEBOOK_MONTHLY = :Monthly
       NOTEBOOK_DEPLOYMENT = :Deployments
+      NOTEBOOK_MTS = :'Monthly Task Summaries'
 
       def pre_exec
         @methods_require_internet.push(:daily, :weekly, :monthly)
@@ -72,6 +73,15 @@ module Evertils
             Notify.error("There's already a log for this month!")
           end
         end
+
+        @model.create_note(title, body, parent_notebook)
+      end
+
+      # generate monthly notes
+      def mts
+        title = @format.date_templates[NOTEBOOK_MTS]
+        body = @format.template_contents
+        parent_notebook = NOTEBOOK_MTS
 
         @model.create_note(title, body, parent_notebook)
       end
