@@ -25,9 +25,9 @@ module Evertils
       def template_contents
         if Date.today.friday? && command == :Daily
           # Friday uses a slightly different template
-          IO.readlines("#{Evertils::TEMPLATE_DIR}#{command.downcase}-friday.enml").join("").gsub!("\n", '')
+          IO.readlines("#{Evertils::TEMPLATE_DIR}#{command.downcase}-friday.enml", :encoding => 'UTF-8').join("").gsub!("\n", '')
         else
-          IO.readlines("#{Evertils::TEMPLATE_DIR}#{command.downcase}.enml").join("").gsub!("\n", '')
+          IO.readlines("#{Evertils::TEMPLATE_DIR}#{command.downcase}.enml", :encoding => 'UTF-8').join("").gsub!("\n", '')
         end
       end
 
