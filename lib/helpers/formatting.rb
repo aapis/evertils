@@ -22,15 +22,21 @@ module Evertils
         end
       end
 
+      # Template file for note body
       def template_contents
-        if Date.today.friday? && command == :Daily
-          # Friday uses a slightly different template
-          IO.readlines("#{Evertils::TEMPLATE_DIR}#{command.downcase}-friday.enml", :encoding => 'UTF-8').join("").gsub!("\n", '')
+        case command == :Daily
+        when Date.today.friday?
+          template = "#{Evertils::TEMPLATE_DIR}#{command.downcase}-friday.enml"
+        when Date.today.thursday?
+          template = "#{Evertils::TEMPLATE_DIR}#{command.downcase}-thursday.enml"
         else
-          IO.readlines("#{Evertils::TEMPLATE_DIR}#{command.downcase}.enml", :encoding => 'UTF-8').join("").gsub!("\n", '')
+          template = "#{Evertils::TEMPLATE_DIR}#{command.downcase}.enml"
         end
+
+        IO.readlines(template, :encoding => 'UTF-8').join("").gsub!("\n", '')
       end
 
+      # Template string for note title
       def date_templates(arg_date = DateTime.now)
         dow = day_of_week(arg_date.strftime('%a'))
         end_of_week = arg_date + 4 # days
