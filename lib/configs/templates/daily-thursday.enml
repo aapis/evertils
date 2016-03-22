@@ -1,0 +1,15 @@
+<div><span style="font-size: 18px;">Logs</span></div>
+<ul>
+<li>...</li>
+</ul>
+<br />
+<div><span style="font-size: 18px;">Tasks completed</span></div>
+<ul>
+<li>...</li>
+</ul>
+<br />
+<div><span style="font-size: 18px;">EOD</span></div>
+<ul>
+<li><en-todo checked="false"/>Weekly timecard is up to date</li>
+<li><en-todo checked="false"/>Tasks are filled out</li>
+</ul>
