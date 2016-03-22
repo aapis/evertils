@@ -53,7 +53,11 @@ module Evertils
           end
         end
 
-        @model.create_note(title, body, parent_notebook)
+        note = @model.create_note(title, body, parent_notebook)
+
+        tag_manager = Evertils::Common::Manager::Tag.new
+        week_tag = tag_manager.find("week-#{DateTime.now.strftime('%-m')}")
+        note.tag(week_tag.prop(:name))
       end
 
       # generate monthly notes
@@ -62,7 +66,11 @@ module Evertils
         body = @format.template_contents
         parent_notebook = NOTEBOOK_MONTHLY
 
-        @model.create_note(title, body, parent_notebook)
+        note = @model.create_note(title, body, parent_notebook)
+
+        tag_manager = Evertils::Common::Manager::Tag.new
+        month_tag = tag_manager.find("month-#{DateTime.now.strftime('%-m')}")
+        note.tag(month_tag.prop(:name))
       end
 
       # generate monthly task summary templates
