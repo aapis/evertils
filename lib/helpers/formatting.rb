@@ -24,13 +24,23 @@ module Evertils
 
       # Template file for note body
       def template_contents
-        case command == :Daily
-        when Date.today.friday?
-          template = "#{Evertils::TEMPLATE_DIR}#{command.downcase}-friday.enml"
-        when Date.today.thursday?
-          template = "#{Evertils::TEMPLATE_DIR}#{command.downcase}-thursday.enml"
-        else
-          template = "#{Evertils::TEMPLATE_DIR}#{command.downcase}.enml"
+        tmpls = {
+          :monday => "#{Evertils::TEMPLATE_DIR}#{command.downcase}-monday.enml",
+          :tuesday => "#{Evertils::TEMPLATE_DIR}#{command.downcase}-tuesday.enml",
+          :wednesday => "#{Evertils::TEMPLATE_DIR}#{command.downcase}-wednesday.enml",
+          :thursday => "#{Evertils::TEMPLATE_DIR}#{command.downcase}-thursday.enml",
+          :friday => "#{Evertils::TEMPLATE_DIR}#{command.downcase}-friday.enml",
+          :default => "#{Evertils::TEMPLATE_DIR}#{command.downcase}.enml"
+        }
+
+        template = tmpls[:default]
+        
+        if command == :Daily
+          if Date.today.friday? && File.exist?(tmpls[:friday])
+            template = tmpls[:friday]
+          elsif Date.today.thursday? && File.exist?(tmpls[:thursday])
+            template = tmpls[:thursday]
+          end
         end
 
         IO.readlines(template, :encoding => 'UTF-8').join("").gsub!("\n", '')
