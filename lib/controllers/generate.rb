@@ -56,7 +56,7 @@ module Evertils
         note = @model.create_note(title, body, parent_notebook)
 
         tag_manager = Evertils::Common::Manager::Tag.new
-        week_tag = tag_manager.find("week-#{DateTime.now.strftime('%-m')}")
+        week_tag = tag_manager.find("week-#{DateTime.now.cweek + 1}")
         note.tag(week_tag.prop(:name))
       end
 
