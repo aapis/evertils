@@ -56,7 +56,7 @@ module Evertils
           end
         end
       rescue RuntimeError => e
-        Notify.error("#{e.to_s}")
+        Notify.error("#{e.to_s}", {})
       rescue NameError => e
         Notify.error("#{e.to_s}\n#{e.backtrace.join("\n")}", {})
       end

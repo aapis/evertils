@@ -33,8 +33,7 @@ module Evertils
           :default => "#{Evertils::TEMPLATE_DIR}#{command.downcase}.enml"
         }
 
-        template = tmpls[:default]
-        template = local_template_override?
+        template = local_template_override?(tmpls[:default])
 
         if command == :Daily
           if Date.today.friday? && File.exist?(tmpls[:friday])
@@ -69,9 +68,14 @@ module Evertils
 
       #
       # @since 0.3.1
-      def local_template_override?
+      def local_template_override?(default)
         tmpl = $config.custom_templates[command]
-        tmpl.gsub!(/~/, Dir.home) if tmpl.include?('~')
+
+        if tmpl.nil?
+          default
+        else
+          tmpl.gsub!(/~/, Dir.home) if tmpl.include?('~')
+        end
       end
 
     end
