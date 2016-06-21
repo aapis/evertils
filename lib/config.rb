@@ -11,6 +11,8 @@ module Evertils
   DEBUG = false
 
   class Cfg
+    attr_accessor :custom_sections, :custom_templates
+
     def bootstrap!
       begin
         # configure Notifaction gem
@@ -20,6 +22,8 @@ module Evertils
       rescue => e
         Notify.error("#{e.to_s}\n#{e.backtrace.join("\n")}")
       end
+
+      load_user_customizations
     end
 
     def constant?(name)
@@ -37,5 +41,32 @@ module Evertils
       end
       hash
     end
+
+    #
+    # @since 0.3.1
+    def load_user_customizations
+      conf = recursive_symbolize_keys(YAML::load_file(Dir.home + '/.evertils/config.yml'))
+
+      @custom_sections = conf[:sections] if conf[:sections]
+      @custom_templates = conf[:templates] if conf[:templates]
+    end
+
+    #
+    # @since 0.3.1
+    def recursive_symbolize_keys(hash)
+      hash.inject({}){|result, (key, value)|
+        new_key = case key
+                  when String then key.to_sym
+                  else key
+                  end
+        new_value = case value
+                    when Hash then recursive_symbolize_keys(value)
+                    else value
+                    end
+        result[new_key] = new_value
+        result
+      }
+    end
+
   end
 end

@@ -101,6 +101,8 @@ module Evertils
 
       private
 
+      #
+      # @since 0.3.1
       def to_enml(hash)
         enml = Evertils::Helper::EvernoteENML::with_list(hash)
       end

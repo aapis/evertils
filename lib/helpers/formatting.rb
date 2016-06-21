@@ -34,7 +34,8 @@ module Evertils
         }
 
         template = tmpls[:default]
-        
+        template = local_template_override?
+
         if command == :Daily
           if Date.today.friday? && File.exist?(tmpls[:friday])
             template = tmpls[:friday]
@@ -50,7 +51,7 @@ module Evertils
       def date_templates(arg_date = DateTime.now)
         dow = day_of_week(arg_date.strftime('%a'))
         end_of_week = arg_date + 4 # days
-        
+
         {
           :Daily => "Daily Log [#{arg_date.strftime('%B %-d')} - #{dow}]",
           :Weekly => "Weekly Log [#{arg_date.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
@@ -63,6 +64,16 @@ module Evertils
       def command
         $request.command.capitalize
       end
+
+      private
+
+      #
+      # @since 0.3.1
+      def local_template_override?
+        tmpl = $config.custom_templates[command]
+        tmpl.gsub!(/~/, Dir.home) if tmpl.include?('~')
+      end
+
     end
   end
 end
