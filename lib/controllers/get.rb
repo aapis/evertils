@@ -46,7 +46,7 @@ module Evertils
       end
 
       def info
-        @model.info.each_pair do |key, value|
+        $config.options.each_pair do |key, value|
           Notify.spit("#{key}: #{value}")
         end
       end
