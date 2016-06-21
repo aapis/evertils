@@ -38,10 +38,10 @@ module Evertils
               puts note.title
             end
           else
-            Notify.error("Could not pull data for notebook #{$request.custom[0]}")
+            Notify.error("Could not pull data for notebook #{$request.custom[0]}", {})
           end
         else
-          Notify.error("Notebook name is a required argument, i.e.\n#{Evertils::PACKAGE_NAME} get notebook agendas")
+          Notify.error("Notebook name is a required argument, i.e.\n#{Evertils::PACKAGE_NAME} get notebook agendas", {})
         end
       end
 

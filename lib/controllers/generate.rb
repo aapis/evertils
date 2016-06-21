@@ -24,7 +24,7 @@ module Evertils
             @start = DateTime.parse(date)
           end
 
-          opt.on("-n", "--name=NAME", "A name to pass to the script (not all command support this flag)") do |name|
+          opt.on("-n", "--name=NAME", "A name to pass to the script (not all commands support this flag)") do |name|
             @name = name
           end
         end.parse!
@@ -36,6 +36,7 @@ module Evertils
       def daily
         title = @format.date_templates[NOTEBOOK_DAILY]
         body = @format.template_contents
+        body += to_enml($config.custom_sections[NOTEBOOK_DAILY]) if $config.custom_sections[NOTEBOOK_DAILY]
         parent_notebook = NOTEBOOK_DAILY
 
         @model.create_note(title, body, parent_notebook)
@@ -45,6 +46,7 @@ module Evertils
       def weekly
         title = @format.date_templates[NOTEBOOK_WEEKLY]
         body = @format.template_contents
+        body += to_enml($config.custom_sections[NOTEBOOK_WEEKLY]) if $config.custom_sections[NOTEBOOK_WEEKLY]
         parent_notebook = NOTEBOOK_WEEKLY
 
         if !@force
@@ -64,6 +66,7 @@ module Evertils
       def monthly
         title = @format.date_templates[NOTEBOOK_MONTHLY]
         body = @format.template_contents
+        body += to_enml($config.custom_sections[NOTEBOOK_MONTHLY]) if $config.custom_sections[NOTEBOOK_MONTHLY]
         parent_notebook = NOTEBOOK_MONTHLY
 
         note = @model.create_note(title, body, parent_notebook)
@@ -79,11 +82,12 @@ module Evertils
 
         title = "#{@name} #{DateTime.now.strftime('%m-%Y')}"
         body = @format.template_contents
+        body += to_enml($config.custom_sections[NOTEBOOK_MTS]) if $config.custom_sections[NOTEBOOK_MTS]
         parent_notebook = NOTEBOOK_MTS
 
         # create the note from template
         mts_note = @model.create_note(title, body, parent_notebook)
-        
+
         # tag it
         # TODO: maybe move this out of controller?
         tag_manager = Evertils::Common::Manager::Tag.new
@@ -94,6 +98,13 @@ module Evertils
         # client_tag = tag_manager.find_or_create(@name)
         # mts_note.tag(client_tag.prop(:name))
       end
+
+      private
+
+      def to_enml(hash)
+        enml = Evertils::Helper::EvernoteENML::with_list(hash)
+      end
+
     end
   end
 end
