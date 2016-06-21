@@ -69,6 +69,8 @@ module Evertils
       #
       # @since 0.3.1
       def local_template_override?(default)
+        return default if $config.custom_templates.nil?
+
         tmpl = $config.custom_templates[command]
 
         if tmpl.nil?
