@@ -7,7 +7,7 @@ module Evertils
       begin
         if !$request.controller.nil?
           controller = Evertils::Controller.const_get $request.controller.capitalize rescue false
-          
+
           if !controller
             raise "Controller not found: #{$request.controller.capitalize}"
           end
@@ -28,7 +28,7 @@ module Evertils
             if context.model.nil?
               context.model = Model::Base.new
             end
-            
+
             # If the method exists, set model data accordingly
             # If it doesn't exist then just fail silently, the model may not
             # be required by some controllers
@@ -44,7 +44,7 @@ module Evertils
 
             # Run the controller
             # Call a default action for controllers which do not require a third
-            # argument, i.e. evertils status 
+            # argument, i.e. evertils status
             if context.respond_to? :default
               context.default
             else
@@ -58,7 +58,7 @@ module Evertils
       rescue RuntimeError => e
         Notify.error("#{e.to_s}")
       rescue NameError => e
-        Notify.error("#{e.to_s}\n#{e.backtrace.join("\n")}")
+        Notify.error("#{e.to_s}\n#{e.backtrace.join("\n")}", {})
       end
     end
 
