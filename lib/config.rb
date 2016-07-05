@@ -11,7 +11,7 @@ module Evertils
   DEBUG = false
 
   class Cfg
-    attr_accessor :custom_sections, :custom_templates
+    attr_accessor :custom_sections, :custom_templates, :custom_path
 
     def bootstrap!
       begin
@@ -45,8 +45,10 @@ module Evertils
     #
     # @since 0.3.1
     def load_user_customizations
-      conf = recursive_symbolize_keys(YAML::load_file(Dir.home + '/.evertils/config.yml'))
+      conf_path = Dir.home + '/.evertils/'
+      conf = recursive_symbolize_keys(YAML::load_file(conf_path + 'config.yml'))
 
+      @custom_path = conf_path
       @custom_sections = conf[:sections] if conf[:sections]
       @custom_templates = conf[:templates] if conf[:templates]
     end

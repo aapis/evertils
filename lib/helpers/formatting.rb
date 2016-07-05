@@ -71,13 +71,20 @@ module Evertils
       def local_template_override?(default)
         return default if $config.custom_templates.nil?
 
+        rval = default
         tmpl = $config.custom_templates[command]
 
-        if tmpl.nil?
-          default
-        else
-          tmpl.gsub!(/~/, Dir.home) if tmpl.include?('~')
+        if !tmpl.nil?
+          rval = $config.custom_path
+
+          if tmpl.include?('~')
+            rval += tmpl.gsub!(/~/, Dir.home)
+          else
+            rval += tmpl
+          end
         end
+
+        rval
       end
 
     end
