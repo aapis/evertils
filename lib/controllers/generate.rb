@@ -51,7 +51,7 @@ module Evertils
 
         if !@force
           if !Date.today.monday?
-            Notify.error("Sorry, you can only create new weekly logs on Mondays")
+            Notify.error("Sorry, you can only create new weekly logs on Mondays", {})
           end
         end
 
@@ -78,7 +78,7 @@ module Evertils
 
       # generate monthly task summary templates
       def mts
-        Notify.error("Name argument is required") if @name.nil?
+        Notify.error("Name argument is required", {}) if @name.nil?
 
         title = "#{@name} #{DateTime.now.strftime('%m-%Y')}"
         body = @format.template_contents
