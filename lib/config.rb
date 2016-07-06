@@ -14,15 +14,6 @@ module Evertils
     attr_accessor :custom_sections, :custom_templates, :custom_path
 
     def bootstrap!
-      begin
-        # configure Notifaction gem
-        Notify.configure do |c|
-          c.plugins = []
-        end
-      rescue => e
-        Notify.error("#{e.to_s}\n#{e.backtrace.join("\n")}")
-      end
-
       load_user_customizations
     end
 
