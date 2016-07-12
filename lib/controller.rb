@@ -6,7 +6,7 @@ module Evertils
       # Perform pre-run tasks
       def pre_exec
         # interface with the provider API so we can use it later
-        provider = data_provider()
+        provider = data_provider
 
         @model = provider.model #Evertils::Common::Query::Simple.new
 

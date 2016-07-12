@@ -1,7 +1,7 @@
 module Evertils
   class Router
     def route
-      pre_exec()
+      pre_exec
 
       # Create object context and pass it the required command line arguments
       begin
