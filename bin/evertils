@@ -18,6 +18,7 @@ require 'yaml'
 
 # include required files
 require_relative "../lib/kernel.rb"
+require_relative "../lib/provider.rb"
 require_relative "../lib/version.rb"
 require_relative "../lib/helpers/time.rb"
 require_relative "../lib/helpers/results.rb"

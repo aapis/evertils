@@ -1,6 +1,6 @@
 module Evertils
   PACKAGE_NAME = "evertils"
-  INSTALLED_DIR = Gem::Specification.find_by_name(Evertils::PACKAGE_NAME).gem_dir
+  INSTALLED_DIR = '/Users/prieber/Personal/evertils/' #Gem::Specification.find_by_name(Evertils::PACKAGE_NAME).gem_dir
   LOG_DIR = INSTALLED_DIR + "/logs"
   DEFAULT_LOG = Evertils::Log.new # no args means default log
   HELPER_DIR = INSTALLED_DIR + "/lib/helpers/"
@@ -11,7 +11,7 @@ module Evertils
   DEBUG = false
 
   class Cfg
-    attr_accessor :custom_sections, :custom_templates, :custom_path
+    attr_accessor :custom_sections, :custom_templates, :custom_path, :provider
 
     def bootstrap!
       load_user_customizations
@@ -42,6 +42,7 @@ module Evertils
       @custom_path = conf_path
       @custom_sections = conf[:sections] if conf[:sections]
       @custom_templates = conf[:templates] if conf[:templates]
+      @provider = conf[:provider] if conf[:provider]
     end
 
     #

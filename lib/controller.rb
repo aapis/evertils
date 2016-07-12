@@ -3,22 +3,17 @@ module Evertils
     class Base
       attr_accessor :model, :helper, :methods_require_internet, :default_method
 
-      @@options = Hash.new
-      
       # Perform pre-run tasks
       def pre_exec
-        # interface with the Evernote API so we can use it later
-        @model = Evertils::Common::Query::Simple.new
+        # interface with the provider API so we can use it later
+        provider = data_provider()
+
+        @model = provider.model #Evertils::Common::Query::Simple.new
 
         @format = Evertils::Helper.load('formatting')
 
         OptionParser.new do |opt|
           opt.banner = "#{Evertils::PACKAGE_NAME} controller command [...-flags]"
-
-          opt.on("-v", "--verbose", "Verbose output") do |v|
-            # short output
-            @@options[:verbose] = v
-          end
 
           opt.on("-V", "--version", "Show app version") do |v|
             # short output
@@ -34,7 +29,8 @@ module Evertils
 
       # Perform post-run cleanup tasks, such as deleting old logs
       def post_exec(total_errors = 0, total_warnings = 0, total_files = 0)
-        
+        @model = nil
+        @helper = nil
       end
 
       # Determines if the command can execute
@@ -84,12 +80,12 @@ module Evertils
       # autoload and instantiate required libraries, models and helpers
       def auto_load_required(modules = [])
         loaded = {:controller => {}, :helper => {}, :model => {}}
-        
+
         begin
           modules.each do |mod|
             if File.exists? "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
               require "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
-              
+
               loaded[:controller][mod] = Evertils::Controller.const_get(mod.capitalize).new
             else
               raise StandardError, "Controller not found: #{mod}"
@@ -118,6 +114,27 @@ module Evertils
         rescue StandardError => e
           Notify.error(e.message)
         end
+      end
+
+      #
+      # @since 0.4.0
+      def data_provider
+        provider = nil
+
+        case $config.provider
+        when "Evernote"
+          require_relative "./providers/evernote.rb"
+
+          provider = Evertils::Provider::Evernote.new
+        when "Onenote"
+          require_relative "./providers/onenote.rb"
+
+          provider = Evertils::Provider::Onenote.new
+        else
+          Notify.error("Provider not found: #{$config.provider}")
+        end
+
+        provider
       end
     end
   end
