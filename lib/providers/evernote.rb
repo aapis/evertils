@@ -6,10 +6,6 @@ module Evertils
       def model
         Evertils::Common::Query::Simple.new
       end
-
-      def authorize
-
-      end
     end
   end
 end
