@@ -51,16 +51,6 @@ module Evertils
       if File.exists? "#{Evertils::CONTROLLER_DIR}#{$request.controller}.rb"
         require "#{Evertils::CONTROLLER_DIR}#{$request.controller}.rb"
       end
-
-      # include helpers
-      if File.exists? "#{Evertils::HELPER_DIR}#{$request.controller}.rb"
-        require "#{Evertils::HELPER_DIR}#{$request.controller}.rb"
-      end
-
-      # include models
-      if File.exists? "#{Evertils::MODEL_DIR}#{$request.controller}.rb"
-        require "#{Evertils::MODEL_DIR}#{$request.controller}.rb"
-      end
     end
   end
 end
