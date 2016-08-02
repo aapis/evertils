@@ -8,7 +8,7 @@ module Evertils
         @methods_require_internet.push(:daily, :weekly, :monthly)
 
         @title = "Evertils - Custom Note"
-        
+
         # command flag parser
         OptionParser.new do |opt|
           opt.banner = "#{Evertils::PACKAGE_NAME} new note [...-flags]"
@@ -54,7 +54,7 @@ module Evertils
           message = @body
         end
 
-        note = @model.create_note(@title, message, @notebook, @file, false, @created_on)
+        note = @model.create_note(title: @title, body: message, parent_notebook: @notebook, files: @file, shareable: false, created_on: @created_on)
 
         if note[:note]
           Notify.success("Note created")
@@ -74,8 +74,8 @@ module Evertils
 
         # Prefix title to indicate it's shared status
         @title = "[SHARED] #{@title}"
-        
-        note = @model.create_note(@title, message, @notebook, @file, true, @created_on)
+
+        note = @model.create_note(title: @title, body: message, parent_notebook: @notebook, files: @file, shareable: true, created_on: @created_on)
 
         if note[:share_url]
           Notify.success("Note created and shared:\n#{note[:share_url]}")

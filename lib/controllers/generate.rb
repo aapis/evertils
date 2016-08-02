@@ -39,7 +39,7 @@ module Evertils
         body += to_enml($config.custom_sections[NOTEBOOK_DAILY]) if $config.custom_sections[NOTEBOOK_DAILY]
         parent_notebook = NOTEBOOK_DAILY
 
-        @model.create_note(title, body, parent_notebook)
+        @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
       end
 
       # generate weekly notes
@@ -55,7 +55,7 @@ module Evertils
           end
         end
 
-        note = @model.create_note(title, body, parent_notebook)
+        note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
 
         tag_manager = Evertils::Common::Manager::Tag.new
         week_tag = tag_manager.find("week-#{DateTime.now.cweek + 1}")
@@ -69,7 +69,7 @@ module Evertils
         body += to_enml($config.custom_sections[NOTEBOOK_MONTHLY]) if $config.custom_sections[NOTEBOOK_MONTHLY]
         parent_notebook = NOTEBOOK_MONTHLY
 
-        note = @model.create_note(title, body, parent_notebook)
+        note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
 
         tag_manager = Evertils::Common::Manager::Tag.new
         month_tag = tag_manager.find("month-#{DateTime.now.strftime('%-m')}")
@@ -86,7 +86,7 @@ module Evertils
         parent_notebook = NOTEBOOK_MTS
 
         # create the note from template
-        mts_note = @model.create_note(title, body, parent_notebook)
+        mts_note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
 
         # tag it
         # TODO: maybe move this out of controller?
