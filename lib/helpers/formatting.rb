@@ -35,14 +35,6 @@ module Evertils
 
         template = local_template_override?(tmpls[:default])
 
-        if command == :Daily
-          if Date.today.friday? && File.exist?(tmpls[:friday])
-            template = tmpls[:friday]
-          elsif Date.today.thursday? && File.exist?(tmpls[:thursday])
-            template = tmpls[:thursday]
-          end
-        end
-
         IO.readlines(template, :encoding => 'UTF-8').join("").gsub!("\n", '')
       end
 
