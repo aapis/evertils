@@ -24,7 +24,7 @@ module Evertils
 
       # Template file for note body
       def template_contents
-        IO.readlines(load_template, :encoding => 'UTF-8').join("").gsub!("\n", '')
+        IO.readlines(load_template, :encoding => 'UTF-8').join("").delete!("\n")
       end
 
       # Template string for note title
@@ -50,7 +50,9 @@ module Evertils
 
       #
       # @since 0.3.1
-      def load_template(default = "#{Evertils::TEMPLATE_DIR}#{command.downcase}.enml")
+      def load_template
+        default = "#{Evertils::TEMPLATE_DIR}#{command.downcase}.enml"
+
         return default if $config.custom_templates.nil?
 
         rval = default
