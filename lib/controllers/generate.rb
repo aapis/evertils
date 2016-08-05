@@ -110,6 +110,14 @@ module Evertils
         @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
       end
 
+      # creates the notes required to start the day
+      #  - priority queue
+      #  - daily
+      def morning
+        pq
+        daily
+      end
+
       private
 
       #
@@ -117,7 +125,6 @@ module Evertils
       def to_enml(hash)
         Evertils::Helper::EvernoteENML.with_list(hash)
       end
-
     end
   end
 end
