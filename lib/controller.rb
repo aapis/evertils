@@ -4,7 +4,7 @@ module Evertils
       attr_accessor :model, :helper, :methods_require_internet, :default_method
 
       @@options = Hash.new
-      
+
       # Perform pre-run tasks
       def pre_exec
         # interface with the Evernote API so we can use it later
@@ -34,7 +34,6 @@ module Evertils
 
       # Perform post-run cleanup tasks, such as deleting old logs
       def post_exec(total_errors = 0, total_warnings = 0, total_files = 0)
-        
       end
 
       # Determines if the command can execute
@@ -54,7 +53,7 @@ module Evertils
 
         @default_method = name || user_defined_methods.first || :sample
 
-        if !respond_to? default_method.to_sym, true
+        unless respond_to? @default_method.to_sym, true
           Notify.error("Command not found: #{name}")
         end
 
@@ -84,12 +83,12 @@ module Evertils
       # autoload and instantiate required libraries, models and helpers
       def auto_load_required(modules = [])
         loaded = {:controller => {}, :helper => {}, :model => {}}
-        
+
         begin
           modules.each do |mod|
             if File.exists? "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
               require "#{Evertils::INSTALLED_DIR}/lib/controllers/#{mod}.rb"
-              
+
               loaded[:controller][mod] = Evertils::Controller.const_get(mod.capitalize).new
             else
               raise StandardError, "Controller not found: #{mod}"

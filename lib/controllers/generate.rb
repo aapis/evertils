@@ -9,6 +9,7 @@ module Evertils
       NOTEBOOK_MONTHLY = :Monthly
       NOTEBOOK_DEPLOYMENT = :Deployments
       NOTEBOOK_MTS = :'Monthly Task Summaries'
+      NOTEBOOK_PRIORITY_QUEUE = :'Priority Queue'
 
       def pre_exec
         @methods_require_internet.push(:daily, :weekly, :monthly, :mts)
@@ -36,7 +37,7 @@ module Evertils
       def daily
         title = @format.date_templates[NOTEBOOK_DAILY]
         body = @format.template_contents
-        body += to_enml($config.custom_sections[NOTEBOOK_DAILY]) if $config.custom_sections[NOTEBOOK_DAILY]
+        body += to_enml($config.custom_sections[NOTEBOOK_DAILY]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_DAILY
 
         @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
@@ -46,7 +47,7 @@ module Evertils
       def weekly
         title = @format.date_templates[NOTEBOOK_WEEKLY]
         body = @format.template_contents
-        body += to_enml($config.custom_sections[NOTEBOOK_WEEKLY]) if $config.custom_sections[NOTEBOOK_WEEKLY]
+        body += to_enml($config.custom_sections[NOTEBOOK_WEEKLY]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_WEEKLY
 
         if !@force
@@ -57,7 +58,7 @@ module Evertils
 
         note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
 
-        tag_manager = Evertils::Common::Manager::Tag.new
+        tag_manager = Evertils::Common::Manager::Tag.instance
         week_tag = tag_manager.find("week-#{DateTime.now.cweek + 1}")
         note.tag(week_tag.prop(:name))
       end
@@ -66,12 +67,12 @@ module Evertils
       def monthly
         title = @format.date_templates[NOTEBOOK_MONTHLY]
         body = @format.template_contents
-        body += to_enml($config.custom_sections[NOTEBOOK_MONTHLY]) if $config.custom_sections[NOTEBOOK_MONTHLY]
+        body += to_enml($config.custom_sections[NOTEBOOK_MONTHLY]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_MONTHLY
 
         note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
 
-        tag_manager = Evertils::Common::Manager::Tag.new
+        tag_manager = Evertils::Common::Manager::Tag.instance
         month_tag = tag_manager.find("month-#{DateTime.now.strftime('%-m')}")
         note.tag(month_tag.prop(:name))
       end
@@ -82,7 +83,7 @@ module Evertils
 
         title = "#{@name} #{DateTime.now.strftime('%m-%Y')}"
         body = @format.template_contents
-        body += to_enml($config.custom_sections[NOTEBOOK_MTS]) if $config.custom_sections[NOTEBOOK_MTS]
+        body += to_enml($config.custom_sections[NOTEBOOK_MTS]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_MTS
 
         # create the note from template
@@ -90,7 +91,7 @@ module Evertils
 
         # tag it
         # TODO: maybe move this out of controller?
-        tag_manager = Evertils::Common::Manager::Tag.new
+        tag_manager = Evertils::Common::Manager::Tag.instance
         month_tag = tag_manager.find("month-#{DateTime.now.strftime('%-m')}")
         mts_note.tag(month_tag.prop(:name))
 
@@ -99,12 +100,22 @@ module Evertils
         # mts_note.tag(client_tag.prop(:name))
       end
 
+      # generate priority queue notes
+      def pq
+        title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
+        body = @format.template_contents
+        body += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE]) unless $config.custom_sections.nil?
+        parent_notebook = NOTEBOOK_PRIORITY_QUEUE
+
+        note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
+      end
+
       private
 
       #
       # @since 0.3.1
       def to_enml(hash)
-        enml = Evertils::Helper::EvernoteENML::with_list(hash)
+        Evertils::Helper::EvernoteENML.with_list(hash)
       end
 
     end
