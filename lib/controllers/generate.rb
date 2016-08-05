@@ -9,6 +9,7 @@ module Evertils
       NOTEBOOK_MONTHLY = :Monthly
       NOTEBOOK_DEPLOYMENT = :Deployments
       NOTEBOOK_MTS = :'Monthly Task Summaries'
+      NOTEBOOK_PRIORITY_QUEUE = :'Priority Queue'
 
       def pre_exec
         @methods_require_internet.push(:daily, :weekly, :monthly, :mts)
@@ -97,6 +98,16 @@ module Evertils
         # TODO: commented out until support for multiple tags is added
         # client_tag = tag_manager.find_or_create(@name)
         # mts_note.tag(client_tag.prop(:name))
+      end
+
+      # generate priority queue notes
+      def pq
+        title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
+        body = @format.template_contents
+        body += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE]) unless $config.custom_sections.nil?
+        parent_notebook = NOTEBOOK_PRIORITY_QUEUE
+
+        note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
       end
 
       private
