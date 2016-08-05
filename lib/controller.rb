@@ -54,7 +54,7 @@ module Evertils
 
         @default_method = name || user_defined_methods.first || :sample
 
-        if !respond_to? @default_method.to_sym, true
+        unless respond_to? @default_method.to_sym, true
           Notify.error("Command not found: #{name}")
         end
 
