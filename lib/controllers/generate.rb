@@ -36,7 +36,7 @@ module Evertils
       def daily
         title = @format.date_templates[NOTEBOOK_DAILY]
         body = @format.template_contents
-        body += to_enml($config.custom_sections[NOTEBOOK_DAILY]) if $config.custom_sections[NOTEBOOK_DAILY]
+        body += to_enml($config.custom_sections[NOTEBOOK_DAILY]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_DAILY
 
         @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
@@ -46,7 +46,7 @@ module Evertils
       def weekly
         title = @format.date_templates[NOTEBOOK_WEEKLY]
         body = @format.template_contents
-        body += to_enml($config.custom_sections[NOTEBOOK_WEEKLY]) if $config.custom_sections[NOTEBOOK_WEEKLY]
+        body += to_enml($config.custom_sections[NOTEBOOK_WEEKLY]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_WEEKLY
 
         if !@force
@@ -66,7 +66,7 @@ module Evertils
       def monthly
         title = @format.date_templates[NOTEBOOK_MONTHLY]
         body = @format.template_contents
-        body += to_enml($config.custom_sections[NOTEBOOK_MONTHLY]) if $config.custom_sections[NOTEBOOK_MONTHLY]
+        body += to_enml($config.custom_sections[NOTEBOOK_MONTHLY]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_MONTHLY
 
         note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
@@ -82,7 +82,7 @@ module Evertils
 
         title = "#{@name} #{DateTime.now.strftime('%m-%Y')}"
         body = @format.template_contents
-        body += to_enml($config.custom_sections[NOTEBOOK_MTS]) if $config.custom_sections[NOTEBOOK_MTS]
+        body += to_enml($config.custom_sections[NOTEBOOK_MTS]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_MTS
 
         # create the note from template
@@ -104,7 +104,7 @@ module Evertils
       #
       # @since 0.3.1
       def to_enml(hash)
-        Evertils::Helper::EvernoteENML::with_list(hash)
+        Evertils::Helper::EvernoteENML.with_list(hash)
       end
 
     end
