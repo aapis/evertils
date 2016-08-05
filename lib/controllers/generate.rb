@@ -57,7 +57,7 @@ module Evertils
 
         note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
 
-        tag_manager = Evertils::Common::Manager::Tag.new
+        tag_manager = Evertils::Common::Manager::Tag.instance
         week_tag = tag_manager.find("week-#{DateTime.now.cweek + 1}")
         note.tag(week_tag.prop(:name))
       end
@@ -71,7 +71,7 @@ module Evertils
 
         note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
 
-        tag_manager = Evertils::Common::Manager::Tag.new
+        tag_manager = Evertils::Common::Manager::Tag.instance
         month_tag = tag_manager.find("month-#{DateTime.now.strftime('%-m')}")
         note.tag(month_tag.prop(:name))
       end
@@ -90,7 +90,7 @@ module Evertils
 
         # tag it
         # TODO: maybe move this out of controller?
-        tag_manager = Evertils::Common::Manager::Tag.new
+        tag_manager = Evertils::Common::Manager::Tag.instance
         month_tag = tag_manager.find("month-#{DateTime.now.strftime('%-m')}")
         mts_note.tag(month_tag.prop(:name))
 
@@ -104,7 +104,7 @@ module Evertils
       #
       # @since 0.3.1
       def to_enml(hash)
-        enml = Evertils::Helper::EvernoteENML::with_list(hash)
+        Evertils::Helper::EvernoteENML::with_list(hash)
       end
 
     end
