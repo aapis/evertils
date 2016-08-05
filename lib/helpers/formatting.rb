@@ -23,8 +23,16 @@ module Evertils
       end
 
       # Template file for note body
-      def template_contents
-        IO.readlines(load_template, :encoding => 'UTF-8').join("").delete!("\n")
+      def template_contents(type = nil)
+        begin
+          raise ArgumentError, "Type is required" if type.nil?
+
+          IO.readlines(load_template(type), :encoding => 'UTF-8').join("").delete!("\n")
+        rescue Errno::ENOENT => e
+          Notify.error(e.message)
+        rescue ArgumentError => e
+          Notify.error(e.message)
+        end
       end
 
       # Template string for note title
@@ -50,13 +58,21 @@ module Evertils
 
       #
       # @since 0.3.1
-      def load_template
-        default = "#{Evertils::TEMPLATE_DIR}#{command.downcase}.enml"
+      def load_template(type)
+        template_type_map = {
+          :Daily => "daily",
+          :Weekly => "weekly",
+          :Monthly => "monthly",
+          :"Monthly Task Summaries" => "mts",
+          :"Priority Queue" => "pq"
+        }
+
+        default = "#{Evertils::TEMPLATE_DIR}#{template_type_map[type]}.enml"
 
         return default if $config.custom_templates.nil?
 
         rval = default
-        tmpl = $config.custom_templates[command]
+        tmpl = $config.custom_templates[type]
 
         if !tmpl.nil?
           rval = $config.custom_path

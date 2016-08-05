@@ -36,7 +36,7 @@ module Evertils
       # generate daily notes
       def daily
         title = @format.date_templates[NOTEBOOK_DAILY]
-        body = @format.template_contents
+        body = @format.template_contents(NOTEBOOK_DAILY)
         body += to_enml($config.custom_sections[NOTEBOOK_DAILY]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_DAILY
 
@@ -46,7 +46,7 @@ module Evertils
       # generate weekly notes
       def weekly
         title = @format.date_templates[NOTEBOOK_WEEKLY]
-        body = @format.template_contents
+        body = @format.template_contents(NOTEBOOK_WEEKLY)
         body += to_enml($config.custom_sections[NOTEBOOK_WEEKLY]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_WEEKLY
 
@@ -66,7 +66,7 @@ module Evertils
       # generate monthly notes
       def monthly
         title = @format.date_templates[NOTEBOOK_MONTHLY]
-        body = @format.template_contents
+        body = @format.template_contents(NOTEBOOK_MONTHLY)
         body += to_enml($config.custom_sections[NOTEBOOK_MONTHLY]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_MONTHLY
 
@@ -82,7 +82,7 @@ module Evertils
         Notify.error("Name argument is required", {}) if @name.nil?
 
         title = "#{@name} #{DateTime.now.strftime('%m-%Y')}"
-        body = @format.template_contents
+        body = @format.template_contents(NOTEBOOK_MTS)
         body += to_enml($config.custom_sections[NOTEBOOK_MTS]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_MTS
 
@@ -103,11 +103,11 @@ module Evertils
       # generate priority queue notes
       def pq
         title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
-        body = @format.template_contents
+        body = @format.template_contents(NOTEBOOK_PRIORITY_QUEUE)
         body += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_PRIORITY_QUEUE
 
-        note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
+        @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
       end
 
       private
