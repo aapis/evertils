@@ -45,6 +45,7 @@ module Evertils
 
       # generate weekly notes
       def weekly
+        exit(1)
         title = @format.date_templates[NOTEBOOK_WEEKLY]
         body = @format.template_contents(NOTEBOOK_WEEKLY)
         body += to_enml($config.custom_sections[NOTEBOOK_WEEKLY]) unless $config.custom_sections.nil?
