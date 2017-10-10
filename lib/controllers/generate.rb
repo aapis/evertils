@@ -17,14 +17,6 @@ module Evertils
         OptionParser.new do |opt|
           opt.banner = "#{Evertils::PACKAGE_NAME} generate timeframe [...-flags]"
 
-          opt.on("-f", "--force", "Force execution") do
-            @force = true
-          end
-
-          opt.on("-s", "--start=START", "Specify a date for the note") do |date|
-            @start = DateTime.parse(date)
-          end
-
           opt.on("-n", "--name=NAME", "A name to pass to the script (not all commands support this flag)") do |name|
             @name = name
           end
