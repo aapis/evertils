@@ -107,9 +107,11 @@ module Evertils
       # creates the notes required to start the day
       #  - priority queue
       #  - daily
+      #  - weekly (if today is Monday)
       def morning
         pq
         daily
+        weekly if Date.today.tuesday?
       end
 
       private
