@@ -36,16 +36,18 @@ module Evertils
       end
 
       # Template string for note title
-      def date_templates(arg_date = DateTime.now)
-        dow = day_of_week(arg_date.strftime('%a'))
-        end_of_week = arg_date + 4 # days
+      def date_templates
+        current_date = Date.today
+        week_stub = day_of_week(current_date.strftime('%a'))
+        start_of_week = Date.commercial(current_date.year, current_date.cweek, 1)
+        end_of_week = Date.commercial(current_date.year, current_date.cweek, 5)
 
         {
-          :Daily => "Daily Log [#{arg_date.strftime('%B %-d')} - #{dow}]",
-          :Weekly => "Weekly Log [#{arg_date.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
-          :Monthly => "Monthly Log [#{arg_date.strftime('%B %Y')}]",
-          :Deployments => "#{arg_date.strftime('%B %-d')} - #{dow}",
-          :'Priority Queue' => "Queue For [#{arg_date.strftime('%B %-d')} - #{dow}]"
+          :Daily => "Daily Log [#{current_date.strftime('%B %-d')} - #{week_stub}]",
+          :Weekly => "Weekly Log [#{start_of_week.strftime('%B %-d')} - #{end_of_week.strftime('%B %-d')}]",
+          :Monthly => "Monthly Log [#{current_date.strftime('%B %Y')}]",
+          :Deployments => "#{current_date.strftime('%B %-d')} - #{week_stub}",
+          :'Priority Queue' => "Queue For [#{current_date.strftime('%B %-d')} - #{week_stub}]"
         }
       end
 
