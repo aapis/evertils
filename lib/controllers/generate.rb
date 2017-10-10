@@ -50,12 +50,6 @@ module Evertils
         body += to_enml($config.custom_sections[NOTEBOOK_WEEKLY]) unless $config.custom_sections.nil?
         parent_notebook = NOTEBOOK_WEEKLY
 
-        if !@force
-          if !Date.today.monday?
-            Notify.error("Sorry, you can only create new weekly logs on Mondays", {})
-          end
-        end
-
         note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
 
         tag_manager = Evertils::Common::Manager::Tag.instance
