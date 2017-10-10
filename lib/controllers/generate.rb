@@ -45,7 +45,6 @@ module Evertils
 
       # generate weekly notes
       def weekly
-        exit(1)
         title = @format.date_templates[NOTEBOOK_WEEKLY]
         body = @format.template_contents(NOTEBOOK_WEEKLY)
         body += to_enml($config.custom_sections[NOTEBOOK_WEEKLY]) unless $config.custom_sections.nil?
@@ -53,9 +52,12 @@ module Evertils
 
         note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
 
-        tag_manager = Evertils::Common::Manager::Tag.instance
-        week_tag = tag_manager.find("week-#{DateTime.now.cweek + 1}")
-        note.tag(week_tag.prop(:name))
+        # BUG: inability to tag notes lies somewhere in evertils-common,
+        # specifically in how note.tag works
+        # As this is non-functional, lets not run it - commented out for now
+        # tag_manager = Evertils::Common::Manager::Tag.instance
+        # week_tag = tag_manager.find_or_create("week-#{Date.today.cweek}")
+        # note.tag(week_tag.prop(:name))
       end
 
       # generate monthly notes
@@ -67,9 +69,12 @@ module Evertils
 
         note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
 
-        tag_manager = Evertils::Common::Manager::Tag.instance
-        month_tag = tag_manager.find("month-#{DateTime.now.strftime('%-m')}")
-        note.tag(month_tag.prop(:name))
+        # BUG: inability to tag notes lies somewhere in evertils-common,
+        # specifically in how note.tag works
+        # As this is non-functional, lets not run it - commented out for now
+        # tag_manager = Evertils::Common::Manager::Tag.instance
+        # month_tag = tag_manager.find_or_create("month-#{Date.today.month}")
+        # note.tag(month_tag.prop(:name))
       end
 
       # generate monthly task summary templates
@@ -84,11 +89,12 @@ module Evertils
         # create the note from template
         mts_note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
 
-        # tag it
-        # TODO: maybe move this out of controller?
-        tag_manager = Evertils::Common::Manager::Tag.instance
-        month_tag = tag_manager.find("month-#{DateTime.now.strftime('%-m')}")
-        mts_note.tag(month_tag.prop(:name))
+        # BUG: inability to tag notes lies somewhere in evertils-common,
+        # specifically in how note.tag works
+        # As this is non-functional, lets not run it - commented out for now
+        # tag_manager = Evertils::Common::Manager::Tag.instance
+        # month_tag = tag_manager.find_or_create("month-#{Date.today.month}")
+        # mts_note.tag(month_tag.prop(:name))
 
         # TODO: commented out until support for multiple tags is added
         # client_tag = tag_manager.find_or_create(@name)
@@ -112,7 +118,7 @@ module Evertils
       def morning
         pq
         daily
-        weekly if Date.today.tuesday?
+        weekly if Date.today.monday?
       end
 
       private
