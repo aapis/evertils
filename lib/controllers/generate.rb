@@ -95,12 +95,41 @@ module Evertils
 
       # generate priority queue notes
       def pq
-        title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
-        body = @format.template_contents(NOTEBOOK_PRIORITY_QUEUE)
-        body += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE]) unless $config.custom_sections.nil?
-        parent_notebook = NOTEBOOK_PRIORITY_QUEUE
+        note = nil
 
-        @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
+        if Date.today.monday?
+          # get friday's note
+          friday = (Date.today - 3)
+          note_title = "Queue For [#{friday.strftime('%B %-d')} - F]"
+          note = @model.find_note_contents(note_title)
+
+          # @model.create_note(title: note.entity.title, body: note.entity.body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
+        elsif Date.today.tuesday? || Date.today.wednesday?
+          # find monday's note
+          monday = (Date.today - 1)
+          monday_note_title = "Queue For [#{monday.strftime('%B %-d')} - M]"
+          monday_note = @model.find_note_contents(monday_note_title)
+
+          if !monday_note.entity.nil?
+            note = monday_note.entity
+          else
+            # if it does not exist, get friday's note
+            friday = (Date.today - 4)
+            note_title = "Queue For [#{friday.strftime('%B %-d')} - F]"
+            note = @model.find_note_contents(note_title)
+          end
+
+          # @model.create_note(title: note.entity.title, body: note.entity.body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
+        else
+          title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
+          body = @format.template_contents(NOTEBOOK_PRIORITY_QUEUE)
+          body += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE]) unless $config.custom_sections.nil?
+
+          # note = @model.create_note(title: title, body: body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
+        end
+
+        puts note.entity.inspect
+        note
       end
 
       # creates the notes required to start the day
