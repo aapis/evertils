@@ -17,7 +17,7 @@ See [this document](https://github.com/aapis/evertils/wiki/Logging-Specification
 |Command|Description|Usage|
 |:--------------|:-----------|:-------------|
 |generate|Create notes from templates|`evertils generate daily`, `evertils generate morning`, `evertils generate monthly`|
-|new|Manually create notes|`evertils new note "STUFF"`, `evertils new share_note "STUFF"`, `other task | evertils new share_note --title="Piped data note"`|
+|new|Manually create notes|`evertils new note "STUFF"`, `evertils new share_note "STUFF"`, `other task $PIPE_CHAR$ evertils new share_note --title="Piped data note"`|
 |get|Get data from Evernote|`evertils get notebook` (coming soon)|
 |convert|Convert your notes to Markdown, then back to ENML|(coming soon)|
 |status|View script information and other data|`evertils status`|
