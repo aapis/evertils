@@ -94,7 +94,8 @@ module Evertils
       end
 
       # generate priority queue notes
-      def pq
+      # TODO: delete method self.pq after this is tested/working
+      def pq_dev
         note = nil
 
         if Date.today.monday?
@@ -128,8 +129,17 @@ module Evertils
           # note = @model.create_note(title: title, body: body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
         end
 
-        puts note.entity.inspect
+        # puts note.entity.inspect
         note
+      end
+
+      # generate priority queue notes
+      def pq
+        title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
+        body = @format.template_contents(NOTEBOOK_PRIORITY_QUEUE)
+        body += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE]) unless $config.custom_sections.nil?
+
+        @model.create_note(title: title, body: body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
       end
 
       # creates the notes required to start the day
