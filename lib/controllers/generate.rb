@@ -95,56 +95,20 @@ module Evertils
 
       # generate priority queue notes
       def pq
+        content, title = nil
+
         if Date.today.monday?
-          # get friday's note
-          friday = (Date.today - 3)
-          dow = @format.day_of_week(friday.strftime('%a'))
-          note_title = "Queue For [#{friday.strftime('%B %-d')} - #{dow}]"
-          found = @model.find_note_contents(note_title)
-
-          raise "Queue was not found - #{friday.strftime('%B %-d')}" unless found
-
-          title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
-          content = prepare_enml(found.entity.content)
-
-          @model.create_note(title: title, body: content, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
+          title, content = pq_do_monday
         elsif Date.today.tuesday?
-          # find monday's note
-          monday = (Date.today - 1)
-          dow = @format.day_of_week(monday.strftime('%a'))
-          monday_note_title = "Queue For [#{monday.strftime('%B %-d')} - #{dow}]"
-          monday_note = @model.find_note_contents(monday_note_title)
-
-          if !monday_note.entity.nil?
-            note = monday_note.entity
-            note.title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
-          else
-            # if it does not exist, get friday's note
-            friday = (Date.today - 4)
-            dow = @format.day_of_week(friday.strftime('%a'))
-            note_title = "Queue For [#{friday.strftime('%B %-d')} - #{dow}]"
-            note = @model.find_note_contents(note_title)
-          end
-
-          raise 'Queue was not found' unless note
-
-          content = prepare_enml(note.content)
-
-          @model.create_note(title: note.title, body: content, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
+          title, content = pq_do_tuesday
         else
-          yest = (Date.today - 1)
-          dow = @format.day_of_week(yest.strftime('%a'))
-          yest_note_title = "Queue For [#{yest.strftime('%B %-d')} - #{dow}]"
-          found = @model.find_note_contents(yest_note_title).entity
-
-          raise "Queue was not found - #{yest.strftime('%B %-d')}" unless found
-
-          title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
-          content = prepare_enml(found.content)
-          content += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE]) unless $config.custom_sections.nil?
-
-          @model.create_note(title: title, body: content, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
+          title, content = pq_do_default
         end
+
+        raise 'Invalid title' if title.nil?
+        raise 'Invalid note content' if content.nil?
+
+        @model.create_note(title: title, body: content, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
       end
 
       # creates the notes required to start the day
@@ -180,7 +144,74 @@ module Evertils
           br.remove
         end
 
-        note_xml.inner_html().to_s
+        enml = note_xml.inner_html().to_s
+
+        # append custom sections to the end of the content if they exist
+        return enml if $config.custom_sections.nil?
+
+        enml += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE])
+        enml
+      end
+
+      #
+      # @since 0.3.7
+      def pq_do_monday
+        # get friday's note
+        friday = (Date.today - 3)
+        dow = @format.day_of_week(friday.strftime('%a'))
+        note_title = "Queue For [#{friday.strftime('%B %-d')} - #{dow}]"
+        found = @model.find_note_contents(note_title)
+
+        raise "Queue was not found - #{friday.strftime('%B %-d')}" unless found
+
+        [
+          @format.date_templates[NOTEBOOK_PRIORITY_QUEUE],
+          prepare_enml(found.entity.content)
+        ]
+      end
+
+      #
+      # @since 0.3.7
+      def pq_do_tuesday
+        # find monday's note
+        monday = (Date.today - 1)
+        dow = @format.day_of_week(monday.strftime('%a'))
+        monday_note_title = "Queue For [#{monday.strftime('%B %-d')} - #{dow}]"
+        monday_note = @model.find_note_contents(monday_note_title)
+
+        if !monday_note.entity.nil?
+          note = monday_note.entity
+          note.title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
+        else
+          # if it does not exist, get friday's note
+          friday = (Date.today - 4)
+          dow = @format.day_of_week(friday.strftime('%a'))
+          note_title = "Queue For [#{friday.strftime('%B %-d')} - #{dow}]"
+          note = @model.find_note_contents(note_title)
+        end
+
+        raise 'Queue was not found' unless note
+
+        [
+          note.title,
+          prepare_enml(note.content)
+        ]
+      end
+
+      #
+      # @since 0.3.7
+      def pq_do_default
+        yest = (Date.today - 1)
+        dow = @format.day_of_week(yest.strftime('%a'))
+        yest_note_title = "Queue For [#{yest.strftime('%B %-d')} - #{dow}]"
+        found = @model.find_note_contents(yest_note_title).entity
+
+        raise "Queue was not found - #{yest.strftime('%B %-d')}" unless found
+
+        [
+          @format.date_templates[NOTEBOOK_PRIORITY_QUEUE],
+          prepare_enml(found.content)
+        ]
       end
     end
   end
