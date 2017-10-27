@@ -98,13 +98,16 @@ module Evertils
         if Date.today.monday?
           # get friday's note
           friday = (Date.today - 3)
-          note_title = "Queue For [#{friday.strftime('%B %-d')} - F]"
-          dow = @format.day_of_week()
-          monday_note = @model.find_note_contents(note_title)
+          dow = @format.day_of_week(friday.strftime('%a'))
+          note_title = "Queue For [#{friday.strftime('%B %-d')} - #{dow}]"
+          found = @model.find_note_contents(note_title)
 
-          today_note_title = "Queue For [#{Date.today.strftime('%B %-d')} - #{dow}]"
+          raise "Queue was not found - #{friday.strftime('%B %-d')}" unless found
 
-          @model.create_note(title: today_note_title, body: monday_note.entity.body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
+          title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
+          content = prepare_enml(found.entity.content)
+
+          @model.create_note(title: title, body: content, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
         elsif Date.today.tuesday?
           # find monday's note
           monday = (Date.today - 1)
@@ -114,8 +117,7 @@ module Evertils
 
           if !monday_note.entity.nil?
             note = monday_note.entity
-            dow = @format.day_of_week()
-            note.title = "Queue For [#{Date.today.strftime('%B %-d')} - #{dow}]"
+            note.title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
           else
             # if it does not exist, get friday's note
             friday = (Date.today - 4)
@@ -123,6 +125,8 @@ module Evertils
             note_title = "Queue For [#{friday.strftime('%B %-d')} - #{dow}]"
             note = @model.find_note_contents(note_title)
           end
+
+          raise 'Queue was not found' unless note
 
           content = prepare_enml(note.content)
 
