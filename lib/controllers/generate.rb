@@ -95,18 +95,16 @@ module Evertils
 
       # generate priority queue notes
       def pq
-        note = nil
-
         if Date.today.monday?
           # get friday's note
           friday = (Date.today - 3)
           note_title = "Queue For [#{friday.strftime('%B %-d')} - F]"
           dow = @format.day_of_week()
-          note = @model.find_note_contents(note_title)
+          monday_note = @model.find_note_contents(note_title)
 
           today_note_title = "Queue For [#{Date.today.strftime('%B %-d')} - #{dow}]"
 
-          @model.create_note(title: today_note_title, body: note.entity.body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
+          @model.create_note(title: today_note_title, body: monday_note.entity.body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
         elsif Date.today.tuesday?
           # find monday's note
           monday = (Date.today - 1)
@@ -141,10 +139,8 @@ module Evertils
           content = prepare_enml(found.content)
           content += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE]) unless $config.custom_sections.nil?
 
-          note = @model.create_note(title: title, body: content, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
+          @model.create_note(title: title, body: content, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
         end
-
-        note
       end
 
       # creates the notes required to start the day
