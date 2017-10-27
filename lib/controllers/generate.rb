@@ -94,52 +94,57 @@ module Evertils
       end
 
       # generate priority queue notes
-      # TODO: delete method self.pq after this is tested/working
-      def pq_dev
+      def pq
         note = nil
 
         if Date.today.monday?
           # get friday's note
           friday = (Date.today - 3)
           note_title = "Queue For [#{friday.strftime('%B %-d')} - F]"
+          dow = @format.day_of_week()
           note = @model.find_note_contents(note_title)
 
-          # @model.create_note(title: note.entity.title, body: note.entity.body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
-        elsif Date.today.tuesday? || Date.today.wednesday?
+          today_note_title = "Queue For [#{Date.today.strftime('%B %-d')} - #{dow}]"
+
+          @model.create_note(title: today_note_title, body: note.entity.body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
+        elsif Date.today.tuesday?
           # find monday's note
           monday = (Date.today - 1)
-          monday_note_title = "Queue For [#{monday.strftime('%B %-d')} - M]"
+          dow = @format.day_of_week(monday.strftime('%a'))
+          monday_note_title = "Queue For [#{monday.strftime('%B %-d')} - #{dow}]"
           monday_note = @model.find_note_contents(monday_note_title)
 
           if !monday_note.entity.nil?
             note = monday_note.entity
+            dow = @format.day_of_week()
+            note.title = "Queue For [#{Date.today.strftime('%B %-d')} - #{dow}]"
           else
             # if it does not exist, get friday's note
             friday = (Date.today - 4)
-            note_title = "Queue For [#{friday.strftime('%B %-d')} - F]"
+            dow = @format.day_of_week(friday.strftime('%a'))
+            note_title = "Queue For [#{friday.strftime('%B %-d')} - #{dow}]"
             note = @model.find_note_contents(note_title)
           end
 
-          # @model.create_note(title: note.entity.title, body: note.entity.body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
-        else
-          title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
-          body = @format.template_contents(NOTEBOOK_PRIORITY_QUEUE)
-          body += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE]) unless $config.custom_sections.nil?
+          content = prepare_enml(note.content)
 
-          # note = @model.create_note(title: title, body: body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
+          @model.create_note(title: note.title, body: content, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
+        else
+          yest = (Date.today - 1)
+          dow = @format.day_of_week(yest.strftime('%a'))
+          yest_note_title = "Queue For [#{yest.strftime('%B %-d')} - #{dow}]"
+          found = @model.find_note_contents(yest_note_title).entity
+
+          raise "Queue was not found - #{yest.strftime('%B %-d')}" unless found
+
+          title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
+          content = prepare_enml(found.content)
+          content += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE]) unless $config.custom_sections.nil?
+
+          note = @model.create_note(title: title, body: content, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
         end
 
-        # puts note.entity.inspect
         note
-      end
-
-      # generate priority queue notes
-      def pq
-        title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
-        body = @format.template_contents(NOTEBOOK_PRIORITY_QUEUE)
-        body += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE]) unless $config.custom_sections.nil?
-
-        @model.create_note(title: title, body: body, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
       end
 
       # creates the notes required to start the day
@@ -158,6 +163,24 @@ module Evertils
       # @since 0.3.1
       def to_enml(hash)
         Evertils::Helper::EvernoteENML.with_list(hash)
+      end
+
+      #
+      # @since 0.3.5
+      def prepare_enml(content)
+        # remove the xml declaration and DTD
+        content = content.split("\n")
+        content.shift(2)
+
+        xml = Nokogiri::XML::DocumentFragment.parse(content.join)
+        note_xml = xml.search('en-note')
+
+        # remove <br> tags
+        note_xml.search('br').each do |br|
+          br.remove
+        end
+
+        note_xml.inner_html().to_s
       end
     end
   end
