@@ -24,12 +24,6 @@ module Evertils
 
       #
       # @since 0.3.7
-      def notebook
-        NOTEBOOK
-      end
-
-      #
-      # @since 0.3.7
       def should_create?
         today_is_first_of_month = Date.today.day == 1
 

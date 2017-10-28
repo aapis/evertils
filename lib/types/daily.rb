@@ -14,12 +14,6 @@ module Evertils
         @content = @format.template_contents(NOTEBOOK)
         @content += to_enml($config.custom_sections[NOTEBOOK]) unless $config.custom_sections.nil?
       end
-
-      #
-      # @since 0.3.7
-      def notebook
-        NOTEBOOK
-      end
     end
   end
 end

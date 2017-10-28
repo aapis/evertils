@@ -24,12 +24,6 @@ module Evertils
 
       #
       # @since 0.3.7
-      def notebook
-        NOTEBOOK
-      end
-
-      #
-      # @since 0.3.7
       def should_create?
         today = Date.today
         is_monday = today.monday?
