@@ -1,15 +1,13 @@
+require_relative '../types/priority-queue'
+require_relative '../types/monthly-task-summary'
+require_relative '../types/daily'
+require_relative '../types/weekly'
+require_relative '../types/monthly'
+
 module Evertils
   module Controller
     class Generate < Controller::Base
       attr_accessor :force, :start, :name
-
-      # required user-created notebooks
-      NOTEBOOK_DAILY = :Daily
-      NOTEBOOK_WEEKLY = :Weekly
-      NOTEBOOK_MONTHLY = :Monthly
-      NOTEBOOK_DEPLOYMENT = :Deployments
-      NOTEBOOK_MTS = :'Monthly Task Summaries'
-      NOTEBOOK_PRIORITY_QUEUE = :'Priority Queue'
 
       def pre_exec
         @methods_require_internet.push(:daily, :weekly, :monthly, :mts)
@@ -27,160 +25,53 @@ module Evertils
 
       # generate daily notes
       def daily
-        title = @format.date_templates[NOTEBOOK_DAILY]
-        body = @format.template_contents(NOTEBOOK_DAILY)
-        body += to_enml($config.custom_sections[NOTEBOOK_DAILY]) unless $config.custom_sections.nil?
-        parent_notebook = NOTEBOOK_DAILY
-
-        @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
+        note = Type::Daily.new
+        note.create
       end
 
       # generate weekly notes
       def weekly
-        title = @format.date_templates[NOTEBOOK_WEEKLY]
-        body = @format.template_contents(NOTEBOOK_WEEKLY)
-        body += to_enml($config.custom_sections[NOTEBOOK_WEEKLY]) unless $config.custom_sections.nil?
-        parent_notebook = NOTEBOOK_WEEKLY
-
-        note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
-
-        # BUG: inability to tag notes lies somewhere in evertils-common,
-        # specifically in how note.tag works
-        # As this is non-functional, lets not run it - commented out for now
-        # tag_manager = Evertils::Common::Manager::Tag.instance
-        # week_tag = tag_manager.find_or_create("week-#{Date.today.cweek}")
-        # note.tag(week_tag.prop(:name))
+        note = Type::Weekly.new
+        note.create
       end
 
       # generate monthly notes
       def monthly
-        title = @format.date_templates[NOTEBOOK_MONTHLY]
-        body = @format.template_contents(NOTEBOOK_MONTHLY)
-        body += to_enml($config.custom_sections[NOTEBOOK_MONTHLY]) unless $config.custom_sections.nil?
-        parent_notebook = NOTEBOOK_MONTHLY
-
-        note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
-
-        # BUG: inability to tag notes lies somewhere in evertils-common,
-        # specifically in how note.tag works
-        # As this is non-functional, lets not run it - commented out for now
-        # tag_manager = Evertils::Common::Manager::Tag.instance
-        # month_tag = tag_manager.find_or_create("month-#{Date.today.month}")
-        # note.tag(month_tag.prop(:name))
+        note = Type::Monthly.new
+        note.create
       end
 
       # generate monthly task summary templates
       def mts
-        Notify.error("Name argument is required", {}) if @name.nil?
+        Notify.error('Name argument is required', {}) if @name.nil?
 
-        title = "#{@name} #{DateTime.now.strftime('%m-%Y')}"
-        body = @format.template_contents(NOTEBOOK_MTS)
-        body += to_enml($config.custom_sections[NOTEBOOK_MTS]) unless $config.custom_sections.nil?
-        parent_notebook = NOTEBOOK_MTS
-
-        # create the note from template
-        mts_note = @model.create_note(title: title, body: body, parent_notebook: parent_notebook)
-
-        # BUG: inability to tag notes lies somewhere in evertils-common,
-        # specifically in how note.tag works
-        # As this is non-functional, lets not run it - commented out for now
-        # tag_manager = Evertils::Common::Manager::Tag.instance
-        # month_tag = tag_manager.find_or_create("month-#{Date.today.month}")
-        # mts_note.tag(month_tag.prop(:name))
-
-        # TODO: commented out until support for multiple tags is added
-        # client_tag = tag_manager.find_or_create(@name)
-        # mts_note.tag(client_tag.prop(:name))
+        note = Type::MonthlyTaskSummary.new(@name)
+        note.create
       end
 
       # generate priority queue notes
       def pq
-        if Date.today.monday?
-          # get friday's note
-          friday = (Date.today - 3)
-          dow = @format.day_of_week(friday.strftime('%a'))
-          note_title = "Queue For [#{friday.strftime('%B %-d')} - #{dow}]"
-          found = @model.find_note_contents(note_title)
-
-          raise "Queue was not found - #{friday.strftime('%B %-d')}" unless found
-
-          title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
-          content = prepare_enml(found.entity.content)
-
-          @model.create_note(title: title, body: content, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
-        elsif Date.today.tuesday?
-          # find monday's note
-          monday = (Date.today - 1)
-          dow = @format.day_of_week(monday.strftime('%a'))
-          monday_note_title = "Queue For [#{monday.strftime('%B %-d')} - #{dow}]"
-          monday_note = @model.find_note_contents(monday_note_title)
-
-          if !monday_note.entity.nil?
-            note = monday_note.entity
-            note.title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
-          else
-            # if it does not exist, get friday's note
-            friday = (Date.today - 4)
-            dow = @format.day_of_week(friday.strftime('%a'))
-            note_title = "Queue For [#{friday.strftime('%B %-d')} - #{dow}]"
-            note = @model.find_note_contents(note_title)
-          end
-
-          raise 'Queue was not found' unless note
-
-          content = prepare_enml(note.content)
-
-          @model.create_note(title: note.title, body: content, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
-        else
-          yest = (Date.today - 1)
-          dow = @format.day_of_week(yest.strftime('%a'))
-          yest_note_title = "Queue For [#{yest.strftime('%B %-d')} - #{dow}]"
-          found = @model.find_note_contents(yest_note_title).entity
-
-          raise "Queue was not found - #{yest.strftime('%B %-d')}" unless found
-
-          title = @format.date_templates[NOTEBOOK_PRIORITY_QUEUE]
-          content = prepare_enml(found.content)
-          content += to_enml($config.custom_sections[NOTEBOOK_PRIORITY_QUEUE]) unless $config.custom_sections.nil?
-
-          @model.create_note(title: title, body: content, parent_notebook: NOTEBOOK_PRIORITY_QUEUE)
-        end
+        note = Type::PriorityQueue.new
+        note.create
       end
 
       # creates the notes required to start the day
       #  - priority queue
       #  - daily
-      #  - weekly (if today is Monday)
+      #  - weekly (if today is Monday and there isn't a weekly log already)
+      #  - monthly (if today is the 1st and there isn't a monthly log already)
       def morning
-        pq
-        daily
-        weekly if Date.today.monday?
-      end
+        pq = Type::PriorityQueue.new
+        pq.create
 
-      private
+        daily = Type::Daily.new
+        daily.create
 
-      #
-      # @since 0.3.1
-      def to_enml(hash)
-        Evertils::Helper::EvernoteENML.with_list(hash)
-      end
+        weekly = Type::Weekly.new
+        weekly.create if weekly.should_create?
 
-      #
-      # @since 0.3.5
-      def prepare_enml(content)
-        # remove the xml declaration and DTD
-        content = content.split("\n")
-        content.shift(2)
-
-        xml = Nokogiri::XML::DocumentFragment.parse(content.join)
-        note_xml = xml.search('en-note')
-
-        # remove <br> tags
-        note_xml.search('br').each do |br|
-          br.remove
-        end
-
-        note_xml.inner_html().to_s
+        monthly = Type::Monthly.new
+        monthly.create if monthly.should_create?
       end
     end
   end

@@ -17,24 +17,6 @@ module Evertils
           if context.can_exec? $request.controller, $request.command
             context.pre_exec
 
-            # no command sent?  Use default to populate model data
-            model_method = ($request.command ? $request.command : context.default_method).to_s + "_data"
-
-            # populate model data
-            method = context.model.public_method(model_method) rescue false
-
-            # model is not set, use Base model instead so the controller still has
-            # access to model methods
-            if context.model.nil?
-              context.model = Model::Base.new
-            end
-
-            # If the method exists, set model data accordingly
-            # If it doesn't exist then just fail silently, the model may not
-            # be required by some controllers
-            if method.respond_to? :call
-              context.model.data = method.call($request.custom || [])
-            end
 
             if context.methods_require_internet.include? $request.command
               if !Utils.has_internet_connection?
