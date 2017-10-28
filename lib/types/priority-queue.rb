@@ -10,6 +10,8 @@ module Evertils
       def initialize
         super
 
+        @handler = Evertils::Helper.load('ApiEnmlHandler')
+
         if Date.today.monday?
           @title, @content = condition_monday
         elsif Date.today.tuesday?
@@ -19,18 +21,11 @@ module Evertils
         end
       end
 
-      #
-      # @since 0.3.7
-      def notebook
-        NOTEBOOK
-      end
-
       private
 
-      #
+      # Get friday's note
       # @since 0.3.7
       def condition_monday
-        # get friday's note
         friday = (Date.today - 3)
         dow = @format.day_of_week(friday.strftime('%a'))
         note_title = "Queue For [#{friday.strftime('%B %-d')} - #{dow}]"
@@ -40,14 +35,13 @@ module Evertils
 
         [
           @format.date_templates[NOTEBOOK],
-          Helper::Enml.new(found.entity.content).prepare
+          @handler.convert_to_xml(found.entity.content).prepare
         ]
       end
 
-      #
+      # Find monday's note
       # @since 0.3.7
       def condition_tuesday
-        # find monday's note
         monday = (Date.today - 1)
         dow = @format.day_of_week(monday.strftime('%a'))
         monday_note_title = "Queue For [#{monday.strftime('%B %-d')} - #{dow}]"
@@ -68,11 +62,11 @@ module Evertils
 
         [
           note.title,
-          Helper::Enml.new(note.content).prepare
+          @handler.convert_to_xml(note.content).prepare
         ]
       end
 
-      #
+      # Default action for not-Monday/Tuesday
       # @since 0.3.7
       def condition_default
         yest = (Date.today - 1)
@@ -84,7 +78,7 @@ module Evertils
 
         [
           @format.date_templates[NOTEBOOK],
-          Helper::Enml.new(found.content).prepare
+          @handler.convert_to_xml(found.content).prepare
         ]
       end
     end
