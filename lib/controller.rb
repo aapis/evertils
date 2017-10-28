@@ -7,11 +7,6 @@ module Evertils
 
       # Perform pre-run tasks
       def pre_exec
-        # interface with the Evernote API so we can use it later
-        @model = Evertils::Common::Query::Simple.new
-
-        @format = Evertils::Helper.load('formatting')
-
         OptionParser.new do |opt|
           opt.banner = "#{Evertils::PACKAGE_NAME} controller command [...-flags]"
 
@@ -38,7 +33,6 @@ module Evertils
 
       # Determines if the command can execute
       def can_exec?(command = nil, name = nil)
-        @model = Evertils::Model.const_get(command.capitalize).new rescue nil
         @helper = Evertils::Helper.const_get(command.capitalize).new rescue nil
         @methods_require_internet = []
 
