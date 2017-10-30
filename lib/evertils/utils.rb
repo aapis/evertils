@@ -1,7 +1,7 @@
 module Evertils
   class Utils
     @cache = Hash.new
-    
+
     # Gets a list of files from the current directory with a specific extension
     def self.get_files(ext)
       @cache[:files] ||= Hash.new
@@ -48,7 +48,7 @@ module Evertils
           @cache[:files][ext].push file.strip.match(/[A-Z ]+(.*)/)[1]
         end
       end
-      
+
       @cache[:files][ext]
     end
 
@@ -94,8 +94,8 @@ module Evertils
             raise TypeError, "unknown os: #{host_os.inspect}"
           end
         )
-      rescue err
-        Notify.error(err.message)
+      rescue e
+        Notify.error("#{e}\n#{e.backtrace.join("\n")}", show_time: false)
       end
     end
 

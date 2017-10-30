@@ -1,16 +1,14 @@
 module Evertils
   module Type
     class PriorityQueue < Type::Base
-      attr_reader :title, :content, :notebook
-
       NOTEBOOK = :'Priority Queue'
 
       #
       # @since 0.3.7
-      def initialize
-        super
+      def initialize(config, *args)
+        super(config, *args)
 
-        @handler = Evertils::Helper.load('ApiEnmlHandler')
+        @handler = Evertils::Helper.load('ApiEnmlHandler', @config)
 
         if Date.today.monday?
           @title, @content = condition_monday

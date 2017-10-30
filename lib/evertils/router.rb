@@ -13,9 +13,9 @@ module Evertils
 
       begin
         # include the controller
-        require "client/controller/#{@request.controller}"
+        require "evertils/controllers/#{@request.controller}"
         # include helpers
-        require "client/helper/#{@request.controller}" if File.exist? "client/helpers/#{@request.controller}"
+        require "evertils/helpers/#{@request.controller}" if File.exist? "evertils/helpers/#{@request.controller}"
       rescue LoadError
         Notify.error("Controller not found: #{@request.controller}")
       end
@@ -45,9 +45,9 @@ module Evertils
           end
         end
       rescue NoMethodError => e
-        Notify.error(e.message)
+        Notify.error("#{e}\n#{e.backtrace.join("\n")}", show_time: false)
       rescue RuntimeError => e
-        Notify.error(e.message, show_time: false)
+        Notify.error("#{e}\n#{e.backtrace.join("\n")}", show_time: false)
       rescue NameError => e
         Notify.error("#{e}\n#{e.backtrace.join("\n")}", show_time: false)
       end
