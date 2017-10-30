@@ -1,46 +1,15 @@
 #!/usr/bin/env ruby
 
-require 'date'
-require 'time'
-require 'json'
-require 'optparse'
-require 'rbconfig'
-require 'evernote-thrift'
-require 'net/http'
-require 'uri'
-require 'fileutils'
-require 'cgi'
-require 'notifaction'
-require 'digest/md5'
-require 'mime/types'
-require 'evertils/common'
-require 'yaml'
-require 'nokogiri'
+# fix load path
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-# include required files
-require_relative '../lib/kernel'
-require_relative '../lib/version'
-require_relative '../lib/type'
-require_relative '../lib/helpers/time'
-require_relative '../lib/helpers/results'
-require_relative '../lib/helpers/api-enml-handler'
-require_relative '../lib/log'
-require_relative '../lib/config'
-require_relative '../lib/request'
-require_relative '../lib/utils'
-require_relative '../lib/logs'
-require_relative '../lib/command'
-require_relative '../lib/controller'
-require_relative '../lib/router'
-require_relative '../lib/helpers/formatting'
-require_relative '../lib/helpers/evernote-enml'
-require_relative '../lib/helper'
+require 'evertils'
 
 # Modify configuration options here
-$config = Evertils::Cfg.new
-# Bootstrap!
-$config.bootstrap!
+app = Evertils::Cfg.new
+app.bootstrap!
 
 # Config file located, route the request
-req = Evertils::Router.new
+req = Evertils::Router.new(app)
 req.route

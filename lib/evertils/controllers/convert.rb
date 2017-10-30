@@ -37,7 +37,7 @@ module Evertils
 
           metadata.each_pair do |note_guid, note_content|
             # convert it here!
-            puts note_content
+            Notify.spit(note_content)
           end
         else
           Notify.error("Could not pull data for notebook #{@notebook}")

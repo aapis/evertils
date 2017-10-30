@@ -29,9 +29,9 @@ module Evertils
 
           IO.readlines(load_template(type), :encoding => 'UTF-8').join("").delete!("\n")
         rescue Errno::ENOENT => e
-          Notify.error(e.message)
+          Notify.error("#{e}\n#{e.backtrace.join("\n")}", show_time: false)
         rescue ArgumentError => e
-          Notify.error(e.message)
+          Notify.error("#{e}\n#{e.backtrace.join("\n")}", show_time: false)
         end
       end
 
@@ -51,9 +51,22 @@ module Evertils
         }
       end
 
-      # format command as required by this model
-      def command
-        $request.command.capitalize
+      # Recursively symbolize keys in a hash
+      # Params:
+      # +h+:: The hash you want to symbolize
+      def symbolize(h)
+        case h
+        when Hash
+          Hash[
+            h.map do |k, v|
+              [k.respond_to?(:to_sym) ? k.to_sym : k, symbolize(v)]
+            end
+          ]
+        when Enumerable
+          h.map { |v| symbolize(v) }
+        else
+          h
+        end
       end
 
       private
@@ -61,34 +74,23 @@ module Evertils
       #
       # @since 0.3.1
       def load_template(type)
-        template_type_map = {
-          :Daily => "daily",
-          :Weekly => "weekly",
-          :Monthly => "monthly",
-          :"Monthly Task Summaries" => "mts",
-          :"Priority Queue" => "pq"
-        }
+        file_name = type.to_s.downcase.gsub(/\s/, '-')
+        installed_dir = Gem::Specification.find_by_name('evertils').gem_dir
+        local_installed_dir = "#{Dir.home}/.evertils/templates/"
+        template_file = "#{installed_dir}/#{file_name}.enml"
 
-        default = "#{Evertils::TEMPLATE_DIR}#{template_type_map[type]}.enml"
+        if Dir.exist? local_installed_dir
+          template_file = "#{local_installed_dir}#{file_name}.enml"
 
-        return default if $config.custom_templates.nil?
-
-        rval = default
-        tmpl = $config.custom_templates[type]
-
-        if !tmpl.nil?
-          rval = $config.custom_path
-
-          if tmpl.include?('~')
-            rval += tmpl.gsub!(/~/, Dir.home)
-          else
-            rval += tmpl
+          # local config dir exists but the requested template does not, use
+          # the default template for this type
+          unless File.exist? template_file
+            template_file = "#{installed_dir}/#{file_name}.enml"
           end
         end
 
-        rval
+        template_file
       end
-
     end
   end
 end

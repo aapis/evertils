@@ -6,7 +6,7 @@ module Evertils
       def pre_exec
         # command flag parser
         OptionParser.new do |opt|
-          opt.banner = "#{Evertils::PACKAGE_NAME} new note [...-flags]"
+          opt.banner = "evertils new note [...-flags]"
 
           opt.on("-t", "--title=TITLE", "Set a custom title") do |title|
             @title = title
@@ -35,7 +35,7 @@ module Evertils
             Notify.info("Printing list of notes")
 
             metadata.notes.each do |note|
-              puts note.title
+              Notify.spit note.title
             end
           else
             Notify.error("Could not pull data for notebook #{$request.custom[0]}", {})
@@ -46,7 +46,7 @@ module Evertils
       end
 
       def info
-        $config.options.each_pair do |key, value|
+        @config.options.each_pair do |key, value|
           Notify.spit("#{key}: #{value}")
         end
       end

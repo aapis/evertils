@@ -1,11 +1,14 @@
 module Evertils
   module Type
     class Base
+      attr_reader :title, :content, :notebook
+
       #
       # @since 0.3.7
-      def initialize(*args)
+      def initialize(config, *args)
         @model = Evertils::Common::Query::Simple.new
         @format = Evertils::Helper.load('Formatting')
+        @config = config if config
         @args = args unless args.size.zero?
       end
 
@@ -28,7 +31,10 @@ module Evertils
       #
       # @since 0.3.7
       def should_create?
-        raise 'Should be overwritten in sub classes'
+        note_title = @format.date_templates[NOTEBOOK]
+        found = @model.find_note_contents(note_title)
+
+        found.entity.nil?
       end
     end
   end
