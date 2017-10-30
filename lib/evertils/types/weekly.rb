@@ -2,6 +2,7 @@ module Evertils
   module Type
     class Weekly < Type::Base
       NOTEBOOK = :Weekly
+      COLOUR = 0xffe8b7
 
       #
       # @since 0.3.7

@@ -2,6 +2,7 @@ module Evertils
   module Type
     class MonthlyTaskSummary < Type::Base
       NOTEBOOK = :'Monthly Task Summaries'
+      COLOUR = 0xffe8b7
 
       #
       # @since 0.3.7

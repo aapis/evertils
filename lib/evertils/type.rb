@@ -3,6 +3,8 @@ module Evertils
     class Base
       attr_reader :title, :content, :notebook
 
+      COLOUR = 0xffffff
+
       #
       # @since 0.3.7
       def initialize(config, *args)
@@ -19,7 +21,8 @@ module Evertils
           title: @title,
           body: @content,
           parent_notebook: self.class::NOTEBOOK,
-          tags: tags || []
+          tags: tags || [],
+          colour: self.class.COLOUR
         }
 
         raise 'Invalid title' if @title.nil?
