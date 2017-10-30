@@ -16,7 +16,7 @@ module Evertils
       #
       # @since 0.3.9
       def tags
-        ["day-#{Date.today.yday}"]
+        ["day-#{Date.today.yday}", @args.first]
       end
     end
   end
