@@ -77,7 +77,7 @@ module Evertils
         file_name = type.to_s.downcase.gsub(/\s/, '-')
         installed_dir = Gem::Specification.find_by_name('evertils').gem_dir
         local_installed_dir = "#{Dir.home}/.evertils/templates/"
-        template_file = "#{installed_dir}/#{file_name}.enml"
+        template_file = "#{installed_dir}/lib/evertils/configs/templates/#{file_name}.enml"
 
         if Dir.exist? local_installed_dir
           template_file = "#{local_installed_dir}#{file_name}.enml"
@@ -85,7 +85,7 @@ module Evertils
           # local config dir exists but the requested template does not, use
           # the default template for this type
           unless File.exist? template_file
-            template_file = "#{installed_dir}/#{file_name}.enml"
+            template_file = "#{installed_dir}/lib/evertils/configs/templates/#{file_name}.enml"
           end
         end
 
