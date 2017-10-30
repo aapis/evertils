@@ -22,7 +22,7 @@ module Evertils
           body: @content,
           parent_notebook: self.class::NOTEBOOK,
           tags: tags || [],
-          colour: self.class.COLOUR
+          colour: self.class::COLOUR
         }
 
         raise 'Invalid title' if @title.nil?
@@ -35,10 +35,13 @@ module Evertils
       #
       # @since 0.3.7
       def should_create?
-        note_title = @format.date_templates[NOTEBOOK]
+        note_title = @format.date_templates[self.class::NOTEBOOK]
         found = @model.find_note_contents(note_title)
+        result = found.entity.nil?
 
-        found.entity.nil?
+        Notify.warning "#{self.class.name} skipped, note already exists" unless result
+
+        result
       end
     end
   end

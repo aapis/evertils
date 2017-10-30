@@ -26,8 +26,11 @@ module Evertils
 
         monthly_note_title = @format.date_templates[NOTEBOOK]
         found = @model.find_note_contents(monthly_note_title)
+        result = found.entity.nil? && today_is_first_of_month
 
-        found.entity.nil? && today_is_first_of_month
+        Notify.warning "#{self.class.name} skipped, note already exists" unless result
+
+        result
       end
     end
   end
