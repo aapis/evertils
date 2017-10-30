@@ -1,7 +1,4 @@
 module Evertils
-  # Flag for enabling more verbose output from certain methods
-  DEBUG = false
-
   class Cfg
     # Perform first run tasks and create or read config file values
     def bootstrap!
