@@ -26,8 +26,11 @@ module Evertils
 
         weekly_note_title = @format.date_templates[NOTEBOOK]
         found = @model.find_note_contents(weekly_note_title)
+        result = found.entity.nil? && is_monday
 
-        found.entity.nil? && is_monday
+        Notify.warning "#{self.class.name} skipped, note already exists" unless result
+
+        result
       end
     end
   end
