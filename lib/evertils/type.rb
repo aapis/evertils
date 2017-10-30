@@ -1,11 +1,14 @@
 module Evertils
   module Type
     class Base
+      attr_reader :title, :content, :notebook
+
       #
       # @since 0.3.7
-      def initialize(*args)
+      def initialize(config, *args)
         @model = Evertils::Common::Query::Simple.new
         @format = Evertils::Helper.load('Formatting')
+        @config = config if config
         @args = args unless args.size.zero?
       end
 
