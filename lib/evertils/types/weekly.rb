@@ -1,9 +1,9 @@
 module Evertils
   module Type
-    class Monthly < Type::Base
+    class Weekly < Type::Base
       attr_reader :title, :content, :notebook
 
-      NOTEBOOK = :Monthly
+      NOTEBOOK = :Weekly
 
       #
       # @since 0.3.7
@@ -18,19 +18,19 @@ module Evertils
         # specifically in how note.tag works
         # As this is non-functional, lets not run it - commented out for now
         # tag_manager = Evertils::Common::Manager::Tag.instance
-        # month_tag = tag_manager.find_or_create("month-#{Date.today.month}")
-        # note.tag(month_tag.prop(:name))
+        # week_tag = tag_manager.find_or_create("week-#{Date.today.cweek}")
+        # note.tag(week_tag.prop(:name))
       end
 
       #
       # @since 0.3.7
       def should_create?
-        today_is_first_of_month = Date.today.day == 1
+        is_monday = Date.today.monday?
 
-        monthly_note_title = @format.date_templates[NOTEBOOK]
-        found = @model.find_note_contents(monthly_note_title)
+        weekly_note_title = @format.date_templates[NOTEBOOK]
+        found = @model.find_note_contents(weekly_note_title)
 
-        !found.entity.nil? && today_is_first_of_month
+        found.entity.nil? && is_monday
       end
     end
   end

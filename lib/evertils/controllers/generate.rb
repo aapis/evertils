@@ -7,7 +7,7 @@ require_relative '../types/monthly'
 module Evertils
   module Controller
     class Generate < Controller::Base
-      attr_accessor :force, :start, :name
+      attr_accessor :name
 
       def pre_exec
         @methods_require_internet.push(:daily, :weekly, :monthly, :mts)
@@ -53,6 +53,10 @@ module Evertils
       def pq
         note = Type::PriorityQueue.new
         note.create
+      end
+
+      def test
+        puts "yup"
       end
 
       # creates the notes required to start the day

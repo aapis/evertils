@@ -28,7 +28,10 @@ module Evertils
       #
       # @since 0.3.7
       def should_create?
-        raise 'Should be overwritten in sub classes'
+        note_title = @format.date_templates[NOTEBOOK]
+        found = @model.find_note_contents(note_title)
+
+        found.entity.nil?
       end
     end
   end
