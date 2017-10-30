@@ -18,7 +18,8 @@ module Evertils
         data = {
           title: @title,
           body: @content,
-          parent_notebook: self.class::NOTEBOOK
+          parent_notebook: self.class::NOTEBOOK,
+          tags: tags || []
         }
 
         raise 'Invalid title' if @title.nil?
