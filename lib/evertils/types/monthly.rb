@@ -2,6 +2,7 @@ module Evertils
   module Type
     class Monthly < Type::Base
       NOTEBOOK = :Monthly
+      COLOUR = 0xffe8b7
 
       #
       # @since 0.3.7
