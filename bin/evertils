@@ -8,7 +8,6 @@ require 'evertils'
 
 # Modify configuration options here
 app = Evertils::Cfg.new
-# Bootstrap!
 app.bootstrap!
 
 # Config file located, route the request

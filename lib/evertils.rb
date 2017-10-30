@@ -28,9 +28,9 @@ require 'evertils/utils'
 require 'evertils/command'
 require 'evertils/controller'
 require 'evertils/router'
+require 'evertils/helper'
 require 'evertils/helpers/formatting'
 require 'evertils/helpers/evernote-enml'
-require 'evertils/helper'
 
 module Evertils
   # Flag to determine if module is running in test mode

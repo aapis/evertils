@@ -29,9 +29,7 @@ module Evertils
 
       # Perform pre-run tasks
       def pre_exec
-        @format = Evertils::Helper.load('formatting')
-        @network = Evertils::Helper.load('network')
-        @network.config = @config
+        @format = Evertils::Helper.load('Formatting')
       end
 
       # Handle the request
