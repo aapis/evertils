@@ -10,13 +10,12 @@ module Evertils
 
         @title = @format.date_templates[NOTEBOOK]
         @content = @format.template_contents(NOTEBOOK)
+      end
 
-        # BUG: inability to tag notes lies somewhere in evertils-common,
-        # specifically in how note.tag works
-        # As this is non-functional, lets not run it - commented out for now
-        # tag_manager = Evertils::Common::Manager::Tag.instance
-        # week_tag = tag_manager.find_or_create("week-#{Date.today.cweek}")
-        # note.tag(week_tag.prop(:name))
+      #
+      # @since 0.3.9
+      def tags
+        ["week-#{Date.today.cweek}"]
       end
 
       #

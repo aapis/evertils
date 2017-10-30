@@ -11,6 +11,12 @@ module Evertils
         @title = @format.date_templates[NOTEBOOK]
         @content = @format.template_contents(NOTEBOOK)
       end
+
+      #
+      # @since 0.3.9
+      def tags
+        ["day-#{Date.today.yday}"]
+      end
     end
   end
 end

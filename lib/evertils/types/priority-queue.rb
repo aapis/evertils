@@ -19,6 +19,12 @@ module Evertils
         end
       end
 
+      #
+      # @since 0.3.9
+      def tags
+        ["day-#{Date.today.yday}"]
+      end
+
       private
 
       # Get friday's note
