@@ -21,3 +21,16 @@ See [this document](https://github.com/aapis/evertils/wiki/Logging-Specification
 |get|Get data from Evernote|`evertils get notebook` (coming soon)|
 |convert|Convert your notes to Markdown, then back to ENML|(coming soon)|
 |status|View script information and other data|`evertils status`|
+
+## Automation
+
+If you're using OSX > 10.4:
+
+1. Rename `com.evertils.plist.dist` to `com.evertils.plist` and update the ProgramArguments value to point to where the gem lives (i.e. `/Library/Ruby/Gems/2.0.0`).
+2. `cp com.evertils.plist /Library/LaunchDaemons`
+3. `launchtl load -w /Library/LaunchDaemons/com.evertils.plist`
+
+If using *nix:
+
+1. Configure a cron job.
+2. Profit.
