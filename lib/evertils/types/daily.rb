@@ -11,12 +11,43 @@ module Evertils
 
         @title = @format.date_templates[NOTEBOOK]
         @content = @format.template_contents(NOTEBOOK)
+
+        attach_pq_note if morning_note?
       end
 
       #
       # @since 0.3.9
       def tags
         ["day-#{Date.today.yday}"]
+      end
+
+      private
+
+      #
+      # @since 0.3.13
+      def morning_note?
+        !caller.grep(/morning/).nil?
+      end
+
+      #
+      # TODO: refactor
+      # @since 0.3.13
+      def attach_pq_note
+        @api = Evertils::Helper.load('ApiEnmlHandler', @config)
+        enml = @api.from_str(@format.template_contents(NOTEBOOK))
+
+        title = @format.date_templates[:'Priority Queue']
+        pq = @model.find_note_contents(title)
+        guid = pq.entity.guid
+        user = @model.user_info[:user]
+        shard = @model.user_info[:shard]
+
+        a = Nokogiri::XML::Node.new('a', enml)
+        a['href'] = "evernote:///view/#{user[:id]}/#{shard}/#{guid}/#{guid}/"
+        a.content = @format.date_templates[:'Priority Queue']
+
+        enml.at('li:contains("Queue") ul li').children.first.replace(a)
+        @content = enml
       end
     end
   end
