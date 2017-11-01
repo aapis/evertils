@@ -9,15 +9,22 @@ module Evertils
       end
 
       #
+      # @since 0.3.13
+      def from_str(str)
+        @xml = Nokogiri::XML::DocumentFragment.parse(str)
+      end
+
+      #
       # @since 0.3.7
       def convert_to_xml(enml)
         # remove the xml declaration and DTD
         enml = enml.split("\n")
         enml.shift(2)
 
-        @xml = Nokogiri::XML::DocumentFragment.parse(enml.join)
+        @xml = from_str(enml.join)
         self
       end
+      alias to_xml convert_to_xml
 
       #
       # @since 0.3.5
