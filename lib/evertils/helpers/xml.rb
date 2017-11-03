@@ -11,6 +11,8 @@ module Evertils
         @doc = doc.first
       end
 
+      #
+      # @since 0.3.15
       def a(link, content)
         conf = {
           href: link,
@@ -20,6 +22,8 @@ module Evertils
         create(:a, conf)
       end
 
+      #
+      # @since 0.3.15
       def li(*children)
         li = create(:li)
         children.each { |child| li.add_child(child) }
