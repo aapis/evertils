@@ -33,6 +33,8 @@ module Evertils
         result
       end
 
+      #
+      # @since 0.3.15
       def add_weekly_note_link
         xml = @api.from_str(@entity.content)
         xml_helper = Evertils::Helper.load('Xml', xml)
@@ -42,8 +44,14 @@ module Evertils
           @format.date_templates[:Weekly]
           )
         li = xml_helper.li(a)
+        br = xml_helper.br
 
         xml.search('ul:first-child li').after(li)
+
+        # add a line break after the UL if one is not there yet
+        if xml.search('ul:first-child').first.next_element.name != 'br'
+          xml.search('ul:first-child').after(br)
+        end
 
         @entity.content = xml.to_s.delete!("\n")
 

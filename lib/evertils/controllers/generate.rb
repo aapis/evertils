@@ -17,6 +17,7 @@ module Evertils
       def weekly
         note = Type::Weekly.new(@config)
         note.create if note.should_create?
+        note.add_daily_note_link
       end
 
       # generate monthly notes
@@ -49,10 +50,7 @@ module Evertils
         pq
         daily
         weekly
-        # monthly
-        # note = Type::Monthly.new(@config)
-        # note.create if note.should_create?
-        # note.add_weekly_note_link
+        monthly
       end
     end
   end

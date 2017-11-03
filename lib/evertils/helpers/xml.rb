@@ -24,10 +24,24 @@ module Evertils
 
       #
       # @since 0.3.15
+      def br
+        create(:br)
+      end
+
+      #
+      # @since 0.3.15
       def li(*children)
         li = create(:li)
         children.each { |child| li.add_child(child) }
         li
+      end
+
+      #
+      # @since 0.3.15
+      def div(conf = {}, *children)
+        el = create(:div, conf)
+        children.each { |child| el.add_child(child) }
+        el
       end
 
       #
