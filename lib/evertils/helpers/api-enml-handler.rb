@@ -1,6 +1,8 @@
 module Evertils
   module Helper
     class ApiEnmlHandler
+      include Nokogiri::XML
+
       #
       # @since 0.3.7
       def initialize(config = nil)
@@ -11,7 +13,21 @@ module Evertils
       #
       # @since 0.3.13
       def from_str(str)
-        @xml = Nokogiri::XML::DocumentFragment.parse(str)
+        @xml = DocumentFragment.parse(str)
+
+        # sometimes, the Doctype declaration gets borked by the XML parser
+        # lets replace it with a new DTD if that is the case
+        if @xml.children[1].is_a?(Text)
+          # remove the existing broken DTD
+          @xml.children[1].remove
+          # create a new one (note: output is overridden in DTD class defined
+          # below ApiEnmlHandler)
+          dtd = DTD.new('DOCTYPE', @xml)
+
+          @xml.children.first.after(dtd)
+        end
+
+        @xml
       end
 
       #
@@ -40,6 +56,13 @@ module Evertils
       # @since 0.3.1
       def to_enml(hash)
         Evertils::Helper::EvernoteENML.with_list(hash)
+      end
+    end
+
+    # gross hack to get around nokogiri failing to parse the DTD
+    class DTD < Nokogiri::XML::DTD
+      def to_s
+        return "\n<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">\n"
       end
     end
   end

@@ -18,6 +18,7 @@ require 'nokogiri'
 # include required files
 require 'evertils/kernel'
 require 'evertils/version'
+require 'evertils/base'
 require 'evertils/type'
 require 'evertils/helpers/time'
 require 'evertils/helpers/results'

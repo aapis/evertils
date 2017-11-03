@@ -9,8 +9,11 @@ module Evertils
       # @since 0.3.7
       def initialize(config, *args)
         @model = Evertils::Common::Query::Simple.new
+        @user = @model.user_info[:user]
+        @shard = @model.user_info[:shard]
         @format = Evertils::Helper.load('Formatting')
         @config = config if config
+        @api = Evertils::Helper.load('ApiEnmlHandler', @config)
         @args = args unless args.size.zero?
       end
 
@@ -42,6 +45,46 @@ module Evertils
         Notify.warning "#{self.class.name} skipped, note already exists" unless result
 
         result
+      end
+
+      #
+      # @since 0.3.15
+      def morning_note?
+        !caller.grep(/morning/).nil?
+      end
+
+      #
+      # @since 0.3.15
+      def wait_for(notebook)
+        note = find_note(notebook)
+
+        # didn't find it the first time?  wait and try again
+        if note.entity.nil?
+          iter = 0
+          loop do
+            iter += 1
+            note = find_note(notebook, true)
+            break unless note.entity.nil?
+          end
+
+          Notify.info("#{iter} attempts to find #{notebook} note") unless iter.zero?
+        end
+
+        note
+      end
+
+      #
+      # @since 0.3.15
+      def find_note(notebook, sleep = false)
+        sleep(5) if sleep
+        title = @format.date_templates[notebook]
+        @model.find_note_contents(title)
+      end
+
+      #
+      # @since 0.3.15
+      def internal_url_for(note)
+        "evernote:///view/#{@user[:id]}/#{@shard}/#{note.guid}/#{note.guid}/"
       end
     end
   end
