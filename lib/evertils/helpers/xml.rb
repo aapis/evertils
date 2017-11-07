@@ -31,15 +31,15 @@ module Evertils
       #
       # @since 0.3.15
       def li(*children)
-        li = create(:li)
-        children.each { |child| li.add_child(child) }
+        el = create(:li)
+        children.each { |child| el.add_child(child) }
         li
       end
 
       #
       # @since 0.3.15
-      def div(conf = {}, *children)
-        el = create(:div, conf)
+      def div(*children)
+        el = create(:div)
         children.each { |child| el.add_child(child) }
         el
       end
@@ -48,6 +48,8 @@ module Evertils
       # @since 0.3.15
       def create(element, conf = {})
         el = Nokogiri::XML::Node.new(element.to_s, @doc)
+
+        return el if conf.empty?
 
         conf.each_pair do |k, v|
           if el.respond_to? "#{k}="
