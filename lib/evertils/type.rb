@@ -22,7 +22,7 @@ module Evertils
       def create
         data = {
           title: @title,
-          body: @content,
+          body: @content.gsub!("\n", ''),
           parent_notebook: self.class::NOTEBOOK,
           tags: tags || [],
           colour: self.class::COLOUR
@@ -64,7 +64,7 @@ module Evertils
           loop do
             iter += 1
             note = find_note(notebook, true)
-            break unless note.entity.nil?
+            break unless note.entity.nil? || iter == 10
           end
 
           Notify.info("#{iter} attempts to find #{notebook} note") unless iter.zero?
