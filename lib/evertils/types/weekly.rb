@@ -47,7 +47,7 @@ module Evertils
 
         xml.search('en-note>div:first-child>ul li:last-child').after(li)
 
-        @entity.content = xml.to_s.delete!("\n")
+        @entity.content = xml
 
         Notify.success("#{self.class.name} updated, added daily note link") if @note.update
       end
