@@ -3,6 +3,7 @@ module Evertils
     class PriorityQueue < Type::Base
       NOTEBOOK = :'Priority Queue'
       COLOUR = 0xffe8b7
+      MAX_SEARCH_SIZE = 21
 
       #
       # @since 0.3.7
@@ -10,13 +11,14 @@ module Evertils
         super(config, *args)
 
         @handler = Evertils::Helper.load('ApiEnmlHandler', @config)
+        @title = @format.date_templates[NOTEBOOK]
 
         if Date.today.monday?
-          @title, @content = condition_monday
+          @content = condition_monday
         elsif Date.today.tuesday?
-          @title, @content = condition_tuesday
+          @content = condition_tuesday
         else
-          @title, @content = condition_default
+          @content = condition_default
         end
       end
 
@@ -38,15 +40,14 @@ module Evertils
 
         raise "Queue was not found - #{friday.strftime('%B %-d')}" unless found
 
-        [
-          @format.date_templates[NOTEBOOK],
-          @handler.convert_to_xml(found.entity.content).prepare
-        ]
+        @handler.convert_to_xml(found.entity.content).prepare
       end
 
       # Find monday's note
+      # TODO: refactor
       # @since 0.3.7
       def condition_tuesday
+        # get monday note
         monday = (Date.today - 1)
         dow = @format.day_of_week(monday.strftime('%a'))
         monday_note_title = "Queue For [#{monday.strftime('%B %-d')} - #{dow}]"
@@ -54,21 +55,38 @@ module Evertils
 
         if !monday_note.entity.nil?
           note = monday_note.entity
-          note.title = @format.date_templates[NOTEBOOK]
         else
           # if it does not exist, get friday's note
           friday = (Date.today - 4)
           dow = @format.day_of_week(friday.strftime('%a'))
-          note_title = "Queue For [#{friday.strftime('%B %-d')} - #{dow}]"
-          note = @model.find_note_contents(note_title)
+          fri_note_title = "Queue For [#{friday.strftime('%B %-d')} - #{dow}]"
+          fri_note = @model.find_note_contents(fri_note_title)
+
+          if fri_note.entity.nil?
+            # if it does not exist, get $day - 1 note until we find one
+            day = friday
+            iter = 0
+
+            Notify.info('Searching for...')
+
+            loop do
+              iter += 1
+              day -= 1
+              dow = @format.day_of_week(day.strftime('%a'))
+              note_title = "Queue For [#{day.strftime('%B %-d')} - #{dow}]"
+              query = @model.find_note_contents(note_title)
+              note = query.entity
+
+              Notify.info(" (#{iter}) #{note_title}")
+
+              break unless note.nil? || iter == MAX_SEARCH_SIZE
+            end
+          end
         end
 
         raise 'Queue was not found' unless note
 
-        [
-          note.title,
-          @handler.convert_to_xml(note.content).prepare
-        ]
+        @handler.convert_to_xml(note.content).prepare
       end
 
       # Default action for not-Monday/Tuesday
@@ -81,10 +99,7 @@ module Evertils
 
         raise "Queue was not found - #{yest.strftime('%B %-d')}" unless found
 
-        [
-          @format.date_templates[NOTEBOOK],
-          @handler.convert_to_xml(found.content).prepare
-        ]
+        @handler.convert_to_xml(found.content).prepare
       end
     end
   end

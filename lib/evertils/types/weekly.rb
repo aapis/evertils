@@ -20,20 +20,6 @@ module Evertils
       end
 
       #
-      # @since 0.3.7
-      def should_create?
-        is_monday = Date.today.monday?
-
-        @note = find_note(NOTEBOOK)
-        @entity = @note.entity
-        result = @entity.nil? && is_monday
-
-        Notify.warning "#{self.class.name} skipped, note already exists" unless result
-
-        result
-      end
-
-      #
       # @since 0.3.15
       def add_daily_note_link
         xml = @api.from_str(@entity.content)

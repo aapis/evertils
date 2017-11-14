@@ -56,6 +56,7 @@ module Evertils
       #
       # @since 0.3.15
       def wait_for(notebook)
+        Notify.info('Waiting for...')
         note = find_note(notebook)
 
         # didn't find it the first time?  wait and try again
@@ -63,6 +64,7 @@ module Evertils
           iter = 0
           loop do
             iter += 1
+            Notify.info(" #{notebook}")
             note = find_note(notebook, true)
             break unless note.entity.nil? || iter == 10
           end
