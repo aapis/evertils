@@ -33,8 +33,14 @@ module Evertils
           @format.date_templates[:Daily]
           )
         li = xml_helper.li(a)
+        br = xml_helper.br
 
         xml.search('en-note>div:first-child>ul li:last-child').after(li)
+
+        # add a line break after the UL if one is not there yet
+        if xml.search('en-note>div:first-child').first.next_element.name != 'br'
+          xml.search('en-note>div:first-child').after(br)
+        end
 
         @entity.content = xml.to_s
 
