@@ -38,8 +38,7 @@ module Evertils
           next if %i[Sa Su].include?(dow)
 
           note_title = "Queue For [#{day.strftime('%B %-d')} - #{dow}]"
-          query = @model.find_note_contents(note_title)
-          note = query.entity
+          note = @model.find_note_contents(note_title).entity
 
           Notify.info(" (#{iter}) #{note_title}")
 
