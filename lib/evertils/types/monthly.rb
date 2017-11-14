@@ -24,13 +24,47 @@ module Evertils
       def should_create?
         today_is_first_of_month = Date.today.day == 1
 
-        monthly_note_title = @format.date_templates[NOTEBOOK]
-        found = @model.find_note_contents(monthly_note_title)
-        result = found.entity.nil? && today_is_first_of_month
+        @note = find_note(NOTEBOOK)
+        @entity = @note.entity
+        result = @note.nil? && today_is_first_of_month
 
         Notify.warning "#{self.class.name} skipped, note already exists" unless result
 
         result
+      end
+
+      #
+      # @since 0.3.15
+      def add_weekly_note_link
+        # parse the ENML note data into something we can work with
+        xml = @api.from_str(@entity.content)
+        # include the XML element builder
+        xml_helper = Evertils::Helper.load('Xml', xml)
+        # find the note entity we want to link
+        linked_note = find_note(:Weekly).entity
+
+        # don't add the note link if it is already there
+        unless xml.search("a[href='#{internal_url_for(linked_note)}']").size.zero?
+          return Notify.warning('Weekly note link already exists here, exiting to avoid duplicate content')
+        end
+
+        a = xml_helper.a(
+          internal_url_for(linked_note),
+          @format.date_templates[:Weekly]
+          )
+        li = xml_helper.li(a)
+        br = xml_helper.br
+
+        xml.search('ul:first-child li').after(li)
+
+        # add a line break after the UL if one is not there yet
+        if xml.search('ul:first-child').first.next_element.name != 'br'
+          xml.search('ul:first-child').after(br)
+        end
+
+        @entity.content = xml.to_s
+
+        Notify.success("#{self.class.name} updated, added weekly note link") if @note.update
       end
     end
   end

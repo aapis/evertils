@@ -1,9 +1,10 @@
+require 'evertils/helpers/xml'
+
 module Evertils
   module Type
     class Daily < Type::Base
       NOTEBOOK = :Daily
       COLOUR = 0xffe8b7
-      MAX_SEARCH_SIZE = 21
 
       #
       # @since 0.3.7
@@ -25,50 +26,26 @@ module Evertils
       private
 
       #
-      # @since 0.3.13
-      def morning_note?
-        !caller.grep(/morning/).nil?
-      end
-
-      #
       # TODO: refactor
       # @since 0.3.13
       def attach_pq_note
         @api = Evertils::Helper.load('ApiEnmlHandler', @config)
         enml = @api.from_str(@format.template_contents(NOTEBOOK))
 
-        Notify.info('Waiting for...')
-        pq = find_priority_queue
-
-        # didn't find the note the first time?  wait and try again
-        if pq.entity.nil?
-          iter = 1
-          loop do
-            iter += 1
-            pq = find_priority_queue(true)
-            break unless pq.entity.nil? || iter == MAX_SEARCH_SIZE
-          end
-
-          Notify.info("#{iter} attempts to find the pq note") unless iter.zero?
-        end
+        pq = wait_for(:'Priority Queue')
 
         guid = pq.entity.guid
-        user = @model.user_info[:user]
-        shard = @model.user_info[:shard]
 
-        a = Nokogiri::XML::Node.new('a', enml)
-        a['href'] = "evernote:///view/#{user[:id]}/#{shard}/#{guid}/#{guid}/"
-        a.content = @format.date_templates[:'Priority Queue']
+        xml_conf = {
+          href: "evernote:///view/#{@user[:id]}/#{@shard}/#{guid}/#{guid}/",
+          content: @format.date_templates[:'Priority Queue']
+        }
+
+        xml = Evertils::Helper.load('Xml', enml)
+        a = xml.create(:a, xml_conf)
 
         enml.at('li:contains("Queue") ul li').children.first.replace(a)
         @content = enml
-      end
-
-      def find_priority_queue(sleep = false)
-        sleep(5) if sleep
-        title = @format.date_templates[:'Priority Queue']
-        Notify.info(title)
-        @model.find_note_contents(title)
       end
     end
   end
