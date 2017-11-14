@@ -22,11 +22,17 @@ module Evertils
       #
       # @since 0.3.15
       def add_daily_note_link
+        # parse the ENML note data into something we can work with
         xml = @api.from_str(@entity.content)
+        # include the XML element builder
         xml_helper = Evertils::Helper.load('Xml', xml)
-
         # find the note entity we want to link
         linked_note = find_note(:Daily).entity
+
+        # don't add the note link if it is already there
+        unless xml.search("a[href='#{internal_url_for(linked_note)}']").size.zero?
+          return Notify.warning('Daily note link already exists here, exiting to avoid duplicate content')
+        end
 
         a = xml_helper.a(
           internal_url_for(linked_note),
