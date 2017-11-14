@@ -21,9 +21,9 @@ module Evertils
       # +request+:: Instance of Evertils::Request, enables access to request
       #             parameters
       def initialize(config, request)
-        @threads = []
         @config = config
         @request = request
+        @pool = ThreadPool.new
 
         pre_exec
       end
@@ -35,24 +35,15 @@ module Evertils
 
       # Handle the request
       def exec
-        @threads << Thread.new do
-          start = Time.now
-
-          if @request.param.nil?
-            send(@method.to_sym)
-          else
-            send(@method.to_sym, @request.flags.first)
-          end
-
-          finish = Time.now
-
-          puts start - finish
+        if @request.param.nil?
+          send(@method.to_sym)
+        else
+          send(@method.to_sym, @request.flags.first)
         end
       end
 
       # Perform post-run cleanup tasks, such as deleting old logs
       def post_exec
-        @threads.each(&:join)
       end
 
       # Determines if the command can execute

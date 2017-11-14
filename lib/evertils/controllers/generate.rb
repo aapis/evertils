@@ -45,10 +45,11 @@ module Evertils
       #  - weekly (if today is Monday and there isn't a weekly log already)
       #  - monthly (if today is the 1st and there isn't a monthly log already)
       def morning
-        pq
-        daily
-        weekly
-        monthly
+        @pool.add(Thread.new { pq })
+        @pool.add(Thread.new { daily })
+        @pool.add(Thread.new { weekly })
+        @pool.add(Thread.new { monthly })
+        @pool.join_all
       end
     end
   end
