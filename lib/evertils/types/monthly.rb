@@ -39,8 +39,11 @@ module Evertils
         xml = @api.from_str(@entity.content)
         xml_helper = Evertils::Helper.load('Xml', xml)
 
+        # find the note entity we want to link
+        linked_note = find_note(:Weekly).entity
+
         a = xml_helper.a(
-          internal_url_for(@entity),
+          internal_url_for(linked_note),
           @format.date_templates[:Weekly]
           )
         li = xml_helper.li(a)
@@ -53,7 +56,7 @@ module Evertils
           xml.search('ul:first-child').after(br)
         end
 
-        @entity.content = xml.to_s.delete!("\n")
+        @entity.content = xml.to_s
 
         Notify.success("#{self.class.name} updated, added weekly note link") if @note.update
       end
