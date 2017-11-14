@@ -3,7 +3,6 @@ module Evertils
     class PriorityQueue < Type::Base
       NOTEBOOK = :'Priority Queue'
       COLOUR = 0xffe8b7
-      MAX_SEARCH_SIZE = 21
 
       #
       # @since 0.3.7

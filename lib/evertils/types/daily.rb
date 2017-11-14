@@ -5,7 +5,6 @@ module Evertils
     class Daily < Type::Base
       NOTEBOOK = :Daily
       COLOUR = 0xffe8b7
-      MAX_SEARCH_SIZE = 21
 
       #
       # @since 0.3.7
