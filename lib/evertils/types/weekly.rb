@@ -25,15 +25,18 @@ module Evertils
         xml = @api.from_str(@entity.content)
         xml_helper = Evertils::Helper.load('Xml', xml)
 
+        # find the note entity we want to link
+        linked_note = find_note(:Daily).entity
+
         a = xml_helper.a(
-          internal_url_for(@entity),
+          internal_url_for(linked_note),
           @format.date_templates[:Daily]
           )
         li = xml_helper.li(a)
 
         xml.search('en-note>div:first-child>ul li:last-child').after(li)
 
-        @entity.content = xml
+        @entity.content = xml.to_s
 
         Notify.success("#{self.class.name} updated, added daily note link") if @note.update
       end
