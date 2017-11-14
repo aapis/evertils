@@ -18,20 +18,6 @@ module Evertils
       def tags
         ["week-#{Date.today.cweek}"]
       end
-
-      #
-      # @since 0.3.7
-      def should_create?
-        is_monday = Date.today.monday?
-
-        weekly_note_title = @format.date_templates[NOTEBOOK]
-        found = @model.find_note_contents(weekly_note_title)
-        result = found.entity.nil? && is_monday
-
-        Notify.warning "#{self.class.name} skipped, note already exists" unless result
-
-        result
-      end
     end
   end
 end
