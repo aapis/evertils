@@ -4,6 +4,7 @@ module Evertils
       attr_reader :title, :content, :notebook
 
       COLOUR = 0xffffff
+      MAX_SEARCH_SIZE = 21
 
       #
       # @since 0.3.7
@@ -61,12 +62,10 @@ module Evertils
 
         # didn't find it the first time?  wait and try again
         if note.entity.nil?
-          iter = 0
-          loop do
-            iter += 1
+          (1..MAX_SEARCH_SIZE).each do |iter|
             Notify.info(" #{notebook}")
             note = find_note(notebook, true)
-            break unless note.entity.nil? || iter == 10
+            break unless note.entity.nil?
           end
 
           Notify.info("#{iter} attempts to find #{notebook} note") unless iter.zero?
