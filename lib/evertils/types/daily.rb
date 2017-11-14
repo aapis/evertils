@@ -3,6 +3,7 @@ module Evertils
     class Daily < Type::Base
       NOTEBOOK = :Daily
       COLOUR = 0xffe8b7
+      MAX_SEARCH_SIZE = 21
 
       #
       # @since 0.3.7
@@ -36,15 +37,16 @@ module Evertils
         @api = Evertils::Helper.load('ApiEnmlHandler', @config)
         enml = @api.from_str(@format.template_contents(NOTEBOOK))
 
+        Notify.info('Waiting for...')
         pq = find_priority_queue
 
         # didn't find the note the first time?  wait and try again
         if pq.entity.nil?
-          iter = 0
+          iter = 1
           loop do
             iter += 1
             pq = find_priority_queue(true)
-            break unless pq.entity.nil?
+            break unless pq.entity.nil? || iter == MAX_SEARCH_SIZE
           end
 
           Notify.info("#{iter} attempts to find the pq note") unless iter.zero?
@@ -65,6 +67,7 @@ module Evertils
       def find_priority_queue(sleep = false)
         sleep(5) if sleep
         title = @format.date_templates[:'Priority Queue']
+        Notify.info(title)
         @model.find_note_contents(title)
       end
     end
