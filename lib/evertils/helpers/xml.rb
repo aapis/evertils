@@ -33,7 +33,7 @@ module Evertils
       def li(*children)
         el = create(:li)
         children.each { |child| el.add_child(child) }
-        li
+        el
       end
 
       #
