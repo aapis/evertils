@@ -26,7 +26,7 @@ module Evertils
 
         @note = find_note(NOTEBOOK)
         @entity = @note.entity
-        result = @note.nil? && today_is_first_of_month
+        result = @entity.nil? && today_is_first_of_month
 
         Notify.warning "#{self.class.name} skipped, note already exists" unless result
 
@@ -41,7 +41,7 @@ module Evertils
         # include the XML element builder
         xml_helper = Evertils::Helper.load('Xml', xml)
         # find the note entity we want to link
-        linked_note = find_note(:Weekly).entity
+        linked_note = wait_for(:Weekly).entity
 
         # don't add the note link if it is already there
         unless xml.search("a[href='#{internal_url_for(linked_note)}']").size.zero?

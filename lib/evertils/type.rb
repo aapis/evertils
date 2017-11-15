@@ -23,7 +23,7 @@ module Evertils
       def create
         data = {
           title: @title,
-          body: @content.delete!("\n"),
+          body: @content.to_s.delete!("\n"),
           parent_notebook: self.class::NOTEBOOK,
           tags: tags || [],
           colour: self.class::COLOUR
@@ -41,7 +41,7 @@ module Evertils
       def should_create?
         @note = find_note(self.class::NOTEBOOK)
         @entity = @note.entity
-        result = @note.nil?
+        result = @entity.nil?
 
         Notify.warning "#{self.class.name} skipped, note already exists" unless result
 
@@ -65,10 +65,8 @@ module Evertils
           (1..MAX_SEARCH_SIZE).each do |iter|
             Notify.info(" (#{iter}) #{notebook}")
             note = find_note(notebook, true)
-            break unless note.entity.nil?
+            break unless note.entity.nil? || iter == MAX_SEARCH_SIZE
           end
-
-          Notify.info("#{iter} attempts to find #{notebook} note") unless iter.zero?
         end
 
         note
