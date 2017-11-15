@@ -63,7 +63,7 @@ module Evertils
         # didn't find it the first time?  wait and try again
         if note.entity.nil?
           (1..MAX_SEARCH_SIZE).each do |iter|
-            Notify.info(" (#{iter}) #{note_title}")
+            Notify.info(" (#{iter}) #{notebook}")
             note = find_note(notebook, true)
             break unless note.entity.nil?
           end
