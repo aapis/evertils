@@ -7,9 +7,12 @@ module Evertils
       return if valid_config?
 
       # no config file found, lets create one using the firstrun controller
-      require 'client/controller/firstrun'
+      require 'evertils/controllers/firstrun'
 
-      controller = Evertils::Controller::Firstrun.new
+      config = {}
+      request = {}
+
+      controller = Evertils::Controller::Firstrun.new(config, request)
       controller.default
 
       populate_config
@@ -29,8 +32,12 @@ module Evertils
       file = File.expand_path("~/.evertils/config.yml")
       fmt = Evertils::Helper.load('Formatting')
 
-      @yml = fmt.symbolize(::YAML.load_file(file))
-      self
+      begin
+        @yml = fmt.symbolize(::YAML.load_file(file))
+        self
+      rescue
+        @yml = nil
+      end
     end
 
     # Get a specific value from the config file data

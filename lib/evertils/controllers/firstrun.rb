@@ -4,8 +4,10 @@ module Evertils
       # Create the configuration file if it does not exist
       def default
         if File.exist?("#{Dir.home}/.evertils/config.yml")
-          Notify.error('Configuration already exists, this is not the first run!  Exiting.', show_time: false)
+          return Notify.warning('Configuration already exists, this is not the first run!')
         end
+
+        FileUtils.mkdir_p("#{Dir.home}/.evertils/")
 
         File.open("#{Dir.home}/.evertils/config.yml", "w") do |f|
           f.write <<-'CONTENTS'
