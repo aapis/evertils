@@ -37,7 +37,7 @@ module Evertils
         if @request.param.nil?
           send(@method.to_sym)
         else
-          send(@method.to_sym, @request.flags.first)
+          send(@method.to_sym, (@request.flags.first || @request.param))
         end
       end
 

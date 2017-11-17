@@ -23,6 +23,16 @@ module Evertils
       end
 
       #
+      # @since 0.3.18
+      def span(content)
+        conf = {
+          content: content
+        }
+
+        create(:span, conf)
+      end
+
+      #
       # @since 0.3.15
       def br
         create(:br)
@@ -40,6 +50,14 @@ module Evertils
       # @since 0.3.15
       def div(*children)
         el = create(:div)
+        children.each { |child| el.add_child(child) }
+        el
+      end
+
+      #
+      # @since 0.3.18
+      def ul(*children)
+        el = create(:ul)
         children.each { |child| el.add_child(child) }
         el
       end

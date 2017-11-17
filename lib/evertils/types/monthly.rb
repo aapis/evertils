@@ -24,7 +24,7 @@ module Evertils
       def should_create?
         today_is_first_of_month = Date.today.day == 1
 
-        @note = find_note(NOTEBOOK)
+        @note = @note_helper.find_note(NOTEBOOK)
         @entity = @note.entity
         result = @entity.nil? && today_is_first_of_month
 
@@ -41,15 +41,15 @@ module Evertils
         # include the XML element builder
         xml_helper = Evertils::Helper.load('Xml', xml)
         # find the note entity we want to link
-        linked_note = wait_for(:Weekly).entity
+        linked_note = @note_helper.wait_for(:Weekly).entity
 
         # don't add the note link if it is already there
-        unless xml.search("a[href='#{internal_url_for(linked_note)}']").size.zero?
+        unless xml.search("a[href='#{@note_helper.internal_url_for(linked_note)}']").size.zero?
           return Notify.warning('Weekly note link already exists here, exiting to avoid duplicate content')
         end
 
         a = xml_helper.a(
-          internal_url_for(linked_note),
+          @note_helper.internal_url_for(linked_note),
           @format.date_templates[:Weekly]
           )
         li = xml_helper.li(a)

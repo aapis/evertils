@@ -27,15 +27,15 @@ module Evertils
         # include the XML element builder
         xml_helper = Evertils::Helper.load('Xml', xml)
         # find the note entity we want to link
-        linked_note = wait_for(:Daily).entity
+        linked_note = @note_helper.wait_for(:Daily).entity
 
         # don't add the note link if it is already there
-        unless xml.search("a[href='#{internal_url_for(linked_note)}']").size.zero?
+        unless xml.search("a[href='#{@note_helper.internal_url_for(linked_note)}']").size.zero?
           return Notify.warning('Daily note link already exists here, exiting to avoid duplicate content')
         end
 
         a = xml_helper.a(
-          internal_url_for(linked_note),
+          @note_helper.internal_url_for(linked_note),
           @format.date_templates[:Daily]
           )
         li = xml_helper.li(a)
