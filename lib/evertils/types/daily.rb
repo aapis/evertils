@@ -1,5 +1,3 @@
-require 'evertils/helpers/xml'
-
 module Evertils
   module Type
     class Daily < Type::Base
@@ -32,12 +30,10 @@ module Evertils
         @api = Evertils::Helper.load('ApiEnmlHandler', @config)
         enml = @api.from_str(@format.template_contents(NOTEBOOK))
 
-        pq = wait_for(:'Priority Queue')
-
-        guid = pq.entity.guid
+        pq = @note_helper.wait_for(:'Priority Queue')
 
         xml_conf = {
-          href: "evernote:///view/#{@user[:id]}/#{@shard}/#{guid}/#{guid}/",
+          href: @note_helper.internal_url_for(pq.entity),
           content: @format.date_templates[:'Priority Queue']
         }
 
