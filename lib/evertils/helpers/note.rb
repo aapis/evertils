@@ -43,6 +43,12 @@ module Evertils
       def internal_url_for(note)
         "evernote:///view/#{@user[:id]}/#{@shard}/#{note.guid}/#{note.guid}/"
       end
+
+      # Create a note
+      def create(data)
+        @model.create_note(data)
+      end
+      alias create_note create
     end
   end
 end
