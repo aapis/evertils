@@ -28,9 +28,10 @@ module Evertils
         xml = @api_helper.from_str(note.entity.content)
         xml_helper = Evertils::Helper.load('Xml', xml)
 
+        time = Time.now.strftime('%I:%M')
         target = xml.search("div:contains('#{conf[:search]}')").first.next_element
         nearest_ul = target.search('ul')
-        span = xml_helper.span(conf[:append])
+        span = xml_helper.span("#{time} - #{conf[:append]}")
         li = xml_helper.li(span)
 
         if nearest_ul.empty?
@@ -41,7 +42,7 @@ module Evertils
         end
 
         note.entity.content = xml.to_s
-        Notify.success('Item logged') if note.update
+        Notify.success("Item logged at #{time}") if note.update
       end
     end
   end
