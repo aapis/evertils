@@ -23,7 +23,7 @@ module Evertils
       def create
         data = {
           title: @title,
-          body: @content.to_s.delete!("\n"),
+          body: @content.to_s.delete("\n"),
           parent_notebook: self.class::NOTEBOOK,
           tags: tags || [],
           colour: self.class::COLOUR
