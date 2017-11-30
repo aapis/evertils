@@ -62,9 +62,9 @@ module Evertils
       # lets replace it with a new DTD if that is the case
       # @since 0.3.15
       def fix_dtd
-        if @xml.children[0].is_a?(Text)
+        if @xml.children.first.is_a?(Text)
           # remove the existing broken DTD
-          @xml.children[0].remove
+          @xml.children.first.remove
           # create a new one (note: output is overridden in DTD class defined
           # below ApiEnmlHandler)
           dtd = DTD.new('DOCTYPE', @xml)
@@ -83,7 +83,7 @@ module Evertils
     # gross hack to get around nokogiri failing to parse the DTD
     class DTD < Nokogiri::XML::DTD
       def to_s
-        return "\n<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">\n"
+        return "<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">\n"
       end
     end
   end
