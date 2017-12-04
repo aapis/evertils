@@ -28,7 +28,7 @@ module Evertils
         day = Date.today
         note = nil
 
-        Notify.info('Searching for...')
+        Notify.info('Searching for last PQ...')
 
         (1..MAX_SEARCH_SIZE).each do |iter|
           day -= 1
@@ -44,8 +44,6 @@ module Evertils
 
           break unless note.nil?
         end
-
-        raise 'Queue was not found' unless note
 
         @handler.convert_to_xml(note.content).prepare
       end
