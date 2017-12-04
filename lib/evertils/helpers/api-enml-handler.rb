@@ -25,11 +25,7 @@ module Evertils
       #
       # @since 0.3.7
       def convert_to_xml(enml)
-        # remove the xml declaration and DTD
-        enml = enml.split("\n")
-        enml.shift(2)
-
-        @xml = from_str(enml.join)
+        @xml = from_str(enml)
         self
       end
       alias to_xml convert_to_xml
@@ -62,9 +58,9 @@ module Evertils
       # lets replace it with a new DTD if that is the case
       # @since 0.3.15
       def fix_dtd
-        if @xml.children.first.is_a?(Text)
+        if @xml.children[0].is_a?(Text)
           # remove the existing broken DTD
-          @xml.children.first.remove
+          @xml.children[0].remove
           # create a new one (note: output is overridden in DTD class defined
           # below ApiEnmlHandler)
           dtd = DTD.new('DOCTYPE', @xml)
