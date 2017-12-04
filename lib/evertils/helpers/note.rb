@@ -15,7 +15,7 @@ module Evertils
 
       # Wait for a note to exist
       def wait_for(notebook)
-        Notify.info('Waiting for...')
+        Notify.info("Waiting for #{notebook}...")
         note = find_note(notebook)
 
         # didn't find it the first time?  wait and try again
