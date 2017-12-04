@@ -36,22 +36,23 @@ module Evertils
       #
       # @since 0.3.15
       def add_weekly_note_link
+        wk_entity = @note_helper.wait_for(:Weekly).entity
         # parse the ENML note data into something we can work with
         xml = @api.from_str(@entity.content)
         # include the XML element builder
         xml_helper = Evertils::Helper.load('Xml', xml)
-        # find the note entity we want to link
-        linked_note = @note_helper.wait_for(:Weekly).entity
+        # internal URL for the linked note
+        note_url = @note_helper.internal_url_for(wk_entity)
 
         # don't add the note link if it is already there
-        unless xml.search("a[href='#{@note_helper.internal_url_for(linked_note)}']").size.zero?
+        unless xml.search("a[href='#{note_url}']").size.zero?
           return Notify.warning('Weekly note link already exists here, exiting to avoid duplicate content')
         end
 
         a = xml_helper.a(
-          @note_helper.internal_url_for(linked_note),
+          note_url,
           @format.date_templates[:Weekly]
-          )
+        )
         li = xml_helper.li(a)
         br = xml_helper.br
 
