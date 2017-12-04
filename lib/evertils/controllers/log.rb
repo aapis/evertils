@@ -12,7 +12,7 @@ module Evertils
       def message(text)
         Notify.error('Text argument is required', {}) if text.nil?
 
-        note = @note_helper.find_note(:Daily)
+        note = @note_helper.wait_for(:Daily)
         edit_conf = {
           search: 'Triage',
           append: text
