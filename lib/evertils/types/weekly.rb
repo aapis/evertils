@@ -16,7 +16,10 @@ module Evertils
       #
       # @since 0.3.9
       def tags
-        ["week-#{Date.today.cweek}"]
+        [
+          "week-#{Date.today.cweek}",
+          "month-#{Date.today.month}"
+        ]
       end
 
       #
