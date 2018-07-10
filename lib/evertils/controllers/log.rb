@@ -32,20 +32,14 @@ module Evertils
 
         time = Time.now.strftime('%I:%M')
         target = xml.search("div:contains('#{conf[:search]}')").first.next_element
-        nearest_ul = target.search('ul')
-        span = xml_helper.span("#{time} - #{conf[:append]}")
-        li = xml_helper.li(span)
 
-        if nearest_ul.empty?
-          node = xml_helper.ul(li)
-          if target.children.size.zero?
-            target.add_child(node)
-          else
-            target.children.before(node)
-          end
-        else
-          nearest_ul.children.after(li)
-        end
+        return Notify.error('Unable to log message') if target.nil?
+
+        log_message_txt = xml_helper.span("#{time} - #{conf[:append]}")
+        log_message_el = xml_helper.li(log_message_txt)
+
+        # append the log message to the target
+        target.add_child(log_message_el)
 
         note.entity.content = xml.to_s
         Notify.success("Item logged at #{time}") if note.update
