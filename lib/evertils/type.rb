@@ -4,7 +4,7 @@ module Evertils
       attr_reader :title, :content, :notebook
 
       COLOUR = 0xffffff
-      MAX_SEARCH_SIZE = 21
+      MAX_SEARCH_SIZE = 11
 
       #
       # @since 0.3.7
