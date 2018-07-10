@@ -1,5 +1,11 @@
 module Evertils
   class Cfg
+
+    # default values for initialization
+    def initialize
+      @yml = {}
+    end
+
     # Perform first run tasks and create or read config file values
     def bootstrap!
       populate_config
