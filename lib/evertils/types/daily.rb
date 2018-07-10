@@ -31,7 +31,6 @@ module Evertils
       # TODO: refactor
       # @since 0.3.13
       def attach_pq_note
-        @api = Evertils::Helper.load('ApiEnmlHandler', @config)
         enml = @api.from_str(@format.template_contents(NOTEBOOK))
 
         pq = @note_helper.wait_for(:'Priority Queue')
