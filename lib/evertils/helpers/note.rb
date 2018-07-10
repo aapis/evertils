@@ -3,7 +3,7 @@ module Evertils
     class Note
       attr_reader :model
 
-      MAX_SEARCH_SIZE = 21
+      MAX_SEARCH_SIZE = 11
 
       # Create the Note object
       def initialize
