@@ -14,7 +14,7 @@ module Evertils
       # @since 0.3.13
       def from_str(str)
         str.sub!("\n", '')
-        @xml = DocumentFragment.parse(str) do |conf|
+        @xml = DocumentFragment.parse(&:noblanks)
           conf.noblanks
         end
 
