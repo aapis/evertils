@@ -36,11 +36,15 @@ module Evertils
 
         if nearest_ul.empty?
           node = xml_helper.ul(li)
-          target.children.before(node)
+          if target.children.size.zero?
+            node << target.children
+          else
+            target.children.before(node)
+          end
         else
           nearest_ul.children.after(li)
         end
-
+        puts xml.to_s
         note.entity.content = xml.to_s
         Notify.success("Item logged at #{time}") if note.update
       end

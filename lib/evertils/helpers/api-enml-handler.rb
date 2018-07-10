@@ -58,14 +58,18 @@ module Evertils
       # lets replace it with a new DTD if that is the case
       # @since 0.3.15
       def fix_dtd
-        if @xml.children[0].is_a?(Text)
+        node = @xml.children[0]
+
+        if node.is_a?(ProcessingInstruction)
+          node = node.next
+
           # remove the existing broken DTD
-          @xml.children[0].remove
+          node.remove
           # create a new one (note: output is overridden in DTD class defined
           # below ApiEnmlHandler)
           dtd = DTD.new('DOCTYPE', @xml)
 
-          @xml.children.first.before(dtd)
+          @xml.children.first.after(dtd)
         end
       end
 
