@@ -9,7 +9,6 @@ module Evertils
       def initialize(config, *args)
         super(config, *args)
 
-        @handler = Evertils::Helper.load('ApiEnmlHandler', @config)
         @title = @format.date_templates[NOTEBOOK]
         @content = find_previous
       end
@@ -49,7 +48,7 @@ module Evertils
           break unless note.nil?
         end
 
-        @handler.convert_to_xml(note.content).prepare
+        @api.convert_to_xml(note.content).prepare
       end
     end
   end
