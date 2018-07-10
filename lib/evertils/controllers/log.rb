@@ -9,14 +9,16 @@ module Evertils
       end
 
       # Send arbitrary text to the daily log
-      def message(text)
-        Notify.error('Text argument is required', {}) if text.nil?
+      def message(text = nil)
+        return Notify.error('A message is required', {}) if text.nil?
 
         note = @note_helper.wait_for(:Daily)
         edit_conf = {
           search: 'Triage',
           append: text
         }
+
+        return Notify.error("Note not found") if note.entity.nil?
 
         modify(note, edit_conf)
       end
@@ -37,14 +39,14 @@ module Evertils
         if nearest_ul.empty?
           node = xml_helper.ul(li)
           if target.children.size.zero?
-            node << target.children
+            target.add_child(node)
           else
             target.children.before(node)
           end
         else
           nearest_ul.children.after(li)
         end
-        puts xml.to_s
+
         note.entity.content = xml.to_s
         Notify.success("Item logged at #{time}") if note.update
       end
