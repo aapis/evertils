@@ -5,7 +5,7 @@ module Evertils
         super
 
         @note_helper = Evertils::Helper.load('Note')
-        @api_helper = Evertils::Helper.load('ApiEnmlHandler', {})
+        @api_helper = Evertils::Helper.load('ApiEnmlHandler', @config)
       end
 
       # Send arbitrary text to the daily log
