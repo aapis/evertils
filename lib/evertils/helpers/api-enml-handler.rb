@@ -60,17 +60,18 @@ module Evertils
       def fix_dtd
         node = @xml.children[0]
 
+        # the node we are looking at is actually the XML node, skip it
         if node.is_a?(ProcessingInstruction)
           node = node.next
-
-          # remove the existing broken DTD
-          node.remove
-          # create a new one (note: output is overridden in DTD class defined
-          # below ApiEnmlHandler)
-          dtd = DTD.new('DOCTYPE', @xml)
-
-          @xml.children.first.after(dtd)
         end
+
+        # remove the existing broken DTD
+        node.remove
+        # create a new one (note: output is overridden in DTD class defined
+        # below ApiEnmlHandler)
+        dtd = DTD.new('DOCTYPE', @xml)
+
+        @xml.children.first.before(dtd)
       end
 
       #
