@@ -3,8 +3,6 @@ module Evertils
     class Note
       attr_reader :model
 
-      MAX_SEARCH_SIZE = 11
-
       # Create the Note object
       def initialize
         @model = Evertils::Common::Query::Simple.new
@@ -18,13 +16,17 @@ module Evertils
         Notify.info("Waiting for #{notebook}...")
         note = find_note(notebook)
 
-        # didn't find it the first time?  wait and try again
-        if note.entity.nil?
-          (1..MAX_SEARCH_SIZE).each do |iter|
-            Notify.info(" (#{iter}) #{notebook}")
-            note = find_note(notebook, true)
-            break unless note.entity.nil? || iter == MAX_SEARCH_SIZE
+        begin
+          # didn't find it the first time?  wait and try again
+          if note.entity.nil?
+            (1..Evertils::Type::Base::MAX_SEARCH_SIZE).each do |iter|
+              Notify.info(" (#{iter}) #{notebook}")
+              note = find_note(notebook, true)
+              break unless note.entity.nil? || iter == Evertils::Type::Base::MAX_SEARCH_SIZE
+            end
           end
+        rescue Interrupt
+          Notify.warning('Cancelled wait')
         end
 
         note
