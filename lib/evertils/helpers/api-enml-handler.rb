@@ -5,8 +5,8 @@ module Evertils
 
       #
       # @since 0.3.7
-      def initialize(config = nil)
-        @config = config
+      def initialize(args = [])
+        @config = args.first
         self
       end
 
@@ -14,7 +14,7 @@ module Evertils
       # @since 0.3.13
       def from_str(str)
         str.sub!("\n", '')
-        @xml = DocumentFragment.parse(&:noblanks)
+        @xml = DocumentFragment.parse(str) do |conf|
           conf.noblanks
         end
 
@@ -47,7 +47,7 @@ module Evertils
           children = node.children
 
           if children.size == 1 && children.first.is_a?(Nokogiri::XML::Text)
-            node.remove if node.text.strip == ''
+            node.remove if node.text.strip.empty?
           end
         end
 
