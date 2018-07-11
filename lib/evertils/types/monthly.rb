@@ -22,8 +22,6 @@ module Evertils
       #
       # @since 0.3.15
       def add_weekly_note_link
-        return if @entity.nil?
-
         wk_entity = @note_helper.wait_for(:Weekly).entity
         # parse the ENML note data into something we can work with
         xml = @api.from_str(@entity.content)
