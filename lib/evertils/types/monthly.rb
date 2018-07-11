@@ -20,22 +20,10 @@ module Evertils
       end
 
       #
-      # @since 0.3.7
-      def should_create?
-        today_is_first_of_month = Date.today.day == 1
-
-        @note = @note_helper.find_note(NOTEBOOK)
-        @entity = @note.entity
-        result = @entity.nil? && today_is_first_of_month
-
-        Notify.warning "#{self.class.name} skipped, note already exists" unless result
-
-        result
-      end
-
-      #
       # @since 0.3.15
       def add_weekly_note_link
+        return if @entity.nil?
+
         wk_entity = @note_helper.wait_for(:Weekly).entity
         # parse the ENML note data into something we can work with
         xml = @api.from_str(@entity.content)
