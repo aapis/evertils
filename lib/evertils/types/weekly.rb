@@ -52,6 +52,11 @@ module Evertils
           xml.search('en-note>div:first-child').after(br)
         end
 
+        # remove XML processing definition if it is the second element
+        if xml.children[1].is_a?(Nokogiri::XML::ProcessingInstruction)
+          xml.children[1].remove
+        end
+
         @entity.content = xml.to_s
 
         Notify.success("#{self.class.name} updated, added daily note link") if @note.update
