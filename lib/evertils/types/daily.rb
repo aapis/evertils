@@ -32,18 +32,21 @@ module Evertils
       # @since 0.3.13
       def attach_pq_note
         enml = @api.from_str(@format.template_contents(NOTEBOOK))
-
         pq = @note_helper.wait_for(:'Priority Queue')
-
         xml_conf = {
           href: @note_helper.internal_url_for(pq.entity),
           content: @format.date_templates[:'Priority Queue']
         }
-
         xml = Evertils::Helper.load('Xml', enml)
         a = xml.create(:a, xml_conf)
 
         enml.at('li:contains("Queue") ul li').children.first.replace(a)
+
+        # remove dtd if it is the first element
+        if enml.children.first.is_a?(Evertils::Helper::DTD)
+          enml.children.first.remove
+        end
+
         @content = enml
       end
     end

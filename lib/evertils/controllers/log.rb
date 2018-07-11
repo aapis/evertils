@@ -40,6 +40,10 @@ module Evertils
 
         # append the log message to the target
         target.add_child(log_message_el)
+        # remove XML processing definition if it is the second element
+        if xml.children[1].is_a?(Nokogiri::XML::ProcessingInstruction)
+          xml.children[1].remove
+        end
 
         note.entity.content = xml.to_s
         Notify.success("Item logged at #{time}") if note.update

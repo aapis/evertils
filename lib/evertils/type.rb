@@ -13,7 +13,7 @@ module Evertils
         @note_helper = Evertils::Helper.load('Note')
         @format = Evertils::Helper.load('Formatting')
 
-        @config = config if config
+        @config = config
         @api = Evertils::Helper.load('ApiEnmlHandler', @config)
         @args = args unless args.size.zero?
       end
@@ -51,7 +51,7 @@ module Evertils
       #
       # @since 0.3.15
       def morning_note?
-        !caller.grep(/morning/).nil?
+        !caller.grep(/morning/).empty?
       end
     end
   end
