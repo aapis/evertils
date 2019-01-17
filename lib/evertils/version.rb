@@ -1,3 +1,3 @@
 module Evertils
-  VERSION = '0.3.27'.freeze
+  VERSION = '0.4.0'.freeze
 end
