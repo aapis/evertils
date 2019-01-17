@@ -1,0 +1,2 @@
+class RequiredCheckException < StandardError
+end
