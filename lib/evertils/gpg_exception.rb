@@ -1,0 +1,2 @@
+class GpgException < StandardError
+end

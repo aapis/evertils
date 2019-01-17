@@ -42,8 +42,17 @@ module Evertils
     # Get a specific value from the config file data
     # Params:
     # +name+:: String/symbol key value
-    def get(name)
+    def get(name, child = nil)
+      return @yml[name.to_sym][child.to_sym] unless child.nil?
       @yml[name.to_sym]
+    end
+
+    # Checks if a key exists
+    # Params:
+    # +name+:: String/symbol key value
+    def exist?(name, child = nil)
+      return @yml[name].key?(child.to_sym) unless child.nil?
+      @yml.key?(name.to_sym)
     end
 
     private

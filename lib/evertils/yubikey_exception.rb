@@ -1,0 +1,2 @@
+class YubikeyException < StandardError
+end
