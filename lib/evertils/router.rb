@@ -19,7 +19,7 @@ module Evertils
 
         # perform all required checks
         must_pass = Helper::Results.new
-        @config.get(:required).each do |key, value|
+        @config.get(:required).each do |key|
           must_pass.add(send("verify_#{key}"))
         end
 
