@@ -44,6 +44,7 @@ module Evertils
     # +name+:: String/symbol key value
     def get(name, child = nil)
       return @yml[name.to_sym][child.to_sym] unless child.nil?
+
       @yml[name.to_sym]
     end
 
@@ -52,7 +53,24 @@ module Evertils
     # +name+:: String/symbol key value
     def exist?(name, child = nil)
       return @yml[name].key?(child.to_sym) unless child.nil?
+
       @yml.key?(name.to_sym)
+    end
+
+    # Merge a hash into config data
+    # Params:
+    # +hash+:: Any arbitrary hash
+    def merge(hash)
+      @yml.merge!(hash)
+      self
+    end
+
+    def symbolize!
+      @yml = @yml.inject({}) { |h, (k, v)| h[k.to_sym] = v; h}
+    end
+
+    def pluck(*args)
+      @yml.slice(*args)
     end
 
     private
