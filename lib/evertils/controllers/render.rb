@@ -12,7 +12,7 @@ module Evertils
 
       def note_exists?
         helper = Evertils::Helper.load('Note')
-        note = helper.wait_for(:Daily, 5)
+        note = helper.wait_for(:Daily, 3)
         @link = helper.external_url_for(note.entity) unless note.entity.nil?
 
         note.exists?
