@@ -32,7 +32,7 @@ module Evertils
       # @since 0.3.13
       def attach_pq_note
         enml = @api.from_str(@format.template_contents(NOTEBOOK))
-        pq = @note_helper.wait_for(:'Priority Queue')
+        pq = @note_helper.wait_for_by_notebook(:'Priority Queue')
         xml_conf = {
           href: @note_helper.internal_url_for(pq.entity),
           content: @format.date_templates[:'Priority Queue']

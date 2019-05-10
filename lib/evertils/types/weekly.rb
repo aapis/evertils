@@ -25,7 +25,7 @@ module Evertils
       #
       # @since 0.3.15
       def add_daily_note_link
-        da_entity = @note_helper.wait_for(:Daily).entity
+        da_entity = @note_helper.wait_for_by_notebook(:Daily).entity
         # parse the ENML note data into something we can work with
         xml = @api.from_str(@entity.content)
         # include the XML element builder

@@ -1,5 +1,19 @@
+# frozen_string_literal: true
+
 module Evertils
   class Cfg
+    REPLACEMENTS = {
+      '%DOY%': Date.today.yday,
+      '%MONTH_NAME%': Date.today.strftime('%B'),
+      '%MONTH%': Date.today.month,
+      '%DAY%': Date.today.day,
+      '%DOW%': Date.today.wday,
+      '%DOW_NAME%': Date.today.strftime('%a'),
+      '%YEAR%': Date.today.year,
+      '%WEEK%': Date.today.cweek,
+      '%WEEK_START%': Date.commercial(Date.today.year, Date.today.cweek, 1),
+      '%WEEK_END%': Date.commercial(Date.today.year, Date.today.cweek, 5)
+    }
 
     # default values for initialization
     def initialize
@@ -66,11 +80,40 @@ module Evertils
     end
 
     def symbolize!
-      @yml = @yml.inject({}) { |h, (k, v)| h[k.to_sym] = v; h}
+      @yml = @yml.inject({}) { |h, (k, v)| h[k.to_sym] = v; h }
     end
 
     def pluck(*args)
-      @yml.slice(*args)
+      @yml.select do |key, _|
+        args.include? key
+      end
+    end
+
+    def translate_placeholders
+      @yml.map do |item|
+        REPLACEMENTS.each_pair do |k, v|
+          item.last.gsub!(k.to_s, v.to_s) if item.last.is_a? String
+          item.last.map { |i| i.gsub!(k.to_s, v.to_s) } if item.last.is_a? Array
+        end
+      end
+
+      symbolize_keys(@yml)
+      self
+    end
+
+    def symbolize_keys(hash)
+      hash.inject({}){ |result, (key, value)|
+        new_key = case key
+                  when String then key.to_sym
+                  else key
+                  end
+        new_value = case value
+                    when Hash then symbolize_keys(value)
+                    else value
+                    end
+        result[new_key] = new_value
+        result
+      }
     end
 
     private

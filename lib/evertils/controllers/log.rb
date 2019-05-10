@@ -12,7 +12,7 @@ module Evertils
       def message(text = nil)
         return Notify.error('A message is required', {}) if text.nil?
 
-        note = @note_helper.wait_for(:Daily)
+        note = @note_helper.wait_for_by_notebook(:Daily)
         edit_conf = {
           search: 'Triage',
           append: text

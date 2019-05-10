@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Evertils
   module Controller
     class Base
@@ -58,7 +60,7 @@ module Evertils
           @method = command
         elsif is_a? Evertils::Controller::Render
           @method = :from_file
-          @request.param = config.pluck(:path, :notebook)
+          @request.param = config
         else
           raise NoMethodError, "Invalid method: #{command}"
         end

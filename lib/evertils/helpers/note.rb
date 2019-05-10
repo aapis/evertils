@@ -12,16 +12,16 @@ module Evertils
       end
 
       # Wait for a note to exist
-      def wait_for(notebook, iterations = Evertils::Type::Base::MAX_SEARCH_SIZE)
+      def wait_for_by_notebook(notebook, iterations = Evertils::Type::Base::MAX_SEARCH_SIZE)
         Notify.info("Waiting for #{notebook}...")
-        note = find_note(notebook)
+        note = find_note_by_notebook(notebook)
 
         begin
           # didn't find it the first time?  wait and try again
           if note.entity.nil?
             (1..iterations).each do |iter|
               Notify.info(" (#{iter}) Looking for #{notebook.downcase}")
-              note = find_note(notebook, true)
+              note = find_note_by_notebook(notebook, true)
               break unless note.entity.nil? || iter == Evertils::Type::Base::MAX_SEARCH_SIZE
             end
           end
@@ -32,13 +32,41 @@ module Evertils
         note
       end
 
-      # Find a note
-      def find_note(notebook, sleep = false)
+      # Wait for a note to exist
+      def wait_for_by_title(title, notebook, iterations = Evertils::Type::Base::MAX_SEARCH_SIZE)
+        Notify.info("Waiting for #{notebook}...")
+        note = find_note_by_title(title)
+
+        begin
+          # didn't find it the first time?  wait and try again
+          if note.entity.nil?
+            (1..iterations).each do |iter|
+              Notify.info(" (#{iter}) Looking for #{notebook.downcase}")
+              note = find_note_by_title(notebook, true)
+              break unless note.entity.nil? || iter == Evertils::Type::Base::MAX_SEARCH_SIZE
+            end
+          end
+        rescue Interrupt
+          Notify.warning('Cancelled wait')
+        end
+
+        note
+      end
+
+      # Find a note by note
+      def find_note_by_title(title, sleep = false)
         sleep(5) if sleep
-        title = @format.date_templates[notebook]
         @model.find_note_contents(title)
       end
-      alias find_by_notebook find_note
+
+      # Find a note by notebook
+      def find_note_by_notebook(notebook, sleep = false)
+        sleep(5) if sleep
+        title = @format.date_templates[notebook]
+
+        @model.find_note_contents(title)
+      end
+      # alias find_by_notebook
 
       #
       # @since 0.3.15
