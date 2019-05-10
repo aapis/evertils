@@ -12,15 +12,15 @@ module Evertils
       end
 
       # Wait for a note to exist
-      def wait_for(notebook)
+      def wait_for(notebook, iterations = Evertils::Type::Base::MAX_SEARCH_SIZE)
         Notify.info("Waiting for #{notebook}...")
         note = find_note(notebook)
 
         begin
           # didn't find it the first time?  wait and try again
           if note.entity.nil?
-            (1..Evertils::Type::Base::MAX_SEARCH_SIZE).each do |iter|
-              Notify.info(" (#{iter}) #{notebook}")
+            (1..iterations).each do |iter|
+              Notify.info(" (#{iter}) Looking for #{notebook.downcase}")
               note = find_note(notebook, true)
               break unless note.entity.nil? || iter == Evertils::Type::Base::MAX_SEARCH_SIZE
             end
@@ -49,7 +49,7 @@ module Evertils
       #
       # @since 1.0.0
       def external_url_for(note)
-        "https://www.evernote.com/Home.action#n=#{note.guid}&s=#{@shard}&ses=4&sh=2&sds=5&"
+        "https://www.evernote.com/Home.action#n=#{note.guid}&s=#{@shard}&ses=4&sh=2&sds=5"
       end
 
       # Create a note
