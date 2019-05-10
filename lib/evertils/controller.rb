@@ -48,13 +48,17 @@ module Evertils
       # Determines if the command can execute
       # Params:
       # +command+:: Symbol containing the command we want to execute
-      def can_exec?(command)
+      # +config+:: Configuration data
+      def can_exec?(command, config)
         # no command was passed, check if controller has a default method
         if command.nil? && respond_to?(:default)
           @method = :default
         elsif respond_to? command
           # check the controller for the requested method
           @method = command
+        elsif is_a? Evertils::Controller::Render
+          @method = :from_file
+          @request.param = config.pluck(:path, :notebook)
         else
           raise NoMethodError, "Invalid method: #{command}"
         end

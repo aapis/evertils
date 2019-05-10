@@ -17,9 +17,11 @@ module Evertils
         # include helpers
         require "evertils/helpers/#{@request.controller}" if File.exist? "evertils/helpers/#{@request.controller}"
 
+        update_config if uses_config_file?
+
         # perform all required checks
         must_pass = Helper::Results.new
-        @config.get(:required).each do |key|
+        @config.get(:required).each do |key, _|
           must_pass.add(send("verify_#{key}"))
         end
 
@@ -30,8 +32,8 @@ module Evertils
         Notify.error('Check failed: GPG key not found or not imported into your keychain')
       rescue RequiredCheckException
         Notify.error('One or more required checks failed')
-      rescue LoadError
-        Notify.error("Controller not found: #{@request.controller}")
+      rescue LoadError => e
+        Notify.error(e || "Controller not found: #{@request.controller}")
       end
     end
 
@@ -43,11 +45,12 @@ module Evertils
       begin
         unless @request.controller.nil?
           controller = Evertils::Controller.const_get @request.controller.capitalize
+          controller = Evertils::Controller::Render if @config.exist?(:path)
 
           # create an instance of the requested controller
           context = controller.new(@config, @request)
 
-          if context.can_exec? @request.command
+          if context.can_exec? @request.command, @config
             # Set things up
             context.pre_exec
 
@@ -65,6 +68,21 @@ module Evertils
       rescue NameError => e
         Notify.error("#{e}\n#{e.backtrace.join("\n")}", show_time: false)
       end
+    end
+
+    def uses_config_file?
+      @config_file_path = File.expand_path("~/.evertils/templates/type/#{@request.command}.yml")
+      File.exist? @config_file_path
+    end
+
+    def update_config
+      additional_config = { path: @config_file_path }.merge(YAML.safe_load(File.read(@config_file_path)))
+      @config.merge(additional_config).symbolize!
+      overwrite_controller_with :render
+    end
+
+    def overwrite_controller_with(new_controller)
+      @request.controller = new_controller
     end
 
     # checks output of gpg --list-keys for the presence of a specific GPG key

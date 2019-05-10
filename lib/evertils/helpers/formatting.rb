@@ -38,7 +38,7 @@ module Evertils
       # Template string for note title
       def date_templates
         current_date = Date.today
-        week_stub = day_of_week(current_date.strftime('%a'))
+        week_stub = current_date.strftime('%a')
         start_of_week = Date.commercial(current_date.year, current_date.cweek, 1)
         end_of_week = Date.commercial(current_date.year, current_date.cweek, 5)
 

@@ -1,7 +1,7 @@
 module Evertils
   class Request
     # Access controller variable property externally
-    attr_reader :controller
+    attr_accessor :controller
     # Access command variable property externally
     attr_reader :command
     # Access custom variable property externally
@@ -11,7 +11,7 @@ module Evertils
     # Access raw_flags variable property externally
     attr_reader :raw_flags
     # Access param variable property externally
-    attr_reader :param
+    attr_accessor :param
 
     # Create the request object, parse ARGV for values
     def initialize
