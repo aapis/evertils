@@ -17,9 +17,7 @@ module Evertils
         # include helpers
         require "evertils/helpers/#{@request.controller}" if File.exist? "evertils/helpers/#{@request.controller}"
 
-        @config_file_path = File.expand_path("~/.evertils/templates/type/#{@request.command}.yml")
-        @config.merge(path: @config_file_path).symbolize! if File.exist? @config_file_path
-        @request.controller = :render if File.exist? @config_file_path
+        update_config if uses_config_file?
 
         # perform all required checks
         must_pass = Helper::Results.new
@@ -70,6 +68,21 @@ module Evertils
       rescue NameError => e
         Notify.error("#{e}\n#{e.backtrace.join("\n")}", show_time: false)
       end
+    end
+
+    def uses_config_file?
+      @config_file_path = File.expand_path("~/.evertils/templates/type/#{@request.command}.yml")
+      File.exist? @config_file_path
+    end
+
+    def update_config
+      additional_config = { path: @config_file_path }.merge(YAML.safe_load(File.read(@config_file_path)))
+      @config.merge(additional_config).symbolize!
+      overwrite_controller_with :render
+    end
+
+    def overwrite_controller_with(new_controller)
+      @request.controller = new_controller
     end
 
     # checks output of gpg --list-keys for the presence of a specific GPG key
