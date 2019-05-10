@@ -46,6 +46,12 @@ module Evertils
         "evernote:///view/#{@user[:id]}/#{@shard}/#{note.guid}/#{note.guid}/"
       end
 
+      #
+      # @since 1.0.0
+      def external_url_for(note)
+        "https://www.evernote.com/Home.action#n=#{note.guid}&s=#{@shard}&ses=4&sh=2&sds=5&"
+      end
+
       # Create a note
       def create(data)
         @model.create_note(data)

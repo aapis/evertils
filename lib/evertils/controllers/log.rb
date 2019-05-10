@@ -18,7 +18,7 @@ module Evertils
           append: text
         }
 
-        return Notify.error("Note not found") if note.entity.nil?
+        return Notify.error('Note not found') if note.entity.nil?
 
         modify(note, edit_conf)
       end
@@ -31,9 +31,9 @@ module Evertils
         xml_helper = Evertils::Helper.load('Xml', xml)
 
         time = Time.now.strftime('%I:%M')
-        target = xml.search("div:contains('#{conf[:search]}')").first.next_element
+        target = xml.search("h2:contains('#{conf[:search]}')").first
 
-        return Notify.error('Unable to log message') if target.nil?
+        return Notify.error('Unable to log message, triage section not found') if target.nil?
 
         log_message_txt = xml_helper.span("#{time} - #{conf[:append]}")
         log_message_el = xml_helper.li(log_message_txt)

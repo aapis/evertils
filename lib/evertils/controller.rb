@@ -58,7 +58,7 @@ module Evertils
           @method = command
         elsif is_a? Evertils::Controller::Render
           @method = :from_file
-          @request.param = config.pluck(:path)
+          @request.param = config.pluck(:path, :title)
         else
           raise NoMethodError, "Invalid method: #{command}"
         end

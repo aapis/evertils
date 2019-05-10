@@ -18,11 +18,8 @@ module Evertils
         require "evertils/helpers/#{@request.controller}" if File.exist? "evertils/helpers/#{@request.controller}"
 
         @config_file_path = File.expand_path("~/.evertils/templates/type/#{@request.command}.yml")
-
-        raise LoadError, "Type not found: #{@request.command}.yml" unless File.exist? @config_file_path
-
-        @config.merge(path: @config_file_path).symbolize!
-        @request.controller = :render if @yaml_conf
+        @config.merge(path: @config_file_path).symbolize! if File.exist? @config_file_path
+        @request.controller = :render if File.exist? @config_file_path
 
         # perform all required checks
         must_pass = Helper::Results.new
