@@ -26,11 +26,11 @@ module Evertils
         xml = @api_helper.from_str(note.entity.content)
 
         time = Time.now.strftime('%I:%M')
-        target = xml.search('en-note>div').first
+        target = xml.search('en-note').first
 
         return Notify.error('Unable to log message, triage section not found') if target.nil?
 
-        log_message_txt = "* #{time} - #{text}<br clear='none'/>"
+        log_message_txt = "<div>* #{time} - #{text}</div>"
 
         # append the log message to the target
         target.add_child(log_message_txt)
