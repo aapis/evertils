@@ -13,39 +13,35 @@ module Evertils
         return Notify.error('A message is required', {}) if text.nil?
 
         note = @note_helper.wait_for_by_notebook(:Daily)
-        edit_conf = {
-          search: 'Triage',
-          append: text
-        }
 
         return Notify.error('Note not found') if note.entity.nil?
 
-        modify(note, edit_conf)
+        modify(note, text)
       end
 
       private
 
       # Update a note with content
-      def modify(note, conf)
+      def modify(note, text)
         xml = @api_helper.from_str(note.entity.content)
-        xml_helper = Evertils::Helper.load('Xml', xml)
 
         time = Time.now.strftime('%I:%M')
-        target = xml.search("h2:contains('#{conf[:search]}')").first
+        target = xml.search('en-note>div').first
 
         return Notify.error('Unable to log message, triage section not found') if target.nil?
 
-        log_message_txt = xml_helper.span("#{time} - #{conf[:append]}")
-        log_message_el = xml_helper.li(log_message_txt)
+        log_message_txt = "* #{time} - #{text}<br clear='none'/>"
 
         # append the log message to the target
-        target.add_child(log_message_el)
+        target.add_child(log_message_txt)
+
         # remove XML processing definition if it is the second element
         if xml.children[1].is_a?(Nokogiri::XML::ProcessingInstruction)
           xml.children[1].remove
         end
 
         note.entity.content = xml.to_s
+
         Notify.success("Item logged at #{time}") if note.update
       end
     end
