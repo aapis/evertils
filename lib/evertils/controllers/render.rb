@@ -10,7 +10,7 @@ module Evertils
 
         Notify.info 'Note not found, creating a new one'
 
-        execute_action(@config[:action] || :create)
+        execute_action(@config[:action])
       end
 
       def note_exists?
@@ -22,11 +22,16 @@ module Evertils
       end
 
       def execute_action(action)
-        case action.to_sym
-        when :duplicate_previous
+        case action
+        when nil
+          Notify.info 'Action not provided, creation new note...'
+          Action::Create.new(@config)
+        when 'create'
+          Action::Create.new(@config)
+        when 'duplicate_previous'
           Action::DuplicatePrevious.new(@config)
         else
-          Action::Create.new(@config)
+          Action::Default.new(action: action)
         end
       end
     end
