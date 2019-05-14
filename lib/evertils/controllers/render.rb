@@ -4,7 +4,13 @@ module Evertils
   module Controller
     class Render < Controller::Base
       def from_file(config)
-        @config = config.translate_placeholders.pluck(:title, :notebook, :path, :action)
+        @config = config.translate_placeholders.pluck(
+          :title,
+          :title_format,
+          :notebook,
+          :path,
+          :action
+        )
 
         return Notify.warning("Note already exists\n- #{@link}") if note_exists?
 
