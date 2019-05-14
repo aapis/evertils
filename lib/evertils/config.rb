@@ -90,12 +90,16 @@ module Evertils
     end
 
     def translate_placeholders
+      title_format = @yml[:title].dup
+
       @yml.map do |item|
         REPLACEMENTS.each_pair do |k, v|
           item.last.gsub!(k.to_s, v.to_s) if item.last.is_a? String
           item.last.map { |i| i.gsub!(k.to_s, v.to_s) } if item.last.is_a? Array
         end
       end
+
+      @yml[:title_format] = title_format unless @yml.key? :title_format
 
       symbolize_keys(@yml)
       self
