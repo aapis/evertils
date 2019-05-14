@@ -34,7 +34,7 @@ module Evertils
 
       # Wait for a note to exist
       def wait_for_by_title(title, notebook, iterations = Evertils::Type::Base::MAX_SEARCH_SIZE)
-        Notify.info("Waiting for #{notebook}...")
+        Notify.info("Waiting for #{title}...")
         note = find_note_by_title(title)
 
         begin
