@@ -27,7 +27,7 @@ module Evertils
           # always skip weekends, even if there is a note for those days
           next if %i[Sat Sun].include?(dow)
 
-          note_title = @args[:title]
+          note_title = previous_note_title(@args[:title_format], day)
           note = @note_helper.model.find_note_contents(note_title).entity
 
           Notify.info(" (#{iter}) #{note_title}")
@@ -36,6 +36,26 @@ module Evertils
         end
 
         @api.convert_to_xml(note.content).prepare
+      end
+
+      def previous_note_title(fmt, date)
+        # not a good solution but it works
+        # TODO: fix this
+        replacements = {
+          '%DOY%': date.yday,
+          '%MONTH_NAME%': date.strftime('%B'),
+          '%MONTH%': date.month,
+          '%DAY%': date.day,
+          '%DOW%': date.wday,
+          '%DOW_NAME%': date.strftime('%a'),
+          '%YEAR%': date.year,
+          '%WEEK%': date.cweek,
+          '%WEEK_START%': Date.commercial(date.year, date.cweek, 1),
+          '%WEEK_END%': Date.commercial(date.year, date.cweek, 5)
+        }
+
+        replacements.each_pair { |k, v| fmt.gsub!(k.to_s, v.to_s) }
+        fmt
       end
     end
   end
