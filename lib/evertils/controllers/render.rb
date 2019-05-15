@@ -9,7 +9,8 @@ module Evertils
           :title_format,
           :notebook,
           :path,
-          :action
+          :action,
+          :tags
         )
 
         return Notify.warning("Note already exists\n- #{@link}") if note_exists?
