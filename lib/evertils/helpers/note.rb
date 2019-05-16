@@ -26,7 +26,7 @@ module Evertils
             end
           end
         rescue Interrupt
-          Notify.warning('Cancelled wait')
+          Notify.error('Cancelled wait')
         end
 
         note
@@ -47,7 +47,7 @@ module Evertils
             end
           end
         rescue Interrupt
-          Notify.warning('Cancelled wait')
+          Notify.error('Cancelled wait')
         end
 
         note
