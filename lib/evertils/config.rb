@@ -50,6 +50,9 @@ module Evertils
       fmt = Evertils::Helper.load('Formatting')
 
       @yml = fmt.symbolize(::YAML.load_file(file))
+
+      set_evertils_token
+
       self
     end
 
@@ -121,6 +124,10 @@ module Evertils
     end
 
     private
+
+    def set_evertils_token
+      ENV['EVERTILS_TOKEN'] = @yml[:token]
+    end
 
     # Check if configuration data exists
     def valid_config?
