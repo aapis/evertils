@@ -54,8 +54,10 @@ module Evertils
           '%WEEK_END%': Date.commercial(date.year, date.cweek, 5)
         }
 
-        replacements.each_pair { |k, v| fmt.gsub!(k.to_s, v.to_s) }
-        fmt
+        title_format = fmt.dup
+
+        replacements.each_pair { |k, v| title_format.gsub!(k.to_s, v.to_s) }
+        title_format
       end
     end
   end
