@@ -12,12 +12,9 @@ module Evertils
       @request = Request.new
 
       begin
-        # include the controller
-        require "evertils/controllers/#{@request.controller}"
-        # include helpers
-        require "evertils/helpers/#{@request.controller}" if File.exist? "evertils/helpers/#{@request.controller}"
+        update_config if uses_local_configuration?
 
-        update_config if uses_config_file?
+        require "evertils/controllers/#{@request.controller}" unless uses_local_configuration?
 
         # perform all required checks
         must_pass = Helper::Results.new
@@ -45,7 +42,6 @@ module Evertils
       begin
         unless @request.controller.nil?
           controller = Evertils::Controller.const_get @request.controller.capitalize
-          controller = Evertils::Controller::Render if @config.exist?(:path)
 
           # create an instance of the requested controller
           context = controller.new(@config, @request)
@@ -70,7 +66,7 @@ module Evertils
       end
     end
 
-    def uses_config_file?
+    def uses_local_configuration?
       @config_file_path = File.expand_path("~/.evertils/templates/type/#{@request.command}.yml")
       File.exist? @config_file_path
     end
