@@ -7,8 +7,32 @@ module Evertils
       def initialize
         @model = Evertils::Common::Query::Simple.new
         @format = Evertils::Helper.load('Formatting')
+        @search_grammar = Evertils::Helper.load('SearchGrammar')
         @user = @model.user_info[:user]
         @shard = @model.user_info[:shard]
+      end
+
+      def wait_for_with_grammar(conf, iterations = Evertils::Type::Base::MAX_SEARCH_SIZE)
+        grammar = @search_grammar.from(conf)
+        Notify.info("Searching with grammar #{grammar}")
+        note = find_note_by_grammar(grammar)
+
+        begin
+          if note.entity.nil?
+            (1..iterations).each do |iter|
+              conf[:tags][:day] -= 1
+              grammar = @search_grammar.from(conf)
+              Notify.info(" (#{iter}) Looking for #{grammar}")
+              note = find_note_by_grammar(grammar, true)
+
+              break unless note.entity.nil? || iter == Evertils::Type::Base::MAX_SEARCH_SIZE
+            end
+          end
+        rescue Interrupt
+          Notify.error('Cancelled wait')
+        end
+
+        note
       end
 
       # Wait for a note to exist
@@ -67,6 +91,11 @@ module Evertils
         @model.find_note_contents(title)
       end
       # alias find_by_notebook
+
+      def find_note_by_grammar(grammar, sleep = false)
+        sleep(5) if sleep
+        @model.find_note_contents_using_grammar(grammar)
+      end
 
       #
       # @since 0.3.15

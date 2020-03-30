@@ -5,14 +5,24 @@ module Evertils
         super
 
         @note_helper = Evertils::Helper.load('Note')
+        @search_grammar = Evertils::Helper.load('SearchGrammar')
         @api_helper = Evertils::Helper.load('ApiEnmlHandler', @config)
       end
 
       # Send arbitrary text to the daily log
       def message(text = nil)
-        return Notify.error('A message is required', {}) if text.nil?
+        return Notify.error('A message is required') if text.nil?
 
-        note = @note_helper.wait_for_by_notebook(:Daily)
+        # TODO: should be an object instead of arbitrary hash
+        criteria = {
+          notebook: :Daily,
+          tags: {
+            day: Date.today.yday
+          },
+          created: Date.new(Date.today.year, 1, 1).strftime('%Y%m%d')
+        }
+
+        note = @note_helper.wait_for_with_grammar(criteria)
 
         return Notify.error('Note not found') if note.entity.nil?
 
