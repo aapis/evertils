@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Evertils
   class Grammar
     attr_accessor :tags, :notebook, :created
