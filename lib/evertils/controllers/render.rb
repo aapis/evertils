@@ -14,7 +14,7 @@ module Evertils
       end
 
       def note_exists?
-        helper = Evertils::Helper.load('Note')
+        helper = Evertils::Helper::Note.instance
         note = helper.wait_for_with_grammar(grammar)
 
         @link = helper.external_url_for(note.entity) unless note.entity.nil?

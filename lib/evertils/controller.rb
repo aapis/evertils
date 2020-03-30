@@ -31,7 +31,6 @@ module Evertils
 
       # Perform pre-run tasks
       def pre_exec
-        @format = Evertils::Helper.load('Formatting')
       end
 
       # Handle the request

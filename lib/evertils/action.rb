@@ -5,8 +5,8 @@ module Evertils
     class Base
       def initialize(args)
         @args = args
-        @note_helper = Evertils::Helper.load('Note')
-        @api = Evertils::Helper.load('ApiEnmlHandler', {})
+        @note_helper = Evertils::Helper::Note.instance
+        @api = Evertils::Helper::ApiEnmlHandler.new
       end
     end
   end

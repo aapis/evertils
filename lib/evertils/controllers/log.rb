@@ -4,8 +4,8 @@ module Evertils
       def pre_exec
         super
 
-        @note_helper = Evertils::Helper.load('Note')
-        @api_helper = Evertils::Helper.load('ApiEnmlHandler', @config)
+        @note_helper = Evertils::Helper::Note.instance
+        @api_helper = Evertils::Helper::ApiEnmlHandler.new(@config)
       end
 
       # Send arbitrary text to the daily log

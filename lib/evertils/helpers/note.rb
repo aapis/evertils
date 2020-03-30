@@ -1,12 +1,14 @@
 module Evertils
   module Helper
     class Note
+      include Singleton
+
       attr_reader :model
 
       # Create the Note object
       def initialize
         @model = Evertils::Common::Query::Simple.new
-        @format = Evertils::Helper.load('Formatting')
+        @format = Formatting.new
         @user = @model.user_info[:user]
         @shard = @model.user_info[:shard]
       end
@@ -85,7 +87,7 @@ module Evertils
       # Find a note by notebook
       def find_note_by_notebook(notebook, sleep = false)
         sleep(5) if sleep
-        title = @format.date_templates[notebook]
+        title = Formatting.date_templates[notebook]
 
         @model.find_note_contents(title)
       end

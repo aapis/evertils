@@ -47,9 +47,7 @@ module Evertils
     # Populates the internal hash which stores any values set in the config file
     def populate_config
       file = File.expand_path("~/.evertils/config.yml")
-      fmt = Evertils::Helper.load('Formatting')
-
-      @yml = fmt.symbolize(::YAML.load_file(file))
+      @yml = symbolize_keys(::YAML.load_file(file))
 
       set_evertils_token
 
