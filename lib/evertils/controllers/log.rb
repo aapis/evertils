@@ -5,7 +5,6 @@ module Evertils
         super
 
         @note_helper = Evertils::Helper.load('Note')
-        @search_grammar = Evertils::Helper.load('SearchGrammar')
         @api_helper = Evertils::Helper.load('ApiEnmlHandler', @config)
       end
 
