@@ -2,7 +2,7 @@
 
 module Evertils
   class Grammar
-    attr_accessor :tags, :notebook, :created
+    attr_accessor :tags, :notebook, :created, :intitle
 
     # Available grammars
     # https://dev.evernote.com/doc/articles/search_grammar.php
@@ -11,6 +11,7 @@ module Evertils
       @tags = []
       @grammar = []
       @notebook = nil
+      @intitle = nil
       @created = Date.today.strftime('%Y%m%d')
     end
 
@@ -42,7 +43,8 @@ module Evertils
       grammars_used.reject! { |k, _| k.to_s.end_with?('=') || k == :tags }
 
       grammars_used.each do |grammar|
-        @grammar.push("#{grammar}:#{send(grammar)}")
+        value = send(grammar)
+        @grammar.push("#{grammar}:#{value}") unless value.nil?
       end
     end
   end
