@@ -13,16 +13,7 @@ module Evertils
       def message(text = nil)
         return Notify.error('A message is required') if text.nil?
 
-        # TODO: should be an object instead of arbitrary hash
-        criteria = {
-          notebook: :Daily,
-          tags: {
-            day: Date.today.yday
-          },
-          created: Date.new(Date.today.year, 1, 1).strftime('%Y%m%d')
-        }
-
-        note = @note_helper.wait_for_with_grammar(criteria)
+        note = @note_helper.find_note_by_grammar(grammar.to_s)
 
         return Notify.error('Note not found') if note.entity.nil?
 
@@ -30,6 +21,17 @@ module Evertils
       end
 
       private
+
+      def grammar
+        terms = Grammar.new
+        terms.tags = {
+          day: Date.today.yday,
+          week: Date.today.cweek
+        }
+        terms.notebook = :Daily
+        terms.created = Date.new(Date.today.year, 1, 1).strftime('%Y%m%d')
+        terms
+      end
 
       # Update a note with content
       def modify(note, text)
