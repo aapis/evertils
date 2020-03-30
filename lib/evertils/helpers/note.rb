@@ -7,23 +7,20 @@ module Evertils
       def initialize
         @model = Evertils::Common::Query::Simple.new
         @format = Evertils::Helper.load('Formatting')
-        @search_grammar = Evertils::Helper.load('SearchGrammar')
         @user = @model.user_info[:user]
         @shard = @model.user_info[:shard]
       end
 
-      def wait_for_with_grammar(conf, iterations = Evertils::Type::Base::MAX_SEARCH_SIZE)
-        grammar = @search_grammar.from(conf)
+      def wait_for_with_grammar(grammar, iterations = Evertils::Type::Base::MAX_SEARCH_SIZE)
         Notify.info("Searching with grammar #{grammar}")
-        note = find_note_by_grammar(grammar)
+        note = find_note_by_grammar(grammar.to_s)
 
         begin
           if note.entity.nil?
             (1..iterations).each do |iter|
-              conf[:tags][:day] -= 1
-              grammar = @search_grammar.from(conf)
+              grammar.tags[:day] -= 1
               Notify.info(" (#{iter}) Looking for #{grammar}")
-              note = find_note_by_grammar(grammar, true)
+              note = find_note_by_grammar(grammar.to_s, true)
 
               break unless note.entity.nil? || iter == Evertils::Type::Base::MAX_SEARCH_SIZE
             end
