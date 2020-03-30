@@ -14,8 +14,9 @@ module Evertils
       end
 
       def note_exists?
-        helper = Evertils::Helper.load('Note')
-        note = helper.wait_for_by_title(@allowed_fields[:title], @allowed_fields[:notebook], 3)
+        helper = Evertils::Helper::Note.instance
+        note = helper.wait_for_with_grammar(grammar)
+
         @link = helper.external_url_for(note.entity) unless note.entity.nil?
 
         note.exists?
@@ -24,7 +25,7 @@ module Evertils
       def execute_action(action)
         case action
         when nil
-          Notify.info 'Action not provided, creation new note...'
+          Notify.info 'Action not provided, creating new note...'
           Action::Create.new(@allowed_fields)
         when 'create'
           Action::Create.new(@allowed_fields)
@@ -46,6 +47,17 @@ module Evertils
           :action,
           :tags
         )
+      end
+
+      def grammar
+        terms = Grammar.new
+        terms.notebook = @allowed_fields[:notebook]
+        terms.tags = {
+          day: Date.today.yday,
+          week: Date.today.cweek
+        }
+        terms.created = Date.new(Date.today.year, 1, 1).strftime('%Y%m%d')
+        terms
       end
     end
   end

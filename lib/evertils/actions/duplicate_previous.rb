@@ -20,7 +20,7 @@ module Evertils
 
         Notify.info("Searching for last #{@args[:notebook]}...")
 
-        (1..Evertils::Type::Base::MAX_SEARCH_SIZE).each do |iter|
+        (1..Evertils::Base::MAX_SEARCH_SIZE).each do |iter|
           day -= 1
           dow = day.strftime('%a')
 

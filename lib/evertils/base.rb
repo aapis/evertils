@@ -1,7 +1,7 @@
+# frozen_string_literal: true
+
 module Evertils
   class Base
-    def initialize
-      @format = Evertils::Helper.load('Formatting')
-    end
+    MAX_SEARCH_SIZE = 11
   end
 end

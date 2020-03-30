@@ -5,8 +5,8 @@ module Evertils
 
       #
       # @since 0.3.7
-      def initialize(args = [])
-        @config = args.first
+      def initialize(conf)
+        @config = conf
         self
       end
 

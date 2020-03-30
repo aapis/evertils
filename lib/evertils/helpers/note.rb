@@ -1,17 +1,21 @@
 module Evertils
   module Helper
     class Note
+      include Singleton
+
       attr_reader :model
 
       # Create the Note object
       def initialize
         @model = Evertils::Common::Query::Simple.new
-        @format = Evertils::Helper.load('Formatting')
+        @format = Formatting.new
         @user = @model.user_info[:user]
         @shard = @model.user_info[:shard]
       end
 
-      def wait_for_with_grammar(grammar, iterations = Evertils::Type::Base::MAX_SEARCH_SIZE)
+      #
+      # @since 1.0.12
+      def wait_for_with_grammar(grammar, iterations = Evertils::Base::MAX_SEARCH_SIZE)
         Notify.info("Searching with grammar #{grammar}")
         note = find_note_by_grammar(grammar.to_s)
 
@@ -22,7 +26,7 @@ module Evertils
               Notify.info(" (#{iter}) Looking for #{grammar}")
               note = find_note_by_grammar(grammar.to_s, true)
 
-              break unless note.entity.nil? || iter == Evertils::Type::Base::MAX_SEARCH_SIZE
+              break unless note.entity.nil? || iter == Evertils::Base::MAX_SEARCH_SIZE
             end
           end
         rescue Interrupt
@@ -33,7 +37,7 @@ module Evertils
       end
 
       # Wait for a note to exist
-      def wait_for_by_notebook(notebook, iterations = Evertils::Type::Base::MAX_SEARCH_SIZE)
+      def wait_for_by_notebook(notebook, iterations = Evertils::Base::MAX_SEARCH_SIZE)
         Notify.info("Waiting for #{notebook}...")
         note = find_note_by_notebook(notebook)
 
@@ -43,7 +47,7 @@ module Evertils
             (1..iterations).each do |iter|
               Notify.info(" (#{iter}) Looking for #{notebook.downcase}")
               note = find_note_by_notebook(notebook, true)
-              break unless note.entity.nil? || iter == Evertils::Type::Base::MAX_SEARCH_SIZE
+              break unless note.entity.nil? || iter == Evertils::Base::MAX_SEARCH_SIZE
             end
           end
         rescue Interrupt
@@ -54,7 +58,7 @@ module Evertils
       end
 
       # Wait for a note to exist
-      def wait_for_by_title(title, notebook, iterations = Evertils::Type::Base::MAX_SEARCH_SIZE)
+      def wait_for_by_title(title, notebook, iterations = Evertils::Base::MAX_SEARCH_SIZE)
         Notify.info("Waiting for #{title}...")
         note = find_note_by_title(title)
 
@@ -64,7 +68,7 @@ module Evertils
             (1..iterations).each do |iter|
               Notify.info(" (#{iter}) Looking for #{notebook.downcase}")
               note = find_note_by_title(notebook, true)
-              break unless note.entity.nil? || iter == Evertils::Type::Base::MAX_SEARCH_SIZE
+              break unless note.entity.nil? || iter == Evertils::Base::MAX_SEARCH_SIZE
             end
           end
         rescue Interrupt
@@ -83,7 +87,7 @@ module Evertils
       # Find a note by notebook
       def find_note_by_notebook(notebook, sleep = false)
         sleep(5) if sleep
-        title = @format.date_templates[notebook]
+        title = Formatting.date_templates[notebook]
 
         @model.find_note_contents(title)
       end
