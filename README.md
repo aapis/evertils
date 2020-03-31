@@ -5,7 +5,8 @@ Evertils is a command line utility for interacting with your Evernote account.
 ## Installation
 
 1. `gem install evertils`
-2. Add `export EVERTILS_TOKEN="token_goes_here"` to your ~/.profile
+2. `git clone git@github.com:aapis/evertils-config.git ~/.evertils`
+3. `mv ~/.evertils/config.dist.yml ~/.evertils/config.yml && nano ~/.config.yml`
 
 Get your Evernote Developer Tokens [here](https://www.evernote.com/Login.action?targetUrl=%2Fapi%2FDeveloperToken.action).
 
