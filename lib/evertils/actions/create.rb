@@ -6,10 +6,16 @@ module Evertils
   module Action
     class Create < Action::Base
       def initialize(args)
-        puts args.inspect
-        exit
+        @args = args
         query = Evertils::Common::Query::Simple.new
-        query.create_note_from_yml(args[:path])
+
+        query.create_note_from_hash(allowed_args)
+      end
+
+      private
+
+      def allowed_args
+        @args.to_h.reject { |key, _| key == :action }
       end
     end
   end

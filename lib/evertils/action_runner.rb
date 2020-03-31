@@ -4,65 +4,20 @@ module Evertils
   class ActionRunner
     attr_accessor :params
 
-    def initialize
-      configure_allowed_fields
-      # action = @allowed_fields[:action]
-
-      # if action != 'create_multiple'
-      #   return Notify.warning("Note already exists\n- #{@link}") if note_exists?
-
-      #   Notify.info 'Note not found, creating a new one'
-      # end
-
-    end
-
-    def execute(action)
-      case action
+    def execute
+      case params.action
       when nil
         Notify.info 'Action not provided, creating new note...'
-        Action::Create.new(@allowed_fields)
+        Action::Create.new(params)
       when 'create'
-        Action::Create.new(@allowed_fields)
+        Action::Create.new(params)
       when 'create_multiple'
-        Action::CreateMultiple.new(@allowed_fields, self)
+        Action::CreateMultiple.new(params.notes)
       when 'duplicate_previous'
-        Action::DuplicatePrevious.new(@allowed_fields)
+        Action::DuplicatePrevious.new(params)
       else
         Action::Default.new(action: action)
       end
-    end
-
-    private
-
-    def note_exists?
-      helper = Evertils::Helper::Note.instance
-      note = helper.wait_for_with_grammar(grammar)
-
-      @link = helper.external_url_for(note.entity) unless note.entity.nil?
-
-      note.exists?
-    end
-
-    def configure_allowed_fields
-      @allowed_fields = params.translate_placeholders.pluck(
-        :title,
-        :title_format,
-        :notebook,
-        :path,
-        :action,
-        :tags
-      )
-    end
-
-    def grammar
-      terms = Grammar.new
-      terms.notebook = @allowed_fields[:notebook]
-      terms.tags = {
-        day: Date.today.yday,
-        week: Date.today.cweek
-      }
-      terms.created = Date.new(Date.today.year, 1, 1).strftime('%Y%m%d')
-      terms
     end
   end
 end
