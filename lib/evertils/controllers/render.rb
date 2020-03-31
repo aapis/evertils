@@ -4,14 +4,38 @@ module Evertils
   module Controller
     class Render < Controller::Base
       def from_file
-        set_allowed_fields
+        configure_allowed_fields
+        action = @allowed_fields[:action]
 
-        return Notify.warning("Note already exists\n- #{@link}") if note_exists?
+        # if action != 'create_multiple'
+        #   return Notify.warning("Note already exists\n- #{@link}") if note_exists?
 
-        Notify.info 'Note not found, creating a new one'
+        #   Notify.info 'Note not found, creating a new one'
+        # end
 
-        execute_action(@allowed_fields[:action])
+        # execute_action(action)
+        runner = ActionRunner.new
+        runner.params = template_contents
+        runner.execute
       end
+
+      def execute_action(action)
+        case action
+        when nil
+          Notify.info 'Action not provided, creating new note...'
+          Action::Create.new(@allowed_fields)
+        when 'create'
+          Action::Create.new(@allowed_fields)
+        when 'create_multiple'
+          Action::CreateMultiple.new(@allowed_fields, self)
+        when 'duplicate_previous'
+          Action::DuplicatePrevious.new(@allowed_fields)
+        else
+          Action::Default.new(action: action)
+        end
+      end
+
+      private
 
       def note_exists?
         helper = Evertils::Helper::Note.instance
@@ -22,23 +46,7 @@ module Evertils
         note.exists?
       end
 
-      def execute_action(action)
-        case action
-        when nil
-          Notify.info 'Action not provided, creating new note...'
-          Action::Create.new(@allowed_fields)
-        when 'create'
-          Action::Create.new(@allowed_fields)
-        when 'duplicate_previous'
-          Action::DuplicatePrevious.new(@allowed_fields)
-        else
-          Action::Default.new(action: action)
-        end
-      end
-
-      private
-
-      def set_allowed_fields
+      def configure_allowed_fields
         @allowed_fields = config.translate_placeholders.pluck(
           :title,
           :title_format,

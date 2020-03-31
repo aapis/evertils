@@ -47,7 +47,7 @@ module Evertils
     # Populates the internal hash which stores any values set in the config file
     def populate_config
       file = File.expand_path("~/.evertils/config.yml")
-      @yml = symbolize_keys(::YAML.load_file(file))
+      @yml = Evertils::Helper::Formatting.symbolize_keys(::YAML.load_file(file))
 
       set_evertils_token
 
@@ -94,6 +94,8 @@ module Evertils
       title_format = @yml[:title].dup
 
       @yml.map do |item|
+        break if item.last.is_a? Hash
+
         REPLACEMENTS.each_pair do |k, v|
           item.last.gsub!(k.to_s, v.to_s) if item.last.is_a? String
           item.last.map { |i| i.gsub!(k.to_s, v.to_s) } if item.last.is_a? Array
@@ -102,23 +104,8 @@ module Evertils
 
       @yml[:title_format] = title_format unless @yml.key? :title_format
 
-      symbolize_keys(@yml)
+      Evertils::Helper::Formatting.symbolize_keys(@yml)
       self
-    end
-
-    def symbolize_keys(hash)
-      hash.inject({}){ |result, (key, value)|
-        new_key = case key
-                  when String then key.to_sym
-                  else key
-                  end
-        new_value = case value
-                    when Hash then symbolize_keys(value)
-                    else value
-                    end
-        result[new_key] = new_value
-        result
-      }
     end
 
     private
