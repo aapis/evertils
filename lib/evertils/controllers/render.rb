@@ -6,9 +6,11 @@ module Evertils
       def from_file
         set_allowed_fields
 
-        return Notify.warning("Note already exists\n- #{@link}") if note_exists?
+        if @allowed_fields[:action] == 'create'
+          return Notify.warning("Note already exists\n- #{@link}") if note_exists?
 
-        Notify.info 'Note not found, creating a new one'
+          Notify.info 'Note not found, creating a new one'
+        end
 
         execute_action(@allowed_fields[:action])
       end
