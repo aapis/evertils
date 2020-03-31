@@ -6,22 +6,7 @@ module Evertils
       def from_file
         set_allowed_fields
 
-        if @allowed_fields[:action] == 'create'
-          return Notify.warning("Note already exists\n- #{@link}") if note_exists?
-
-          Notify.info 'Note not found, creating a new one'
-        end
-
         execute_action(@allowed_fields[:action])
-      end
-
-      def note_exists?
-        helper = Evertils::Helper::Note.instance
-        note = helper.wait_for_with_grammar(grammar)
-
-        @link = helper.external_url_for(note.entity) unless note.entity.nil?
-
-        note.exists?
       end
 
       def execute_action(action)
