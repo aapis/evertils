@@ -6,7 +6,7 @@ module Evertils
       def initialize(args)
         super(args)
 
-        @args[:content] = find_previous(args)
+        @args[:content] = find_previous
 
         query = Evertils::Common::Query::Simple.new
         query.create_note_from_hash(@args)
@@ -14,50 +14,22 @@ module Evertils
 
       private
 
-      def find_previous(args)
-        day = Date.today
-        note = nil
+      def find_previous
+        helper = Evertils::Helper::Note.instance
+        note = helper.wait_for_with_grammar(grammar)
 
-        Notify.info("Searching for last #{@args[:notebook]}...")
-
-        (1..Evertils::Base::MAX_SEARCH_SIZE).each do |iter|
-          day -= 1
-          dow = day.strftime('%a')
-
-          # always skip weekends, even if there is a note for those days
-          next if %i[Sat Sun].include?(dow)
-
-          note_title = previous_note_title(@args[:title_format], day)
-          note = @note_helper.model.find_note_contents(note_title).entity
-
-          Notify.info(" (#{iter}) #{note_title}")
-
-          break unless note.nil?
-        end
-
-        @api.convert_to_xml(note.content).prepare
+        @api.convert_to_xml(note.entity.content).prepare
       end
 
-      def previous_note_title(fmt, date)
-        # not a good solution but it works
-        # TODO: fix this
-        replacements = {
-          '%DOY%': date.yday,
-          '%MONTH_NAME%': date.strftime('%B'),
-          '%MONTH%': date.month,
-          '%DAY%': date.day,
-          '%DOW%': date.wday,
-          '%DOW_NAME%': date.strftime('%a'),
-          '%YEAR%': date.year,
-          '%WEEK%': date.cweek,
-          '%WEEK_START%': Date.commercial(date.year, date.cweek, 1),
-          '%WEEK_END%': Date.commercial(date.year, date.cweek, 5)
+      def grammar
+        terms = Grammar.new
+        terms.notebook = @args[:notebook]
+        terms.tags = {
+          day: Date.today.yday,
+          week: Date.today.cweek
         }
-
-        title_format = fmt.dup
-
-        replacements.each_pair { |k, v| title_format.gsub!(k.to_s, v.to_s) }
-        title_format
+        terms.created = Date.new(Date.today.year, 1, 1).strftime('%Y%m%d')
+        terms
       end
     end
   end
