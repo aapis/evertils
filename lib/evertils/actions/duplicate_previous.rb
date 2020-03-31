@@ -6,10 +6,10 @@ module Evertils
       def initialize(args)
         super(args)
 
-        @args[:content] = find_previous
+        @args.content = find_previous
 
         query = Evertils::Common::Query::Simple.new
-        query.create_note_from_hash(@args)
+        query.create_note_from_hash(@args.to_h)
       end
 
       private
