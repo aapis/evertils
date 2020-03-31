@@ -6,7 +6,7 @@ module Evertils
       def initialize(args)
         @args = args
         @note_helper = Evertils::Helper::Note.instance
-        @api = Evertils::Helper::ApiEnmlHandler.new
+        @api = Evertils::Helper::ApiEnmlHandler.new(@args)
       end
     end
   end
