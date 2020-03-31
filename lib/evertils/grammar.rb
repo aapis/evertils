@@ -18,6 +18,7 @@ module Evertils
     #
     # @since 1.0.12
     def to_s
+      @grammar = []
       stringify_properties
       stringify_tags unless @tags.empty?
 

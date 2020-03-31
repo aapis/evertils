@@ -14,9 +14,10 @@ module Evertils
         # end
 
         # execute_action(action)
-        runner = ActionRunner.new
-        runner.params = template_contents
-        runner.execute
+        # runner = ActionRunner.new
+        # runner.params = template_contents
+        # runner.execute
+        execute_action(@allowed_fields[:action])
       end
 
       def execute_action(action)
