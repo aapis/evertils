@@ -19,6 +19,7 @@ See [this document](https://github.com/aapis/evertils/wiki/Logging-Specification
 |:--------------|:-----------|:-------------|
 |generate|Create notes from templates|`evertils generate daily`, `evertils generate morning`, `evertils generate monthly`|
 |log|Interact with a note's content|`evertils log message "I am a message"`, `evertils log grep 2223`, `evertils log group`|
+|change|Change the configured Evernote API token `evertils` is using|`evertils change token`|
 
 ## Automation
 

@@ -26,12 +26,6 @@ module Evertils
 
       return if valid_config?
 
-      # no config file found, lets create one using the firstrun controller
-      require 'client/controller/firstrun'
-
-      controller = Evertils::Controller::Firstrun.new
-      controller.default
-
       populate_config
     end
 
