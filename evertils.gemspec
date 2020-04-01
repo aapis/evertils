@@ -17,11 +17,12 @@ Gem::Specification.new do |s|
   s.executables           = 'evertils'
   s.required_ruby_version = '>= 2.4.0'
 
-  s.add_runtime_dependency 'notifaction', '~> 0.4.4'
-  s.add_runtime_dependency 'mime-types', '~> 3.3.1'
   s.add_runtime_dependency 'evertils-common', '~> 0.3.7'
+  s.add_runtime_dependency 'gist', '~> 5.1.0'
+  s.add_runtime_dependency 'mime-types', '~> 3.3.1'
   s.add_runtime_dependency 'nokogiri', '~> 1.10.9'
+  s.add_runtime_dependency 'notifaction', '~> 0.4.4'
 
-  s.add_development_dependency "bundler", "~> 1.10"
-  s.add_development_dependency "rake", "~> 12.3.3"
+  s.add_development_dependency 'bundler', '~> 1.10'
+  s.add_development_dependency 'rake', '~> 12.3.3'
 end
