@@ -1,7 +1,7 @@
 module Evertils
   module Controller
     class Log < Controller::Base
-      WORDS_PER_LINE = 15
+      WORDS_PER_LINE = 20
 
       def pre_exec
         super
