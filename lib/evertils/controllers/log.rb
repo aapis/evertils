@@ -1,5 +1,7 @@
 module Evertils
   module Controller
+    Formatting = Evertils::Helper::Formatting
+
     class Log < Controller::Base
       WORDS_PER_LINE = 20
 
@@ -28,23 +30,21 @@ module Evertils
       #
       # @since 2.2.0
       def grep(text = nil)
-        return Notify.error('A search term is required') if text.nil?
+        params = OpenStruct.new(term: text, action: 'search', notebook: 'Daily')
 
-        @note = @note_helper.find_note_by_grammar(grammar.to_s)
-
-        return Notify.error('Note not found') if @note.entity.nil?
-
-        search_for(text)
+        runner = ActionRunner.new
+        runner.params = params
+        runner.execute
       end
 
       #
       # @since 2.2.0
-      def group(text = nil)
-        @note = @note_helper.find_note_by_grammar(grammar.to_s)
+      def group
+        params = OpenStruct.new(action: 'group', notebook: 'Daily')
 
-        return Notify.error('Note not found') if @note.entity.nil?
-
-        group_by
+        runner = ActionRunner.new
+        runner.params = params
+        runner.execute
       end
 
       private
@@ -71,7 +71,7 @@ module Evertils
 
         @note.entity.content = xml.to_s
 
-        Notify.success("Item logged at #{current_time}") if @note.update
+        Notify.success("Item logged at #{Formatting.current_time}") if @note.update
       end
 
       #
@@ -81,71 +81,10 @@ module Evertils
         target = xml.search('en-note').first
 
         text.each do |line|
-          target.add_child("<div>* #{current_time} - #{clean(line)}</div>")
+          target.add_child("<div>* #{Formatting.current_time} - #{Formatting.clean(line)}</div>")
         end
 
         xml
-      end
-
-      #
-      # @since 2.2.0
-      def search_for(text)
-        results = grep_results_for(text)
-
-        return Notify.error("No rows matched search query {#{text}}") if results.empty?
-
-        Notify.success("#{results.size} rows matched query {#{text}}")
-        results.each { |res| Notify.info(clean(res)) }
-      end
-
-      #
-      # @since 2.2.0
-      def group_by
-        grouped_results.each_pair do |job_id, rows|
-          Notify.note("#{clean(job_id)} - #{rows.size} occurrences") unless job_id.nil?
-
-          rows.each { |row| Notify.info(clean(row)) }
-        end
-      end
-
-      #
-      # @since 2.2.0
-      def search_nodes
-        xml = @api_helper.from_str(@note.entity.content)
-        target = xml.search('en-note').first
-        nodes = []
-
-        target.children.each do |child|
-          node = child.children.first.to_s
-          nodes.push(clean(node)) unless node.empty? || node == '<br/>'
-        end
-
-        nodes
-      end
-
-      #
-      # @since 2.2.0
-      def grouped_results
-        search_nodes.group_by do |node|
-          match = /- (.*)? -/.match(node)
-          match[1] unless match.nil?
-        end
-      end
-
-      #
-      # @since 2.2.0
-      def grep_results_for(text)
-        search_nodes.select { |line| line.include? text }
-      end
-
-      #
-      # @since 2.2.0
-      def clean(text)
-        text.delete("\n").gsub('&#xA0;', ' ')
-      end
-
-      def current_time
-        Time.now.strftime('%I:%M')
       end
     end
   end
