@@ -33,6 +33,18 @@ module Evertils
           result
         }
       end
+
+      #
+      # @since 2.2.0
+      def self.clean(text)
+        text.delete("\n").gsub('&#xA0;', ' ')
+      end
+
+      #
+      # @since 2.2.1
+      def self.current_time
+        Time.now.strftime('%I:%M')
+      end
     end
   end
 end
