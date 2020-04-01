@@ -63,13 +63,28 @@ module Evertils
 
       def gist_exists?
         # begin
-          Gist.list_all_gists
-          $stdout.flush
-          puts gists.scan(@token).inspect
+
+
+          gists = with_captured_stdout { puts Gist.list_all_gists }
+          # puts gists.inspect
+
+          # puts gists.scan(@token).inspect
 
         # rescue
         #   false
         # end
+      end
+
+      #
+      # Thanks https://stackoverflow.com/a/22777806/7044855
+      # @since 2.3.0
+      def with_captured_stdout
+        original_stdout = $stdout  # capture previous value of $stdout
+        $stdout = StringIO.new     # assign a string buffer to $stdout
+        yield                      # perform the body of the user code
+        $stdout.string             # return the contents of the string buffer
+      ensure
+        $stdout = original_stdout  # restore $stdout to its previous value
       end
 
       def has_auth_already?
