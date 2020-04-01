@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Evertils
   module Controller
     Formatting = Evertils::Helper::Formatting
