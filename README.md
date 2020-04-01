@@ -18,7 +18,7 @@ See [this document](https://github.com/aapis/evertils/wiki/Logging-Specification
 |Command|Description|Usage|
 |:--------------|:-----------|:-------------|
 |generate|Create notes from templates|`evertils generate daily`, `evertils generate morning`, `evertils generate monthly`|
-|log|Write a line to a note|`evertils log message "I am a message"`|
+|log|Interact with a note's content|`evertils log message "I am a message"`, `evertils log grep 2223`, `evertils log group`|
 
 ## Automation
 
