@@ -6,7 +6,7 @@ module Evertils
       def initialize(args)
         super(args)
 
-        @args.content = find_previous
+        @args.content = previous_note_content
 
         query = Evertils::Common::Query::Simple.new
         query.create_note_from_hash(@args.to_h)
@@ -14,7 +14,7 @@ module Evertils
 
       private
 
-      def find_previous
+      def previous_note_content
         helper = Evertils::Helper::Note.instance
         note = helper.wait_for_with_grammar(grammar)
 
@@ -25,7 +25,7 @@ module Evertils
         terms = Grammar.new
         terms.notebook = @args[:notebook]
         terms.tags = {
-          day: Date.today.yday,
+          day: (Date.today.yday - 1),
           week: Date.today.cweek
         }
         terms.created = Date.new(Date.today.year, 1, 1).strftime('%Y%m%d')
