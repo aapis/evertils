@@ -5,6 +5,8 @@ module Evertils
     class Group < Action::Base
       Formatting = Evertils::Helper::Formatting
 
+      #
+      # @since 2.2.2
       def initialize(args)
         @note_helper = Evertils::Helper::Note.instance
         @args = args
@@ -16,12 +18,16 @@ module Evertils
 
       private
 
+      #
+      # @since 2.2.2
       def execute
         return Notify.error('Note not found') if @note.entity.nil?
 
         group_by
       end
 
+      #
+      # @since 2.2.2
       def grammar
         terms = Grammar.new
         terms.tags = {
@@ -34,7 +40,7 @@ module Evertils
       end
 
       #
-      # @since 2.2.0
+      # @since 2.2.2
       def group_by
         grouped_results.each_pair do |job_id, rows|
           Notify.note("#{Formatting.clean(job_id)} - #{rows.size} occurrences") unless job_id.nil?
@@ -44,7 +50,7 @@ module Evertils
       end
 
       #
-      # @since 2.2.0
+      # @since 2.2.2
       def search_nodes
         xml = @api_helper.from_str(@note.entity.content)
         target = xml.search('en-note').first
@@ -59,7 +65,7 @@ module Evertils
       end
 
       #
-      # @since 2.2.0
+      # @since 2.2.2
       def grouped_results
         search_nodes.group_by do |node|
           match = /- (.*)? -/.match(node)
