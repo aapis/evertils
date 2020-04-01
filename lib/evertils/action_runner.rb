@@ -6,15 +6,16 @@ module Evertils
 
     def execute
       case params.action
-      when nil
-        Notify.info 'Action not provided, creating new note...'
-        Action::Create.new(params)
       when 'create'
         Action::Create.new(params)
       when 'create_multiple'
         Action::CreateMultiple.new(params.notes)
       when 'duplicate_previous'
         Action::DuplicatePrevious.new(params)
+      when 'search'
+        Action::Search.new(params)
+      when 'group'
+        Action::Group.new(params)
       else
         Action::Default.new(action: action)
       end
