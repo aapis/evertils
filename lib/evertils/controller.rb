@@ -25,8 +25,6 @@ module Evertils
       def initialize(config, request)
         @config = config
         @request = request
-
-        pre_exec
       end
 
       # Perform pre-run tasks
