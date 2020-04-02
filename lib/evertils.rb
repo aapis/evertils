@@ -14,6 +14,7 @@ require 'mime/types'
 require 'evertils/common'
 require 'yaml'
 require 'nokogiri'
+require 'egist'
 # require 'open3'
 
 # include required files
