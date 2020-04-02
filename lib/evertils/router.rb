@@ -82,18 +82,18 @@ module Evertils
     end
 
     # checks output of gpg --list-keys for the presence of a specific GPG key
-    def verify_gpgKey
+    def verify_gpg_key
       # TODO: replace with Open3
-      res = system("gpg --list-keys  #{@config.get(:required, :gpgKey)} 2>/dev/null >/dev/null")
+      res = system("gpg --list-keys  #{@config.get(:required, :gpg_key)} 2>/dev/null >/dev/null")
 
       raise GpgException unless res
       res
     end
 
     # checks output of ykman list to determine if the correct key is inserted
-    def verify_yubikeySerial
+    def verify_yubikey_serial
       # TODO: replace with Open3
-      res = system("ykman list | grep #{@config.get(:required, :yubikeySerial)} 2>/dev/null >/dev/null")
+      res = system("ykman list | grep #{@config.get(:required, :yubikey_serial)} 2>/dev/null >/dev/null")
 
       raise YubikeyException unless res
       res
