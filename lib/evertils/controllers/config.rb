@@ -9,11 +9,7 @@ module Evertils
         conf = contents_of('~/.evertils/config.yml')
         @token = conf['gist_token'] unless conf['gist_token'].nil?
         # if the requested gist doesn't exist, ignore it and generate a new one
-        puts @token.inspect
-        @token = nil unless gist_exists?
-        puts gist_exists?
-        puts @token.inspect
-        exit
+        @token = nil unless Gist.gist_exists?(@token)
 
         Gist.login! unless has_auth_already?
       end
@@ -28,11 +24,13 @@ module Evertils
         resp = Gist.multi_gist(payload, options)
         @token = resp['id'] if resp.key?('id')
 
-        Notify.success("Gist created/updated - #{resp['url']}") if store_token?
+        Notify.success("Gist created/updated - #{resp['html_url']}") if store_token?
       end
 
       def pull
+        files = Gist.download(@token)
 
+        files.each
       end
 
       private
@@ -59,32 +57,6 @@ module Evertils
 
       def gist_authenticate
         Gist.login!
-      end
-
-      def gist_exists?
-        # begin
-
-
-          gists = with_captured_stdout { puts Gist.list_all_gists }
-          # puts gists.inspect
-
-          # puts gists.scan(@token).inspect
-
-        # rescue
-        #   false
-        # end
-      end
-
-      #
-      # Thanks https://stackoverflow.com/a/22777806/7044855
-      # @since 2.3.0
-      def with_captured_stdout
-        original_stdout = $stdout  # capture previous value of $stdout
-        $stdout = StringIO.new     # assign a string buffer to $stdout
-        yield                      # perform the body of the user code
-        $stdout.string             # return the contents of the string buffer
-      ensure
-        $stdout = original_stdout  # restore $stdout to its previous value
       end
 
       def has_auth_already?
