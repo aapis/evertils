@@ -81,9 +81,16 @@ module Evertils
       def update_note_content_with(text)
         xml = @api_helper.from_str(@note.entity.content)
         target = xml.search('en-note').first
+        job_id = 0
+        job_id = text.first.split(' -').first.to_i unless text.first.scan('-').empty?
+
+        text.map! { |l| l.gsub("#{job_id} - ", '')}
 
         text.each do |line|
-          target.add_child("<div>* #{Formatting.current_time} - #{Formatting.clean(line)}</div>")
+          child = "<div>* #{Formatting.current_time} -".dup
+          child.concat " #{job_id} -" unless job_id.zero?
+          child.concat " #{Formatting.clean(line)}</div>"
+          target.add_child(child)
         end
 
         xml
