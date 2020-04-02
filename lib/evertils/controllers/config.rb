@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'yaml/store'
+require 'fileutils'
 
 module Evertils
   module Controller
@@ -28,11 +29,24 @@ module Evertils
       end
 
       def pull
+        # TODO: refactor this crap
         files = Gist.download(@token)
 
+        FileUtils.mv(File.expand_path('~/.evertils'), File.expand_path('~/.evertils.old'))
+        FileUtils.mkdir_p(File.expand_path('~/.evertils/templates/type'))
+
+        dir = {}
+        t_pfx = '~/.evertils/templates/type'
+        c_pfx = '~/.evertils'
+        root_files = ['config.yml', 'rolling.log']
+
         files.each_pair do |_, file|
-          puts file.inspect
-          # rebuild the .evertils folder here
+          dir["#{t_pfx}/#{file['filename']}"] = file['content'] unless file['filename'] == 'config.yml'
+          dir["#{c_pfx}/#{file['filename']}"] = file['content'] if root_files.include?(file['filename'])
+        end
+
+        dir.each_pair do |path, contents|
+          File.open(File.expand_path(path), 'w') { |f| f.write(contents) }
         end
       end
 
@@ -40,7 +54,8 @@ module Evertils
 
       def payload
         {
-          'config.yml' => contents_of('~/.evertils/config.yml').to_yaml
+          'config.yml' => contents_of('~/.evertils/config.yml').to_yaml,
+          'rolling.log' => File.read(File.expand_path('~/.evertils/rolling.log'))
         }.merge(types)
       end
 
