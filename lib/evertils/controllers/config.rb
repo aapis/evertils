@@ -30,7 +30,10 @@ module Evertils
       def pull
         files = Gist.download(@token)
 
-        files.each
+        files.each_pair do |_, file|
+          puts file.inspect
+          # rebuild the .evertils folder here
+        end
       end
 
       private
