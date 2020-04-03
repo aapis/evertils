@@ -11,6 +11,7 @@ module Evertils
         super
 
         @note = nil
+        @text = nil
         @note_helper = Evertils::Helper::Note.instance
         @api_helper = Evertils::Helper::ApiEnmlHandler.new(@config)
       end
@@ -19,10 +20,7 @@ module Evertils
       def message(text = nil)
         return Notify.error('A message is required') if text.nil?
 
-        @note = @note_helper.find_note_by_grammar(grammar.to_s)
-        text_groups = text.split(' ').each_slice(WORDS_PER_LINE).map do |w|
-          w.join(' ')
-        end
+        @text = text
 
         return Notify.error('Note not found') if @note.entity.nil?
 
@@ -49,7 +47,36 @@ module Evertils
         runner.execute
       end
 
+      def at(time, text = ARGV[3])
+        return Notify.error('A message is required') if text.nil?
+
+        @time = time
+        @text = text
+
+        groups = text_groups
+
+        puts @note.entity.content.inspect
+      end
+
       private
+
+      def text_groups
+        @note = @note_helper.find_note_by_grammar(grammar.to_s)
+        groups = @text.split(' ').each_slice(WORDS_PER_LINE).map do |w|
+          w.join(' ')
+        end
+
+        return Notify.error('Note not found') if @note.entity.nil?
+
+        groups
+      end
+
+      def sort_time
+        h, m = @time.split(':').map(&:to_i)
+        now = Date.today
+
+        DateTime.new(now.year, now.month, now.day, h, m, 0, 0)
+      end
 
       def grammar
         terms = Grammar.new
