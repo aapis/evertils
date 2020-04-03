@@ -55,7 +55,15 @@ module Evertils
 
         groups = text_groups
 
-        puts @note.entity.content.inspect
+        # xml = @api_helper.from_str(@note.entity.content)
+        # xml.search('div').each do |row|
+        #   puts row.text.to_s.inspect
+        # end
+        xml = update_note_content_with(text_groups)
+
+        xml.search('div').each do |row|
+          puts row.text.to_s.inspect
+        end
       end
 
       private
@@ -69,13 +77,6 @@ module Evertils
         return Notify.error('Note not found') if @note.entity.nil?
 
         groups
-      end
-
-      def sort_time
-        h, m = @time.split(':').map(&:to_i)
-        now = Date.today
-
-        DateTime.new(now.year, now.month, now.day, h, m, 0, 0)
       end
 
       def grammar
@@ -114,13 +115,23 @@ module Evertils
         text.map! { |l| l.gsub("#{job_id} - ", '')}
 
         text.each do |line|
-          child = "<div>* #{Formatting.current_time} -".dup
+          child = "<div>* #{log_time} -".dup
           child.concat " #{job_id} -" unless job_id.zero?
           child.concat " #{Formatting.clean(line)}</div>"
           target.add_child(child)
         end
 
         xml
+      end
+
+      def log_time
+        return Formatting.current_time if @time.nil?
+
+        h, m = @time.split(':').map(&:to_i)
+        now = Date.today
+
+        time = DateTime.new(now.year, now.month, now.day, h, m, 0, 0)
+        time.strftime("%H:%M")
       end
     end
   end
