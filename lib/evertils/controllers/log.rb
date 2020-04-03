@@ -7,11 +7,15 @@ module Evertils
     class Log < Controller::Base
       WORDS_PER_LINE = 20
 
+      # Each row we log or read from the log
+      Row = Struct.new(:time, :text, :job)
+
       def pre_exec
         super
 
         @note = nil
         @text = nil
+        @rows = []
         @note_helper = Evertils::Helper::Note.instance
         @api_helper = Evertils::Helper::ApiEnmlHandler.new(@config)
       end
@@ -55,15 +59,35 @@ module Evertils
 
         groups = text_groups
 
-        # xml = @api_helper.from_str(@note.entity.content)
-        # xml.search('div').each do |row|
-        #   puts row.text.to_s.inspect
-        # end
-        xml = update_note_content_with(text_groups)
+        # write a method that reads note content and inserts a new Row, sorting
+        # it appropriately before overwriting it's contents
+        xml = update_note_content_with(Row.new(log_time, chunk(text), 11))
+        rows = []
 
-        xml.search('div').each do |row|
-          puts row.text.to_s.inspect
+        xml.search('div').each do |div|
+          h, m = div.text.scan(/^\* (\d+)\:(\d+) -/).first
+          job = div.text.scan(/^\* \d+\:\d+ - (\d+) - /).first.first.to_i
+          text = div.text.scan(/^\* \d+\:\d+ - \d* - (.*)$/).first.first
+
+          rows.push(Row.new(timestamp_from(h, m), text, job))
         end
+
+        rows.sort_by!(&:time)
+
+        # covert the array of structs to a text string which can be passed to
+        # target.add_child
+        rows.each do |line|
+          child = "<div>* #{line.time.strftime("%H:%M")} -".dup
+          child.concat " #{line.job} -"
+          child.concat " #{Formatting.clean(line.text)}</div>"
+          # target.add_child(child)
+          puts child.inspect
+        end
+
+      end
+
+      def chunk(text)
+        text.split(' ').each_slice(WORDS_PER_LINE).map { |w| w.join(' ') }
       end
 
       private
@@ -106,16 +130,18 @@ module Evertils
 
       #
       # @since 2.2.1
-      def update_note_content_with(text)
+      def update_note_content_with(row)
+        raise 'Must be an instance of Row' unless row.is_a? Row
+
         xml = @api_helper.from_str(@note.entity.content)
         target = xml.search('en-note').first
         job_id = 0
-        job_id = text.first.split(' -').first.to_i unless text.first.scan('-').empty?
+        job_id = row.text.first.split(' -').first.to_i unless row.text.first.scan('-').empty?
 
-        text.map! { |l| l.gsub("#{job_id} - ", '')}
+        row.text.map! { |l| l.gsub("#{job_id} - ", '') }
 
-        text.each do |line|
-          child = "<div>* #{log_time} -".dup
+        row.text.each do |line|
+          child = "<div>* #{log_time.strftime("%H:%M")} -".dup
           child.concat " #{job_id} -" unless job_id.zero?
           child.concat " #{Formatting.clean(line)}</div>"
           target.add_child(child)
@@ -128,10 +154,14 @@ module Evertils
         return Formatting.current_time if @time.nil?
 
         h, m = @time.split(':').map(&:to_i)
+
+        timestamp_from(h, m)
+      end
+
+      def timestamp_from(hour, minute)
         now = Date.today
 
-        time = DateTime.new(now.year, now.month, now.day, h, m, 0, 0)
-        time.strftime("%H:%M")
+        DateTime.new(now.year, now.month, now.day, hour.to_i, minute.to_i, 0, 0)
       end
     end
   end
