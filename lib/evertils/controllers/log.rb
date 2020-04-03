@@ -53,14 +53,9 @@ module Evertils
 
       def at(time, text = ARGV[3])
         return Notify.error('A message is required') if text.nil?
+        return Notify.error('A time is required') if time.nil?
 
-        @time = time
-        @text = text
-
-        groups = text_groups
-
-        # write a method that reads note content and inserts a new Row, sorting
-        # it appropriately before overwriting it's contents
+        @note = @note_helper.find_note_by_grammar(grammar.to_s)
         xml = update_note_content_with(Row.new(log_time, chunk(text), 11))
         rows = []
 
@@ -77,20 +72,19 @@ module Evertils
         # covert the array of structs to a text string which can be passed to
         # target.add_child
         rows.each do |line|
-          child = "<div>* #{line.time.strftime("%H:%M")} -".dup
+          child = "<div>* #{line.time.strftime('%H:%M')} -".dup
           child.concat " #{line.job} -"
-          child.concat " #{Formatting.clean(line.text)}</div>"
+          child.concat " #{line.text}</div>"
           # target.add_child(child)
           puts child.inspect
         end
-
       end
+
+      private
 
       def chunk(text)
         text.split(' ').each_slice(WORDS_PER_LINE).map { |w| w.join(' ') }
       end
-
-      private
 
       def text_groups
         @note = @note_helper.find_note_by_grammar(grammar.to_s)
@@ -140,12 +134,12 @@ module Evertils
 
         row.text.map! { |l| l.gsub("#{job_id} - ", '') }
 
-        row.text.each do |line|
-          child = "<div>* #{log_time.strftime("%H:%M")} -".dup
-          child.concat " #{job_id} -" unless job_id.zero?
-          child.concat " #{Formatting.clean(line)}</div>"
-          target.add_child(child)
-        end
+        # row.text.each do |line|
+        #   child = "<div>* #{log_time} -".dup
+        #   child.concat " #{job_id} -" unless job_id.zero?
+        #   child.concat " #{Formatting.clean(line)}</div>"
+        #   target.add_child(child)
+        # end
 
         xml
       end
