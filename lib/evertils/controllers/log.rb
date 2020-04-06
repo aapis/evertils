@@ -119,7 +119,9 @@ module Evertils
 
         @note.entity.content = xml.to_s
 
-        Notify.success("Item logged at #{Formatting.current_time}") if @note.update
+        return Notify.success("Item logged at #{Formatting.current_time}") if @note.update
+
+        Notify.error('Error logging item')
       end
 
       #
@@ -134,12 +136,12 @@ module Evertils
 
         row.text.map! { |l| l.gsub("#{job_id} - ", '') }
 
-        # row.text.each do |line|
-        #   child = "<div>* #{log_time} -".dup
-        #   child.concat " #{job_id} -" unless job_id.zero?
-        #   child.concat " #{Formatting.clean(line)}</div>"
-        #   target.add_child(child)
-        # end
+        row.text.each do |line|
+          child = "<div>* #{log_time} -".dup
+          child.concat " #{job_id} -" unless job_id.zero?
+          child.concat " #{Formatting.clean(line)}</div>"
+          target.add_child(child)
+        end
 
         xml
       end
