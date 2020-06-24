@@ -2,7 +2,12 @@
 
 module Evertils
   module Controller
+    # Used to format output
     Formatting = Evertils::Helper::Formatting
+    # Data structure for grep action options
+    GrepParams = Struct.new(:term, :action, :notebook)
+    # Data structure for group action options
+    GroupParams = Struct.new(:action, :notebook)
 
     class Log < Controller::Base
       WORDS_PER_LINE = 20
@@ -24,7 +29,7 @@ module Evertils
           w.join(' ')
         end
 
-        return Notify.error('Note not found') if @note.entity.nil?
+        return Notify.error("Note not found for grammar '#{grammar}'") if @note.entity.nil?
 
         modify_with(text_groups)
       end
@@ -32,20 +37,16 @@ module Evertils
       #
       # @since 2.2.0
       def grep(text = nil)
-        params = OpenStruct.new(term: text, action: 'search', notebook: 'Daily')
-
         runner = ActionRunner.new
-        runner.params = params
+        runner.params = GrepParams.new(text, 'search', 'Daily')
         runner.execute
       end
 
       #
       # @since 2.2.0
       def group
-        params = OpenStruct.new(action: 'group', notebook: 'Daily')
-
         runner = ActionRunner.new
-        runner.params = params
+        runner.params = GroupParams.new('group', 'Daily')
         runner.execute
       end
 
